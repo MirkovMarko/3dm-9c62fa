@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3DM Srbija — Računovodstvo</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:#f6f7f9; color:#1d2330; }
+  .wrap { max-width:1100px; margin:0 auto; padding:16px; }
+  .top { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  h1 { font-size:19px; margin:0; }
+  .sub { color:#6b7280; font-size:12px; margin:2px 0 12px; }
+  button { font:inherit; cursor:pointer; }
+  .btn { border:1px solid #d8dbe2; background:#fff; border-radius:9px; padding:8px 12px; font-size:13px; }
+  .btn.primary { background:#12b566; border-color:#12b566; color:#fff; font-weight:600; }
+  .btn.sm { padding:5px 9px; font-size:12px; }
+  select,input { font:inherit; }
+  select.month { padding:7px 10px; border:1px solid #cfd3db; border-radius:9px; font-size:13px; }
+  .tabs { display:flex; gap:6px; margin:10px 0 14px; border-bottom:1px solid #e7e9ee; flex-wrap:wrap; }
+  .tab { padding:9px 14px; font-size:14px; border:none; background:none; color:#6b7280; border-bottom:2px solid transparent; }
+  .tab.active { color:#12b566; border-bottom-color:#12b566; font-weight:600; }
+  .grid { display:grid; gap:12px; }
+  .kpis { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:14px; }
+  .card { background:#fff; border:1px solid #e7e9ee; border-radius:12px; padding:14px 16px; }
+  .card .label { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#7a8294; }
+  .card .val { font-size:21px; font-weight:700; margin-top:4px; }
+  .card.hero { background:linear-gradient(135deg,#0f8a4d,#12b566); border:none; color:#fff; }
+  .card.hero .label { color:#d7f5e4; }
+  .card.amber { background:linear-gradient(135deg,#b9791a,#e0a32e); border:none; color:#fff; }
+  .card.amber .label { color:#fbe6c8; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .chip { border:1px solid #e2e5ec; background:#fff; border-radius:999px; padding:6px 12px; font-size:13px; cursor:pointer; display:flex; gap:8px; align-items:center; }
+  .chip .dot { width:9px; height:9px; border-radius:50%; }
+  .chip.active { outline:2px solid #1d2330; }
+  .chip .n { font-weight:700; }
+  .panel { background:#fff; border:1px solid #e7e9ee; border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+  .panel h2 { font-size:14px; margin:0 0 10px; }
+  .today { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .today .t { background:#f8fafc; border:1px solid #eef0f4; border-radius:10px; padding:10px 12px; }
+  .today .t .l { font-size:11px; color:#7a8294; }
+  .today .t .v { font-size:18px; font-weight:700; margin-top:2px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { text-align:left; padding:8px; border-bottom:1px solid #eef0f4; vertical-align:top; }
+  th { color:#7a8294; font-weight:600; font-size:11px; text-transform:uppercase; position:sticky; top:0; background:#fff; }
+  td.num,th.num { text-align:right; white-space:nowrap; }
+  td.nowrap,th.nowrap { white-space:nowrap; }
+  .col-proizvod { min-width:230px; }
+  .tableScroll { max-height:560px; overflow:auto; -webkit-overflow-scrolling:touch; }
+  .badge { font-size:11px; padding:3px 8px; border-radius:999px; font-weight:600; display:inline-block; white-space:nowrap; }
+  .pos { color:#0f8a4d; font-weight:600; }
+  .neg { color:#c4332b; font-weight:600; }
+  .muted { color:#9aa1ad; }
+  .twocol { display:grid; grid-template-columns:1fr; gap:14px; }
+  @media(min-width:760px){ .twocol{ grid-template-columns:1.1fr .9fr; } }
+  .chartBox { position:relative; height:300px; }
+  .center { padding:36px 16px; text-align:center; color:#6b7280; }
+  .err { color:#c4332b; }
+  .formrow { display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin-bottom:12px; }
+  .formrow .f { display:flex; flex-direction:column; gap:3px; }
+  .formrow label { font-size:11px; color:#7a8294; }
+  .formrow input { padding:8px; border:1px solid #cfd3db; border-radius:8px; font-size:13px; }
+  .iconbtn { border:none; background:none; cursor:pointer; color:#c4332b; font-size:14px; padding:2px 6px; }
+  .qbtn { border:1px solid #cfd3db; background:#fff; border-radius:7px; width:30px; height:30px; font-size:16px; line-height:1; }
+  .qty { width:64px; text-align:center; padding:7px; border:1px solid #cfd3db; border-radius:8px; font-size:14px; }
+  .inp { padding:7px; border:1px solid #cfd3db; border-radius:8px; font-size:13px; }
+  .hide { display:none !important; }
+  @media (max-width:600px){
+    .wrap{ padding:10px; } h1{ font-size:16px; } .sub{ font-size:11px; } .top{ gap:6px; }
+    select.month{ padding:6px 8px; font-size:12px; }
+    .kpis{ grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:10px; }
+    .card{ padding:11px 12px; } .card .label{ font-size:10px; } .card .val{ font-size:17px; }
+    .kpis .card.hero{ grid-column:1 / -1; }
+    .chips{ gap:6px; margin-bottom:10px; } .chip{ padding:5px 10px; font-size:12px; }
+    .tabs .tab{ padding:8px 10px; font-size:13px; } .panel{ padding:12px; } .panel h2{ font-size:13px; }
+    th,td{ padding:7px 6px; font-size:12px; } .col-proizvod{ min-width:120px; }
+    .chartBox{ height:230px; } .formrow{ gap:6px; } .today{ grid-template-columns:repeat(3,1fr); gap:6px; } .today .t .v{ font-size:15px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>3DM Srbija — Računovodstvo</h1>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select class="month" id="month"></select>
+      <button class="btn sm" id="refresh" title="Osveži">↻</button>
+      <button class="btn sm" id="settings" title="Backup (export)">⚙︎</button>
+    </div>
+  </div>
+  <div class="sub" id="sub"></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="app"></div>
+  <div id="boot" class="center">⏳ Učitavam…</div>
+</div>
+<script>
+const LS_EXP="3dm_expenses_v1", LS_LAG="3dm_lager_v1", LS_URL="3dm_csv_url", LS_SET="3dm_settings_v1", LS_CONF="3dm_confirm_v1";
+const EMBEDDED_CSV = `Mesec,Br,Broj narudžbine,Kupac,Proizvod,Cena (RSD),Datum naručeno,Datum poslat kuriru,Datum preuzeo kupac,Status,Profit (RSD)
+jun 2026,1,#1458,Dejan Čivović,FK Partizan Lampa,3389,21.06.2026 16:49,,,U obradi,
+jun 2026,2,#1457,Ivana Gojković,FK Crvena Zvezda Lampa,2889,21.06.2026 09:08,,,U obradi,
+jun 2026,3,#1456,Ivana Gojković,FK Crvena Zvezda Lampa,2889,21.06.2026 09:08,,,U obradi,
+jun 2026,4,#1455,Savo Trifunović,FK Partizan Lampa,3389,20.06.2026 16:49,,,U obradi,
+jun 2026,5,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,6,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,7,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 05:57,,,U obradi,
+jun 2026,8,#1449,Suzana Popovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 22:21,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,9,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 21:42,,,U obradi,
+jun 2026,10,#1448,Dragana Trmčić,FK Crvena Zvezda Lampa (2 kom) + Ćirilični natpis,4999,19.06.2026 21:35,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,11,#1447,Desanka Vujosevic,FK Partizan Lampa,3389,19.06.2026 15:21,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,12,#1446,Ljubica Janjić,FK Partizan Lampa,3389,19.06.2026 09:01,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,13,#1445,Jelena Veskov,FK Partizan Lampa (2 kom),5389,18.06.2026 18:48,21.06.2026 19:46,,Čeka preuzimanje,
+jun 2026,14,#1444,Nikolina Ilic,FK Partizan Lampa,3389,18.06.2026 16:29,18.06.2026 23:09,,Preuzeto,
+jun 2026,15,#1440,Mirko Bobic,FK Crvena Zvezda Lampa (2 kom),5390,18.06.2026 07:10,18.06.2026 12:12,19.06.2026 20:49,Isporučeno,3600
+jun 2026,16,#1435,Gordana Popov,FK Partizan Lampa,3389,18.06.2026 00:27,18.06.2026 08:15,,Preuzeto,
+jun 2026,17,#1434,Duško Joksimovic,FK Crvena Zvezda Lampa,3389,17.06.2026 21:28,18.06.2026 08:15,19.06.2026 10:32,Isporučeno,2299
+jun 2026,18,#AI1038197,Mislimi Emini,Instagram DM (nema na Shopify),3390,17.06.2026 15:32,18.06.2026 08:15,19.06.2026 16:09,Isporučeno,2300
+jun 2026,19,#1433,Mladen Sredojević,FK Crvena Zvezda Lampa,3389,17.06.2026 12:30,18.06.2026 08:15,19.06.2026 13:37,Isporučeno,2299
+jun 2026,20,#1432,Slavisa Pavlovic,FK Crvena Zvezda Lampa,3389,17.06.2026 11:52,17.06.2026 12:09,18.06.2026 13:16,Isporučeno,2299
+jun 2026,21,#1431,Dario Vranesevic,FK Crvena Zvezda Lampa,3389,16.06.2026 17:37,17.06.2026 12:09,18.06.2026 14:15,Isporučeno,2299
+jun 2026,22,#1429,Predrag Lukić,FK Partizan Lampa,2889,10.06.2026 22:48,11.06.2026 19:53,15.06.2026 12:57,Isporučeno,1799
+jun 2026,23,#1427,Radivoj Vrgotić,FK Partizan Lampa,2889,10.06.2026 09:47,11.06.2026 19:53,15.06.2026 16:03,Isporučeno,1799
+jun 2026,24,#AI1030370,Dragan Pantić,"Instagram DM (COD 8390 -> više kom, proveriti)",8390,09.06.2026 23:15,11.06.2026 19:53,15.06.2026 12:00,Isporučeno,7300
+jun 2026,25,#1425,Branko Dašic,FK Partizan Lampa,2889,09.06.2026 17:04,11.06.2026 19:53,15.06.2026 12:27,Isporučeno,1799
+jun 2026,26,#1424,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 11:04,11.06.2026 19:53,15.06.2026 13:09,Isporučeno,1799
+jun 2026,27,#1423,Momir Mucic,FK Partizan Lampa,2889,09.06.2026 10:37,10.06.2026 17:55,12.06.2026 13:51,Isporučeno,1799
+jun 2026,28,#1422,Marina Matic,FK Partizan Lampa,2889,09.06.2026 10:14,10.06.2026 17:55,12.06.2026 12:33,Isporučeno,1799
+jun 2026,29,#1421,Zoltan Lukač,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 09:56,09.06.2026 18:38,11.06.2026 12:41,Isporučeno,1799
+jun 2026,30,#1420,Vladica Aleksić,FK Crvena Zvezda Lampa,2889,09.06.2026 07:06,10.06.2026 17:55,12.06.2026 14:55,Isporučeno,1799
+jun 2026,31,#1419,Snežana Trišić,FK Partizan Lampa,2889,09.06.2026 06:09,09.06.2026 18:38,11.06.2026 12:05,Isporučeno,1799
+jun 2026,32,#1418,Ljiljana Šerbula,FK Partizan Lampa,2889,08.06.2026 21:59,10.06.2026 17:55,12.06.2026 13:26,Isporučeno,1799
+jun 2026,33,#1417,Slobodan Zivanovic,FK Crvena Zvezda Lampa + Ćirilični natpis,3390,08.06.2026 20:24,10.06.2026 17:55,12.06.2026 14:46,Isporučeno,2300
+jun 2026,34,#1415,Danijela Sentic,FK Crvena Zvezda Lampa,2889,08.06.2026 15:33,09.06.2026 18:38,11.06.2026 10:45,Isporučeno,1799
+jun 2026,35,#1414,Snezana Djurovic,FK Partizan Lampa,2889,08.06.2026 14:16,10.06.2026 17:55,12.06.2026 13:32,Isporučeno,1799
+jun 2026,36,#1413,Slavisa Spesojevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:59,10.06.2026 17:55,12.06.2026 13:38,Isporučeno,1799
+jun 2026,37,#1412,Aleksandar Zarić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:01,10.06.2026 17:55,12.06.2026 14:00,Isporučeno,1799
+jun 2026,38,#1411,Sreten Aleksic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 07:41,10.06.2026 17:55,12.06.2026 12:48,Isporučeno,1799
+jun 2026,39,#1409,Aleksandar Antic,FK Partizan Lampa,2889,07.06.2026 18:41,10.06.2026 17:55,12.06.2026 13:06,Isporučeno,1799
+jun 2026,40,#AI1027978,Milovan Simović,Instagram DM (nema na Shopify),2890,07.06.2026 16:23,07.06.2026 20:43,09.06.2026 15:48,Isporučeno,1800
+jun 2026,41,#AI1027973,Ana Vukadinovic,Instagram DM (nema na Shopify),2890,07.06.2026 16:16,07.06.2026 16:49,09.06.2026 15:23,Isporučeno,1800
+jun 2026,42,#1407,Milan Brajovic,FK Partizan Lampa,2889,07.06.2026 10:13,10.06.2026 17:55,12.06.2026 16:57,Isporučeno,1799
+jun 2026,43,#1406,Dusan Djukic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,07.06.2026 08:22,07.06.2026 16:49,09.06.2026 16:07,Isporučeno,1799
+jun 2026,44,#AI1027398,Vanja Lukić,Instagram DM (nema na Shopify),2890,06.06.2026 15:02,07.06.2026 16:49,09.06.2026 17:25,Isporučeno,1800
+jun 2026,45,#1405,Ivana Jevtic,FK Partizan Lampa,2889,06.06.2026 11:11,07.06.2026 20:43,09.06.2026 14:51,Isporučeno,1799
+jun 2026,46,#1403,Ljubiša Avić,FK Partizan Lampa,2889,06.06.2026 09:01,07.06.2026 16:49,09.06.2026 13:43,Isporučeno,1799
+jun 2026,47,#1402,Mika Birišić,FK Partizan Lampa,2889,05.06.2026 21:59,07.06.2026 16:49,09.06.2026 14:17,Isporučeno,1799
+jun 2026,48,#1401,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,05.06.2026 18:52,07.06.2026 16:49,09.06.2026 12:51,Isporučeno,1799
+jun 2026,49,#1400,Predrag Petrovic,FK Partizan Lampa,2889,05.06.2026 13:00,07.06.2026 16:49,09.06.2026 15:24,Isporučeno,1799
+jun 2026,50,#1399,Dejan Stanic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:47,04.06.2026 22:15,08.06.2026 12:58,Isporučeno,1799
+jun 2026,51,#1398,Ivan Šalajić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:46,04.06.2026 22:15,15.06.2026 16:32,Vraćeno,-390
+jun 2026,52,#AI1025933,Miroslava Pajtašev,Instagram DM (nema na Shopify),2890,04.06.2026 16:20,04.06.2026 22:15,08.06.2026 14:11,Isporučeno,1800
+jun 2026,53,#AI1025920,Negica Pajović,Instagram DM (nema na Shopify),2890,04.06.2026 15:59,04.06.2026 22:15,08.06.2026 12:23,Isporučeno,1800
+jun 2026,54,#1397,Zoran Stojković,FK Partizan Lampa,2889,04.06.2026 15:36,04.06.2026 22:15,08.06.2026 11:14,Isporučeno,1799
+jun 2026,55,#1396,Dragana Detki,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 13:12,04.06.2026 22:15,08.06.2026 12:56,Isporučeno,1799
+jun 2026,56,#1395,Zoran Viskovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 10:42,04.06.2026 11:02,05.06.2026 14:35,Isporučeno,1799
+jun 2026,57,#1394,Blagoja Merdzanovski,FK Partizan Lampa,2889,03.06.2026 23:53,04.06.2026 00:54,05.06.2026 14:02,Isporučeno,1799
+jun 2026,58,#1390,Aleksandra Živanović,FK Partizan Lampa,2889,03.06.2026 10:28,04.06.2026 11:14,10.06.2026 21:15,Isporučeno,1799
+jun 2026,59,#1389,Mladenka Markovic,FK Partizan Lampa,2889,03.06.2026 08:13,04.06.2026 09:29,05.06.2026 13:32,Isporučeno,1799
+jun 2026,60,#1388,Emini Mislim,FK Partizan Lampa,2889,02.06.2026 19:48,02.06.2026 20:42,04.06.2026 15:26,Isporučeno,1799
+jun 2026,61,#1387,Rozalija Aleksijević,FK Crvena Zvezda Lampa,2889,02.06.2026 19:25,02.06.2026 20:42,04.06.2026 15:25,Isporučeno,1799
+jun 2026,62,#1385,Miljan Radović,FK Partizan Lampa + Prioritetna izrada,3288,02.06.2026 15:53,02.06.2026 20:42,04.06.2026 14:46,Isporučeno,2198
+jun 2026,63,#1383,Bojan Gunj,Željko Obradović Lampa,2889,02.06.2026 12:29,02.06.2026 20:42,04.06.2026 14:09,Isporučeno,1799
+jun 2026,64,#1381,Luna Mikulandra,FK Partizan Lampa,2889,02.06.2026 08:41,02.06.2026 20:42,08.06.2026 12:54,Isporučeno,1799
+jun 2026,65,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,04.06.2026 00:54,05.06.2026 14:56,Isporučeno,1799
+
+REZIME,jun 2026
+Ukupno narudžbina,65
+Isporučeno,49
+Preuzeto,2
+Čeka preuzimanje,7
+U obradi,6
+Vraćeno,1
+FB reklame (RSD),65603
+
+Mesec,Datum,USD,RSD
+jun 2026,01.06.2026,21.22,2176
+jun 2026,02.06.2026,38.67,3966
+jun 2026,03.06.2026,38.91,3990
+jun 2026,04.06.2026,42.83,4392
+jun 2026,05.06.2026,45.99,4716
+jun 2026,06.06.2026,36.11,3703
+jun 2026,07.06.2026,43.58,4469
+jun 2026,08.06.2026,37.73,3869
+jun 2026,09.06.2026,39.0,3999
+jun 2026,10.06.2026,39.08,4008
+jun 2026,11.06.2026,17.39,1783
+jun 2026,12.06.2026,0.0,0
+jun 2026,13.06.2026,0.0,0
+jun 2026,14.06.2026,0.0,0
+jun 2026,15.06.2026,0.0,0
+jun 2026,16.06.2026,19.48,1998
+jun 2026,17.06.2026,19.06,1955
+jun 2026,18.06.2026,45.26,4641
+jun 2026,19.06.2026,44.44,4557
+jun 2026,20.06.2026,74.36,7626
+jun 2026,21.06.2026,36.62,3755
+`;
+const MONTHS=["","jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
+const KATEGORIJE=["Filament","USB kabl","LED traka","Kutija za pakovanje","Struja","Alat","Ostalo"];
+const LAGER_DEFAULT=[{naziv:"Filament",jed:"kg",kol:0},{naziv:"USB kabl",jed:"kom",kol:0},{naziv:"LED traka",jed:"m",kol:0},{naziv:"Kutija za pakovanje",jed:"kom",kol:0}];
+const DEF_SET={postarina:390,proizvodi:[{tip:"Lampa",cena:600}],komponente:[{naziv:"LED traka",jed:"m",cena:0},{naziv:"USB kabl",jed:"kom",cena:0},{naziv:"Kutija za pakovanje",jed:"kom",cena:0},{naziv:"Filament",jed:"kg",cena:0}]};
+const STATUS_META={"Isporučeno":{c:"#0f8a4d",b:"#e4f6ec"},"Preuzeto":{c:"#1f6fd6",b:"#e6f0fd"},"Čeka preuzimanje":{c:"#b9791a",b:"#fdf1dd"},"U obradi":{c:"#7a4ddb",b:"#efe8fd"},"Vraćeno":{c:"#c4332b",b:"#fce8e6"}};
+const fmt=n=>Math.round(n||0).toLocaleString("sr-RS")+" RSD";
+const num=s=>parseInt(String(s||"").replace(/[^\d-]/g,""))||0;
+const val=id=>document.getElementById(id).value.trim();
+let STATE={orders:[],ads:[],month:null,tab:"pregled",statusFilter:null};
+const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d;}catch(e){return d;}};
+const SUPA_URL="https://auwkcdfsflhptaggasbv.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1d2tjZGZzZmxocHRhZ2dhc2J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMTA1NzUsImV4cCI6MjA5NDU4NjU3NX0.Eh3Y0aF4xcAwfKduIgVzKjXItow5mPChk93YEz6KMIU";
+const SUPA_H={apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY};
+const DBKEYS={[LS_EXP]:"expenses",[LS_LAG]:"lager",[LS_SET]:"settings",[LS_CONF]:"confirm"};
+function _lsSetRaw(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function lsSet(k,v){_lsSetRaw(k,v);if(DBKEYS[k])dbSave(k);}
+function dbSave(ls){const dbk=DBKEYS[ls];if(!dbk)return;fetch(SUPA_URL+"/rest/v1/app_state",{method:"POST",headers:Object.assign({},SUPA_H,{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=minimal"}),body:JSON.stringify({key:dbk,data:lsGet(ls,null),updated_at:new Date().toISOString()})}).catch(()=>{});}
+async function dbLoadAll(){try{const r=await fetch(SUPA_URL+"/rest/v1/app_state?select=key,data",{headers:SUPA_H,cache:"no-store"});if(!r.ok)return false;const rows=await r.json();const map={};rows.forEach(x=>map[x.key]=x.data);for(const ls in DBKEYS){const dbk=DBKEYS[ls];if(map[dbk]!==undefined){_lsSetRaw(ls,map[dbk]);}else if(localStorage.getItem(ls)!==null){dbSave(ls);}}return true;}catch(e){return false;}}
+function settings(){let s=lsGet(LS_SET,null);if(!s){s=JSON.parse(JSON.stringify(DEF_SET));lsSet(LS_SET,s);}if(!s.proizvodi||!s.proizvodi.length)s.proizvodi=[{tip:"Lampa",cena:600}];if(typeof s.postarina!=="number")s.postarina=390;if(!s.komponente)s.komponente=[];return s;}
+function monthOf(d){const m=String(d).match(/^(\d{2})\.(\d{2})\.(\d{4})/);return m?MONTHS[+m[2]]+" "+m[3]:null;}
+function ts(d){const m=String(d).match(/(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}):(\d{2}))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0;}
+function todayStr(){const d=new Date(),p=n=>String(n).padStart(2,"0");return p(d.getDate())+"."+p(d.getMonth()+1)+"."+d.getFullYear();}
+function qtyOf(prod){const m=String(prod).match(/(\d+)\s*kom/i);return m?(+m[1]||1):1;}
+function tipOf(prod){const s=settings(),p=String(prod).toLowerCase();for(const it of s.proizvodi){if(it.tip&&p.includes(it.tip.toLowerCase()))return it;}return s.proizvodi[0];}
+function costOf(prod){return (tipOf(prod).cena||0)*qtyOf(prod);}
+function baseProfit(o){return o.cena-settings().postarina-costOf(o.prod);}
+function profitInfo(o){if(o.status==="Vraćeno")return{v:-settings().postarina,real:true};if(o.status==="Isporučeno")return{v:baseProfit(o),real:true};return{v:baseProfit(o),real:false};}
+function isConfirmed(o){return !!lsGet(LS_CONF,{})[o.broj];}
+function profDay(o){if(o.status==="Isporučeno")return baseProfit(o);if(o.status==="Vraćeno")return -settings().postarina;if(o.status==="Preuzeto"||o.status==="Čeka preuzimanje")return baseProfit(o);if(o.status==="U obradi")return isConfirmed(o)?baseProfit(o):0;return 0;}
+function parseCSV(t){const rows=[];let row=[],cur="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+ if(q){if(c==='"'){if(t[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;}
+ else{if(c==='"')q=true;else if(c===','){row.push(cur);cur="";}else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur="";}else if(c==='\r'){}else cur+=c;}}
+ if(cur!==""||row.length){row.push(cur);rows.push(row);}return rows;}
+function extract(rows){
+  rows=rows.map(r=>r.map(x=>(x||"").trim()));
+  const orders=[],ads=[];
+  let oi=rows.findIndex(r=>r.includes("Broj narudžbine"));
+  if(oi>=0){const h=rows[oi],ix=n=>h.indexOf(n);
+    const c={mesec:ix("Mesec"),br:ix("Br"),broj:ix("Broj narudžbine"),kupac:ix("Kupac"),prod:ix("Proizvod"),cena:ix("Cena (RSD)"),d1:ix("Datum naručeno"),d2:ix("Datum poslat kuriru"),d3:ix("Datum preuzeo kupac"),st:ix("Status")};
+    for(let i=oi+1;i<rows.length;i++){const r=rows[i]; if(!r[c.br]||!/^\d+$/.test(r[c.br]))break;
+      orders.push({mesec:r[c.mesec],br:+r[c.br],broj:r[c.broj],kupac:r[c.kupac],prod:r[c.prod],cena:num(r[c.cena]),d1:r[c.d1],d2:r[c.d2],d3:r[c.d3],status:r[c.st]});}}
+  let ai=rows.findIndex(r=>r.includes("USD")&&r.includes("RSD"));
+  if(ai>=0){const h=rows[ai],mi=h.indexOf("Mesec"),di=h.indexOf("Datum"),ui=h.indexOf("USD"),ri=h.indexOf("RSD");
+    for(let i=ai+1;i<rows.length;i++){const r=rows[i]; if(!r[di]||!/^\d{2}\.\d{2}\.\d{4}$/.test(r[di]))break;
+      ads.push({mesec:mi>=0?r[mi]:null,datum:r[di],usd:parseFloat(r[ui])||0,rsd:num(r[ri])});}}
+  return {orders,ads};
+}
+function allMonths(){const s=new Set();STATE.orders.forEach(o=>o.mesec&&s.add(o.mesec));lsGet(LS_EXP,[]).forEach(e=>e.mesec&&s.add(e.mesec));return [...s];}
+function buildMonthSelect(){const sel=document.getElementById("month");const ms=allMonths();if(!ms.length){sel.innerHTML="";return;}if(!STATE.month||!ms.includes(STATE.month))STATE.month=ms[0];sel.innerHTML=ms.map(m=>`<option ${m===STATE.month?"selected":""}>${m}</option>`).join("");}
+function tabsBar(){const t=[["pregled","Pregled"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
+function renderPregled(){
+  const m=STATE.month;
+  const ords=STATE.orders.filter(o=>o.mesec===m).sort((a,b)=>ts(b.d1)-ts(a.d1));
+  const ads=STATE.ads.filter(a=>!a.mesec||a.mesec===m);
+  const exp=lsGet(LS_EXP,[]).filter(e=>e.mesec===m);
+  const cnt={}; let promet=0,real=0,dostava=0,priprema=0;
+  ords.forEach(o=>{cnt[o.status]=(cnt[o.status]||0)+1; const pi=profitInfo(o);
+    if(o.status==="Isporučeno"){promet+=o.cena; real+=pi.v;}
+    else if(o.status==="Vraćeno"){real+=pi.v;}
+    else if(o.status==="Preuzeto"||o.status==="Čeka preuzimanje"){dostava+=pi.v;}
+    else if(o.status==="U obradi"){priprema+=pi.v;}});
+  const adsRsd=ads.reduce((s,a)=>s+a.rsd,0), cista=real-adsRsd, matTrosak=exp.reduce((s,e)=>s+e.iznos,0);
+  // DANAS
+  const TD=todayStr();
+  const adsToday=STATE.ads.filter(a=>a.datum===TD).reduce((s,a)=>s+a.rsd,0);
+  let profToday=0,brToday=0,ukupnoToday=0; STATE.orders.forEach(o=>{if((o.d2||"").slice(0,10)===TD){profToday+=profDay(o);ukupnoToday+=o.cena;brToday++;}});
+  const order=["Isporučeno","Preuzeto","Čeka preuzimanje","U obradi","Vraćeno"];
+  const chips=order.filter(s=>cnt[s]).map(s=>{const mm=STATUS_META[s]||{c:"#555"};const a=STATE.statusFilter===s?"active":"";return `<div class="chip ${a}" data-s="${s}"><span class="dot" style="background:${mm.c}"></span>${s}<span class="n">${cnt[s]}</span></div>`;}).join("");
+  const rows=ords.filter(o=>!STATE.statusFilter||o.status===STATE.statusFilter);
+  const isObrada=STATE.statusFilter==="U obradi";
+  const conf=lsGet(LS_CONF,{});
+  let tallyHtml="",confCount=0,izradaPanel="";
+  if(isObrada){const tally={};rows.forEach(o=>{const q=qtyOf(o.prod);const isC=!!conf[o.broj];o.prod.split("+").map(x=>x.trim()).forEach((p,idx)=>{let nm=p.replace(/\s*\(.*?\)/g,"").trim();if(!nm)return;const ad=(idx===0?q:1);if(!tally[nm])tally[nm]={t:0,c:0};tally[nm].t+=ad;if(isC)tally[nm].c+=ad;});});
+    tallyHtml=Object.entries(tally).sort((a,b)=>b[1].t-a[1].t).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f1f4;font-size:14px"><span>${k}</span><b style="font-size:16px">${v.t} <span style="font-size:12px;font-weight:600;color:#0f8a4d">(${v.c} potvr\u0111eno)</span></b></div>`).join("");
+    confCount=rows.filter(o=>conf[o.broj]).length;
+    izradaPanel=`<div class="panel"><h2>Za izradu (${rows.length} por. • potvr\u0111eno ${confCount}/${rows.length})</h2><div class="muted" style="font-size:11px;margin-bottom:8px">Koliko \u010dega da napravi\u0161 \u2022 \u010dekiraj u tabeli kad ti kupac potvrdi SMS.</div>${tallyHtml||'<div class="muted">nema</div>'}</div>`;}
+  const tbody=rows.map(o=>{const mm=STATUS_META[o.status]||{c:"#555",b:"#eee"};const pi=profitInfo(o);
+    const pf=pi.real?`<span class="${pi.v<0?'neg':'pos'}">${pi.v.toLocaleString("sr-RS")}</span>`:`<span class="muted">~${pi.v.toLocaleString("sr-RS")}</span>`;
+    return `<tr style="${isObrada&&conf[o.broj]?'background:#eafaf0':''}">${isObrada?`<td><input type="checkbox" data-cf="${o.broj}" ${conf[o.broj]?'checked':''} style="width:19px;height:19px"></td>`:''}<td>${o.br}</td><td class="nowrap">${o.broj}</td><td>${o.kupac}</td><td class="col-proizvod">${o.prod}</td><td class="num">${o.cena.toLocaleString("sr-RS")}</td><td class="nowrap">${o.d1}</td><td><span class="badge" style="color:${mm.c};background:${mm.b}">${o.status}</span></td><td class="num">${pf}</td></tr>`;}).join("");
+  const pm={}; ords.forEach(o=>{let k=o.prod.replace(/\s*\(.*?\)/g,"").replace(/\s*\+.*/,"").trim(); if(/Instagram/i.test(o.prod))k="Instagram DM (nepoznato)"; pm[k]=(pm[k]||0)+1;});
+  const lampHtml=Object.entries(pm).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span>${k}</span><b>${v}</b></div>`).join("");
+  document.getElementById("app").innerHTML=`
+    <div class="panel" style="padding:12px 16px">
+      <h2>Danas (${TD})</h2>
+      <div class="today">
+        <div class="t"><div class="l">Poslato danas (${brToday} por.)</div><div class="v">${fmt(ukupnoToday)}</div></div>
+        <div class="t"><div class="l">Profit danas</div><div class="v">${fmt(profToday)}</div></div>
+        <div class="t"><div class="l">Reklame danas</div><div class="v">${fmt(adsToday)}</div></div>
+      </div>
+    </div>
+    <div class="grid kpis">
+      <div class="card hero"><div class="label">Čista zarada (neto − reklame)</div><div class="val">${fmt(cista)}</div></div>
+      <div class="card hero"><div class="label">Na ruke (zarada − materijal)</div><div class="val">${fmt(cista-matTrosak)}</div></div>
+      <div class="card amber"><div class="label">Očekivani profit (Preuzeto + Čeka)</div><div class="val">${fmt(dostava)}</div></div>
+      <div class="card"><div class="label">Neto profit pre reklama</div><div class="val">${fmt(real)}</div></div>
+      <div class="card"><div class="label">Promet isporučenih</div><div class="val">${fmt(promet)}</div></div>
+      <div class="card"><div class="label">FB reklame</div><div class="val">${fmt(adsRsd)}</div></div>
+      <div class="card"><div class="label">Troškovi materijala (${m})</div><div class="val">${fmt(matTrosak)}</div></div>
+    </div>
+    <div class="chips" id="chips">
+      <div class="chip ${STATE.statusFilter===null?'active':''}" data-s="__all"><span class="dot" style="background:#1d2330"></span>Sve<span class="n">${ords.length}</span></div>${chips}
+    </div>
+    ${izradaPanel}
+    <div class="twocol">
+      <div class="panel"><h2>Narudžbine — ${m}</h2>
+        <div class="tableScroll"><table><thead><tr>${isObrada?'<th>\u2713</th>':''}<th>#</th><th>Narudžbina</th><th>Kupac</th><th class="col-proizvod">Proizvod</th><th class="num">Cena</th><th>Naručeno</th><th>Status</th><th class="num">Profit</th></tr></thead><tbody>${tbody}</tbody></table></div>
+        <div class="muted" style="font-size:11px;margin-top:6px">Prikazano ${rows.length} od ${ords.length} • ~ = procena (još nije naplaćeno)</div>
+      </div>
+      <div>
+        <div class="panel"><h2>Dnevni trošak reklama (RSD)</h2><div class="chartBox"><canvas id="ch"></canvas></div></div>
+        <div class="panel"><h2>Po proizvodu</h2>${lampHtml||'<div class="muted">nema</div>'}</div>
+      </div>
+    </div>`;
+  document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{const s=c.dataset.s;STATE.statusFilter=(s==="__all")?null:(STATE.statusFilter===s?null:s);render();});
+  document.querySelectorAll("[data-cf]").forEach(cb=>cb.onchange=()=>{const x=lsGet(LS_CONF,{});if(cb.checked)x[cb.dataset.cf]=true;else delete x[cb.dataset.cf];lsSet(LS_CONF,x);render();});
+  const ctx=document.getElementById("ch");
+  if(ctx&&window.Chart){new Chart(ctx,{type:"bar",data:{labels:ads.map(a=>a.datum.slice(0,5)),datasets:[{data:ads.map(a=>a.rsd),backgroundColor:"#1f6fd6",borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toLocaleString("sr-RS")+" RSD"}}},scales:{y:{ticks:{callback:v=>(v/1000)+"k"}},x:{ticks:{maxRotation:0,autoSkip:true}}}}});}
+}
+function renderTroskovi(){
+  const m=STATE.month;
+  const exp=lsGet(LS_EXP,[]);
+  const mexp=exp.filter(e=>e.mesec===m).sort((a,b)=>b.datum.localeCompare(a.datum));
+  const total=mexp.reduce((s,e)=>s+e.iznos,0);
+  const ads=STATE.ads.filter(a=>!a.mesec||a.mesec===m);
+  const adsTot=ads.reduce((s,a)=>s+a.rsd,0), adsUsd=ads.reduce((s,a)=>s+a.usd,0);
+  const pbd={};
+  STATE.orders.filter(o=>o.mesec===m).forEach(o=>{const k=(o.d1||"").slice(0,10); if(!/^\d{2}\.\d{2}\.\d{4}$/.test(k))return; pbd[k]=(pbd[k]||0)+profDay(o);});
+  const profTot=ads.reduce((s,a)=>s+(pbd[a.datum]||0),0);
+  const adsRows=ads.map(a=>{const pr=pbd[a.datum]||0,neto=pr-a.rsd;return `<tr><td class="nowrap">${a.datum}</td><td class="num">${a.usd.toFixed(2)}</td><td class="num">${a.rsd.toLocaleString("sr-RS")}</td><td class="num pos">${pr.toLocaleString("sr-RS")}</td><td class="num ${neto<0?'neg':'pos'}">${neto.toLocaleString("sr-RS")}</td></tr>`;}).join("");
+  const byKat={}; mexp.forEach(e=>byKat[e.kat]=(byKat[e.kat]||0)+e.iznos);
+  const katHtml=Object.entries(byKat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span>${k}</span><b>${fmt(v)}</b></div>`).join("")||'<div class="muted">nema unosa</div>';
+  const today=new Date().toISOString().slice(0,10).split("-").reverse().join(".");
+  const list=mexp.map(e=>`<tr><td class="nowrap">${e.datum}</td><td>${e.kat}</td><td>${e.opis||""}</td><td class="num">${e.kol||""}</td><td class="num">${e.iznos.toLocaleString("sr-RS")}</td><td><button class="iconbtn" data-del="${e.id}">✕</button></td></tr>`).join("");
+  document.getElementById("app").innerHTML=`
+    <div class="grid kpis">
+      <div class="card hero"><div class="label">Materijal — ukupno (${m})</div><div class="val">${fmt(total)}</div></div>
+      <div class="card"><div class="label">Reklame — ukupno (${m})</div><div class="val">${fmt(adsTot)}</div><div class="muted" style="font-size:11px">${adsUsd.toFixed(2)} USD</div></div>
+      <div class="card" style="min-width:240px"><div class="label">Materijal po kategoriji</div><div style="margin-top:6px">${katHtml}</div></div>
+    </div>
+    <div class="panel">
+      <h2>Dodaj trošak materijala</h2>
+      <div class="formrow">
+        <div class="f"><label>Datum</label><input id="e_datum" value="${today}" size="10"></div>
+        <div class="f"><label>Kategorija</label><input id="e_kat" list="katlist" placeholder="Filament..." size="14"><datalist id="katlist">${KATEGORIJE.map(k=>`<option>${k}</option>`).join("")}</datalist></div>
+        <div class="f"><label>Opis (opciono)</label><input id="e_opis" placeholder="npr. PLA crni 1kg" size="16"></div>
+        <div class="f"><label>Količina</label><input id="e_kol" placeholder="1" size="6"></div>
+        <div class="f"><label>Iznos (RSD)</label><input id="e_iznos" placeholder="0" size="8" inputmode="numeric"></div>
+        <button class="btn primary" id="e_add">+ Dodaj</button>
+      </div>
+      <div class="tableScroll"><table><thead><tr><th>Datum</th><th>Kategorija</th><th>Opis</th><th class="num">Kol.</th><th class="num">Iznos</th><th></th></tr></thead><tbody>${list}</tbody></table></div>
+    </div>
+    <div class="panel">
+      <h2>Reklame vs profit po danima (${m})</h2>
+      <div class="tableScroll"><table><thead><tr><th>Datum</th><th class="num">Reklame USD</th><th class="num">Reklame RSD</th><th class="num">Profit RSD</th><th class="num">Neto</th></tr></thead><tbody>${adsRows||'<tr><td colspan="5" class="muted">nema podataka</td></tr>'}</tbody><tfoot><tr><th>Ukupno</th><th class="num">${adsUsd.toFixed(2)}</th><th class="num">${adsTot.toLocaleString("sr-RS")}</th><th class="num">${profTot.toLocaleString("sr-RS")}</th><th class="num ${(profTot-adsTot)<0?'neg':'pos'}">${(profTot-adsTot).toLocaleString("sr-RS")}</th></tr></tfoot></table></div>
+      <div class="muted" style="font-size:11px">Profit vezan za dan naručivanja (za nenaplaćene je procena). Neto = profit − reklame tog dana.</div>
+    </div>`;
+  document.getElementById("e_add").onclick=()=>{const datum=val("e_datum"),kat=val("e_kat"),opis=val("e_opis"),kol=val("e_kol"),iznos=num(val("e_iznos"));if(!datum||!kat||!iznos){alert("Unesi datum, kategoriju i iznos.");return;}const mes=monthOf(datum)||m;const arr=lsGet(LS_EXP,[]);arr.push({id:Date.now()+"",mesec:mes,datum,kat,opis,kol,iznos});lsSet(LS_EXP,arr);if(mes!==STATE.month)STATE.month=mes;render();};
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Obrisati ovaj trošak?"))return;lsSet(LS_EXP,lsGet(LS_EXP,[]).filter(e=>e.id!==b.dataset.del));render();});
+}
+function renderLager(){
+  let items=lsGet(LS_LAG,null); if(items===null){items=LAGER_DEFAULT.slice();lsSet(LS_LAG,items);}
+  const rows=items.map((it,i)=>`<tr><td>${it.naziv}</td><td class="nowrap"><button class="qbtn" data-dec="${i}">−</button> <input class="qty" data-q="${i}" value="${it.kol}" inputmode="decimal"> <button class="qbtn" data-inc="${i}">+</button></td><td>${it.jed}</td><td><button class="iconbtn" data-rem="${i}">✕</button></td></tr>`).join("");
+  document.getElementById("app").innerHTML=`
+    <div class="panel">
+      <h2>Lager (stanje zaliha)</h2>
+      <div class="muted" style="font-size:11px;margin-bottom:10px">Ažuriraj količine na popisu na par dana.</div>
+      <div class="tableScroll"><table><thead><tr><th>Stavka</th><th>Količina</th><th>Jed.</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="formrow" style="margin-top:14px">
+        <div class="f"><label>Nova stavka</label><input id="l_naziv" placeholder="npr. Lepak" size="16"></div>
+        <div class="f"><label>Jedinica</label><input id="l_jed" placeholder="kom / m / kg" size="8"></div>
+        <div class="f"><label>Količina</label><input id="l_kol" placeholder="0" size="6"></div>
+        <button class="btn primary" id="l_add">+ Dodaj stavku</button>
+      </div>
+    </div>`;
+  const save=a=>lsSet(LS_LAG,a);
+  document.querySelectorAll("[data-q]").forEach(inp=>inp.onchange=()=>{const a=lsGet(LS_LAG,[]);a[+inp.dataset.q].kol=parseFloat(inp.value)||0;save(a);});
+  document.querySelectorAll("[data-inc]").forEach(b=>b.onclick=()=>{const a=lsGet(LS_LAG,[]);a[+b.dataset.inc].kol=(parseFloat(a[+b.dataset.inc].kol)||0)+1;save(a);render();});
+  document.querySelectorAll("[data-dec]").forEach(b=>b.onclick=()=>{const a=lsGet(LS_LAG,[]);a[+b.dataset.dec].kol=(parseFloat(a[+b.dataset.dec].kol)||0)-1;save(a);render();});
+  document.querySelectorAll("[data-rem]").forEach(b=>b.onclick=()=>{if(!confirm("Obrisati stavku?"))return;const a=lsGet(LS_LAG,[]);a.splice(+b.dataset.rem,1);save(a);render();});
+  document.getElementById("l_add").onclick=()=>{const naziv=val("l_naziv");if(!naziv)return;const a=lsGet(LS_LAG,[]);a.push({naziv,jed:val("l_jed")||"kom",kol:parseFloat(val("l_kol"))||0});save(a);render();};
+}
+function renderSettings(){
+  const s=settings();
+  const prod=s.proizvodi.map((p,i)=>`<tr><td><input class="inp" data-pt="${i}" value="${(p.tip||"").replace(/"/g,'&quot;')}" size="18"></td><td class="num"><input class="inp" data-pc="${i}" value="${p.cena}" size="7" inputmode="numeric"> RSD</td><td><button class="iconbtn" data-pr="${i}">✕</button></td></tr>`).join("");
+  const komp=s.komponente.map((k,i)=>`<tr><td><input class="inp" data-kn="${i}" value="${(k.naziv||"").replace(/"/g,'&quot;')}" size="16"></td><td><input class="inp" data-kj="${i}" value="${k.jed||""}" size="5"></td><td class="num"><input class="inp" data-kc="${i}" value="${k.cena}" size="7" inputmode="numeric"> RSD</td><td><button class="iconbtn" data-kr="${i}">✕</button></td></tr>`).join("");
+  document.getElementById("app").innerHTML=`
+    <div class="panel" style="max-width:560px">
+      <h2>Poštarina</h2>
+      <div class="formrow"><div class="f"><label>Cena poštarine po porudžbini (RSD)</label><input class="inp" id="s_post" value="${s.postarina}" size="8" inputmode="numeric"></div><button class="btn primary" id="s_postsave">Sačuvaj</button></div>
+      <div class="muted" style="font-size:11px">Profit = cena − poštarina − (cena izrade × broj komada). Računa se uživo.</div>
+    </div>
+    <div class="panel" style="max-width:560px">
+      <h2>Cena izrade po proizvodu</h2>
+      <div class="muted" style="font-size:11px;margin-bottom:8px">Naziv tipa mora da se pojavljuje u nazivu proizvoda (npr. „Lampa", „Držač", „Reklama").</div>
+      <table><thead><tr><th>Tip proizvoda</th><th class="num">Cena izrade</th><th></th></tr></thead><tbody>${prod}</tbody></table>
+      <div class="formrow" style="margin-top:10px"><div class="f"><label>Novi tip</label><input class="inp" id="p_tip" placeholder="npr. Držač" size="14"></div><div class="f"><label>Cena (RSD)</label><input class="inp" id="p_cena" placeholder="0" size="7" inputmode="numeric"></div><button class="btn primary" id="p_add">+ Dodaj</button></div>
+    </div>
+    <div class="panel" style="max-width:560px">
+      <h2>Cenovnik komponenti (informativno)</h2>
+      <div class="muted" style="font-size:11px;margin-bottom:8px">Beleži cenu po komponenti da znaš kad nešto poskupi (traka, kabl…).</div>
+      <table><thead><tr><th>Komponenta</th><th>Jed.</th><th class="num">Cena</th><th></th></tr></thead><tbody>${komp}</tbody></table>
+      <div class="formrow" style="margin-top:10px"><div class="f"><label>Nova komponenta</label><input class="inp" id="k_naziv" placeholder="npr. Prekidač" size="14"></div><div class="f"><label>Jed.</label><input class="inp" id="k_jed" placeholder="kom" size="5"></div><div class="f"><label>Cena</label><input class="inp" id="k_cena" placeholder="0" size="7" inputmode="numeric"></div><button class="btn primary" id="k_add">+ Dodaj</button></div>
+    </div>`;
+  document.getElementById("s_postsave").onclick=()=>{const v=num(val("s_post"));const x=settings();x.postarina=v;lsSet(LS_SET,x);render();};
+  document.querySelectorAll("[data-pt]").forEach(inp=>inp.onchange=()=>{const x=settings();x.proizvodi[+inp.dataset.pt].tip=inp.value.trim();lsSet(LS_SET,x);});
+  document.querySelectorAll("[data-pc]").forEach(inp=>inp.onchange=()=>{const x=settings();x.proizvodi[+inp.dataset.pc].cena=num(inp.value);lsSet(LS_SET,x);});
+  document.querySelectorAll("[data-pr]").forEach(b=>b.onclick=()=>{const x=settings();x.proizvodi.splice(+b.dataset.pr,1);lsSet(LS_SET,x);render();});
+  document.getElementById("p_add").onclick=()=>{const t=val("p_tip");if(!t)return;const x=settings();x.proizvodi.push({tip:t,cena:num(val("p_cena"))});lsSet(LS_SET,x);render();};
+  document.querySelectorAll("[data-kn]").forEach(inp=>inp.onchange=()=>{const x=settings();x.komponente[+inp.dataset.kn].naziv=inp.value.trim();lsSet(LS_SET,x);});
+  document.querySelectorAll("[data-kj]").forEach(inp=>inp.onchange=()=>{const x=settings();x.komponente[+inp.dataset.kj].jed=inp.value.trim();lsSet(LS_SET,x);});
+  document.querySelectorAll("[data-kc]").forEach(inp=>inp.onchange=()=>{const x=settings();x.komponente[+inp.dataset.kc].cena=num(inp.value);lsSet(LS_SET,x);});
+  document.querySelectorAll("[data-kr]").forEach(b=>b.onclick=()=>{const x=settings();x.komponente.splice(+b.dataset.kr,1);lsSet(LS_SET,x);render();});
+  document.getElementById("k_add").onclick=()=>{const n=val("k_naziv");if(!n)return;const x=settings();x.komponente.push({naziv:n,jed:val("k_jed")||"kom",cena:num(val("k_cena"))});lsSet(LS_SET,x);render();};
+}
+function renderObrada(){
+  const m=STATE.month;
+  const ords=STATE.orders.filter(o=>o.mesec===m && o.status==="U obradi").sort((a,b)=>ts(b.d1)-ts(a.d1));
+  const conf=lsGet(LS_CONF,{});
+  const tally={};
+  ords.forEach(o=>{const q=qtyOf(o.prod);o.prod.split("+").map(x=>x.trim()).forEach((p,idx)=>{let name=p.replace(/\s*\(.*?\)/g,"").trim();if(!name)return;tally[name]=(tally[name]||0)+(idx===0?q:1);});});
+  const tallyHtml=Object.entries(tally).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f1f4;font-size:14px"><span>${k}</span><b style="font-size:16px">${v}</b></div>`).join("")||'<div class="muted">nema</div>';
+  const confCount=ords.filter(o=>conf[o.broj]).length;
+  const list=ords.map(o=>{const c=!!conf[o.broj];
+    return `<tr style="${c?'background:#eafaf0':''}"><td><input type="checkbox" data-cf="${o.broj}" ${c?'checked':''} style="width:20px;height:20px"></td><td class="nowrap">${o.broj}</td><td>${o.kupac}</td><td class="col-proizvod">${o.prod}</td><td class="num">${o.cena.toLocaleString("sr-RS")}</td><td class="nowrap">${o.d1}</td></tr>`;}).join("");
+  document.getElementById("app").innerHTML=`
+    <div class="twocol">
+      <div class="panel"><h2>Potvrda narudžbina — SMS (${confCount}/${ords.length} potvrđeno)</h2>
+        <div class="muted" style="font-size:11px;margin-bottom:8px">Čekiraj kad ti kupac potvrdi porudžbinu preko SMS-a. Čuva se na ovom uređaju.</div>
+        <div class="tableScroll"><table><thead><tr><th>✓</th><th>Narudžbina</th><th>Kupac</th><th class="col-proizvod">Proizvod</th><th class="num">Cena</th><th>Naručeno</th></tr></thead><tbody>${list||'<tr><td colspan="6" class="muted">nema u obradi</td></tr>'}</tbody></table></div>
+      </div>
+      <div class="panel"><h2>Za izradu (${ords.length} por.)</h2><div class="muted" style="font-size:11px;margin-bottom:8px">Koliko čega da napraviš za sve „U obradi".</div>${tallyHtml}</div>
+    </div>`;
+  document.querySelectorAll("[data-cf]").forEach(cb=>cb.onchange=()=>{const x=lsGet(LS_CONF,{});if(cb.checked)x[cb.dataset.cf]=true;else delete x[cb.dataset.cf];lsSet(LS_CONF,x);render();});
+}
+function render(){buildMonthSelect();tabsBar();if(STATE.tab==="pregled")renderPregled();else if(STATE.tab==="troskovi")renderTroskovi();else if(STATE.tab==="lager")renderLager();else renderSettings();}
+function exportData(){const data={expenses:lsGet(LS_EXP,[]),lager:lsGet(LS_LAG,[]),settings:settings()};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="3dm-backup.json";a.click();}
+async function load(){
+  localStorage.removeItem(LS_URL);
+  document.getElementById("boot").classList.remove("hide");
+  document.getElementById("boot").className="center";
+  document.getElementById("boot").textContent="⏳ Učitavam…";
+  let synced=false;
+  try{ synced=await dbLoadAll(); }catch(e){}
+  try{
+    const r=extract(parseCSV(EMBEDDED_CSV));
+    STATE.orders=r.orders; STATE.ads=r.ads;
+    document.getElementById("boot").classList.add("hide");
+    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 21.06.2026";
+    render();
+  }catch(e){document.getElementById("boot").className="center err";document.getElementById("boot").textContent="Greška: "+e.message;}
+}
+document.getElementById("month").onchange=e=>{STATE.month=e.target.value;STATE.statusFilter=null;render();};
+document.getElementById("refresh").onclick=()=>location.reload(true);
+document.getElementById("settings").onclick=exportData;
+load();
+</script>
+</body>
+</html>
