@@ -98,82 +98,77 @@
 <script>
 const LS_EXP="3dm_expenses_v1", LS_LAG="3dm_lager_v1", LS_URL="3dm_csv_url", LS_SET="3dm_settings_v1", LS_CONF="3dm_confirm_v1";
 const EMBEDDED_CSV = `Mesec,Br,Broj narudžbine,Kupac,Proizvod,Cena (RSD),Datum naručeno,Datum poslat kuriru,Datum preuzeo kupac,Status,Profit (RSD)
-jun 2026,1,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 12:58,,,U obradi,
-jun 2026,2,#1459,Nenad Vasiljevic,FK Partizan Lampa (2 kom),4389,22.06.2026 06:08,,,U obradi,
-jun 2026,3,#1458,Dejan Čivović,FK Partizan Lampa,3389,21.06.2026 16:49,,,U obradi,
-jun 2026,4,#1457,Ivana Gojković,FK Crvena Zvezda Lampa,2889,21.06.2026 09:08,,,U obradi,
-jun 2026,5,#1456,Ivana Gojković,FK Crvena Zvezda Lampa,2889,21.06.2026 09:08,,,U obradi,
-jun 2026,6,#1455,Savo Trifunović,FK Partizan Lampa,3389,20.06.2026 16:49,,,U obradi,
-jun 2026,7,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,,Preuzeto,
-jun 2026,8,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,,Preuzeto,
-jun 2026,9,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 05:57,,,U obradi,
-jun 2026,10,#1449,Suzana Popovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 22:21,21.06.2026 19:46,,Preuzeto,
-jun 2026,11,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 21:42,,,U obradi,
-jun 2026,12,#1448,Dragana Trmčić,FK Crvena Zvezda Lampa (2 kom) + Ćirilični natpis,4999,19.06.2026 21:35,21.06.2026 19:46,,Preuzeto,
-jun 2026,13,#1447,Desanka Vujosevic,FK Partizan Lampa,3389,19.06.2026 15:21,21.06.2026 19:46,,Preuzeto,
-jun 2026,14,#1446,Ljubica Janjić,FK Partizan Lampa,3389,19.06.2026 09:01,21.06.2026 19:46,,Preuzeto,
-jun 2026,15,#1445,Jelena Veskov,FK Partizan Lampa (2 kom),5389,18.06.2026 18:48,21.06.2026 19:46,,Preuzeto,
-jun 2026,16,#1444,Nikolina Ilic,FK Partizan Lampa,3389,18.06.2026 16:29,18.06.2026 23:09,22.06.2026 21:24,Isporučeno,2299
-jun 2026,17,#1440,Mirko Bobic,FK Crvena Zvezda Lampa (2 kom),5390,18.06.2026 07:10,18.06.2026 12:12,19.06.2026 20:49,Isporučeno,3600
-jun 2026,18,#1435,Gordana Popov,FK Partizan Lampa,3389,18.06.2026 00:27,18.06.2026 08:15,,Preuzeto,
-jun 2026,19,#1434,Duško Joksimovic,FK Crvena Zvezda Lampa,3389,17.06.2026 21:28,18.06.2026 08:15,19.06.2026 10:32,Isporučeno,2299
-jun 2026,20,#AI1038197,Mislimi Emini,Instagram DM (nema na Shopify),3390,17.06.2026 15:32,18.06.2026 08:15,19.06.2026 16:09,Isporučeno,2300
-jun 2026,21,#1433,Mladen Sredojević,FK Crvena Zvezda Lampa,3389,17.06.2026 12:30,18.06.2026 08:15,19.06.2026 13:37,Isporučeno,2299
-jun 2026,22,#1432,Slavisa Pavlovic,FK Crvena Zvezda Lampa,3389,17.06.2026 11:52,17.06.2026 12:09,18.06.2026 13:16,Isporučeno,2299
-jun 2026,23,#1431,Dario Vranesevic,FK Crvena Zvezda Lampa,3389,16.06.2026 17:37,17.06.2026 12:09,18.06.2026 14:15,Isporučeno,2299
-jun 2026,24,#1429,Predrag Lukić,FK Partizan Lampa,2889,10.06.2026 22:48,11.06.2026 19:53,15.06.2026 12:57,Isporučeno,1799
-jun 2026,25,#1427,Radivoj Vrgotić,FK Partizan Lampa,2889,10.06.2026 09:47,11.06.2026 19:53,15.06.2026 16:03,Isporučeno,1799
-jun 2026,26,#AI1030370,Dragan Pantić,"Instagram DM (COD 8390 -> više kom, proveriti)",8390,09.06.2026 23:15,11.06.2026 19:53,15.06.2026 12:00,Isporučeno,7300
-jun 2026,27,#1425,Branko Dašic,FK Partizan Lampa,2889,09.06.2026 17:04,11.06.2026 19:53,15.06.2026 12:27,Isporučeno,1799
-jun 2026,28,#1424,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 11:04,11.06.2026 19:53,15.06.2026 13:09,Isporučeno,1799
-jun 2026,29,#1423,Momir Mucic,FK Partizan Lampa,2889,09.06.2026 10:37,10.06.2026 17:55,12.06.2026 13:51,Isporučeno,1799
-jun 2026,30,#1422,Marina Matic,FK Partizan Lampa,2889,09.06.2026 10:14,10.06.2026 17:55,12.06.2026 12:33,Isporučeno,1799
-jun 2026,31,#1421,Zoltan Lukač,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 09:56,09.06.2026 18:38,11.06.2026 12:41,Isporučeno,1799
-jun 2026,32,#1420,Vladica Aleksić,FK Crvena Zvezda Lampa,2889,09.06.2026 07:06,10.06.2026 17:55,12.06.2026 14:55,Isporučeno,1799
-jun 2026,33,#1419,Snežana Trišić,FK Partizan Lampa,2889,09.06.2026 06:09,09.06.2026 18:38,11.06.2026 12:05,Isporučeno,1799
-jun 2026,34,#1418,Ljiljana Šerbula,FK Partizan Lampa,2889,08.06.2026 21:59,10.06.2026 17:55,12.06.2026 13:26,Isporučeno,1799
-jun 2026,35,#1417,Slobodan Zivanovic,FK Crvena Zvezda Lampa + Ćirilični natpis,3390,08.06.2026 20:24,10.06.2026 17:55,12.06.2026 14:46,Isporučeno,2300
-jun 2026,36,#1415,Danijela Sentic,FK Crvena Zvezda Lampa,2889,08.06.2026 15:33,09.06.2026 18:38,11.06.2026 10:45,Isporučeno,1799
-jun 2026,37,#1414,Snezana Djurovic,FK Partizan Lampa,2889,08.06.2026 14:16,10.06.2026 17:55,12.06.2026 13:32,Isporučeno,1799
-jun 2026,38,#1413,Slavisa Spesojevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:59,10.06.2026 17:55,12.06.2026 13:38,Isporučeno,1799
-jun 2026,39,#1412,Aleksandar Zarić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:01,10.06.2026 17:55,12.06.2026 14:00,Isporučeno,1799
-jun 2026,40,#1411,Sreten Aleksic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 07:41,10.06.2026 17:55,12.06.2026 12:48,Isporučeno,1799
-jun 2026,41,#1409,Aleksandar Antic,FK Partizan Lampa,2889,07.06.2026 18:41,10.06.2026 17:55,12.06.2026 13:06,Isporučeno,1799
-jun 2026,42,#AI1027978,Milovan Simović,Instagram DM (nema na Shopify),2890,07.06.2026 16:23,07.06.2026 20:43,09.06.2026 15:48,Isporučeno,1800
-jun 2026,43,#AI1027973,Ana Vukadinovic,Instagram DM (nema na Shopify),2890,07.06.2026 16:16,07.06.2026 16:49,09.06.2026 15:23,Isporučeno,1800
-jun 2026,44,#1407,Milan Brajovic,FK Partizan Lampa,2889,07.06.2026 10:13,10.06.2026 17:55,12.06.2026 16:57,Isporučeno,1799
-jun 2026,45,#1406,Dusan Djukic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,07.06.2026 08:22,07.06.2026 16:49,09.06.2026 16:07,Isporučeno,1799
-jun 2026,46,#AI1027398,Vanja Lukić,Instagram DM (nema na Shopify),2890,06.06.2026 15:02,07.06.2026 16:49,09.06.2026 17:25,Isporučeno,1800
-jun 2026,47,#1405,Ivana Jevtic,FK Partizan Lampa,2889,06.06.2026 11:11,07.06.2026 20:43,09.06.2026 14:51,Isporučeno,1799
-jun 2026,48,#1403,Ljubiša Avić,FK Partizan Lampa,2889,06.06.2026 09:01,07.06.2026 16:49,09.06.2026 13:43,Isporučeno,1799
-jun 2026,49,#1402,Mika Birišić,FK Partizan Lampa,2889,05.06.2026 21:59,07.06.2026 16:49,09.06.2026 14:17,Isporučeno,1799
-jun 2026,50,#1401,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,05.06.2026 18:52,07.06.2026 16:49,09.06.2026 12:51,Isporučeno,1799
-jun 2026,51,#1400,Predrag Petrovic,FK Partizan Lampa,2889,05.06.2026 13:00,07.06.2026 16:49,09.06.2026 15:24,Isporučeno,1799
-jun 2026,52,#1399,Dejan Stanic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:47,04.06.2026 22:15,08.06.2026 12:58,Isporučeno,1799
-jun 2026,53,#1398,Ivan Šalajić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:46,04.06.2026 22:15,15.06.2026 16:32,Vraćeno,-390
-jun 2026,54,#AI1025933,Miroslava Pajtašev,Instagram DM (nema na Shopify),2890,04.06.2026 16:20,04.06.2026 22:15,08.06.2026 14:11,Isporučeno,1800
-jun 2026,55,#AI1025920,Negica Pajović,Instagram DM (nema na Shopify),2890,04.06.2026 15:59,04.06.2026 22:15,08.06.2026 12:23,Isporučeno,1800
-jun 2026,56,#1397,Zoran Stojković,FK Partizan Lampa,2889,04.06.2026 15:36,04.06.2026 22:15,08.06.2026 11:14,Isporučeno,1799
-jun 2026,57,#1396,Dragana Detki,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 13:12,04.06.2026 22:15,08.06.2026 12:56,Isporučeno,1799
-jun 2026,58,#1395,Zoran Viskovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 10:42,04.06.2026 11:02,05.06.2026 14:35,Isporučeno,1799
-jun 2026,59,#1394,Blagoja Merdzanovski,FK Partizan Lampa,2889,03.06.2026 23:53,04.06.2026 00:54,05.06.2026 14:02,Isporučeno,1799
-jun 2026,60,#1390,Aleksandra Živanović,FK Partizan Lampa,2889,03.06.2026 10:28,04.06.2026 11:14,10.06.2026 21:15,Isporučeno,1799
-jun 2026,61,#1389,Mladenka Markovic,FK Partizan Lampa,2889,03.06.2026 08:13,04.06.2026 09:29,05.06.2026 13:32,Isporučeno,1799
-jun 2026,62,#1388,Emini Mislim,FK Partizan Lampa,2889,02.06.2026 19:48,02.06.2026 20:42,04.06.2026 15:26,Isporučeno,1799
-jun 2026,63,#1387,Rozalija Aleksijević,FK Crvena Zvezda Lampa,2889,02.06.2026 19:25,02.06.2026 20:42,04.06.2026 15:25,Isporučeno,1799
-jun 2026,64,#1385,Miljan Radović,FK Partizan Lampa + Prioritetna izrada,3288,02.06.2026 15:53,02.06.2026 20:42,04.06.2026 14:46,Isporučeno,2198
-jun 2026,65,#1383,Bojan Gunj,Željko Obradović Lampa,2889,02.06.2026 12:29,02.06.2026 20:42,04.06.2026 14:09,Isporučeno,1799
-jun 2026,66,#1381,Luna Mikulandra,FK Partizan Lampa,2889,02.06.2026 08:41,02.06.2026 20:42,08.06.2026 12:54,Isporučeno,1799
-jun 2026,67,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,04.06.2026 00:54,05.06.2026 14:56,Isporučeno,1799
+jun 2026,1,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 14:58,23.06.2026 18:34,,Čeka preuzimanje,
+jun 2026,2,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,23.06.2026 11:19,Isporučeno,2299
+jun 2026,3,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,23.06.2026 13:31,Isporučeno,2299
+jun 2026,4,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 07:57,23.06.2026 18:34,,Čeka preuzimanje,
+jun 2026,5,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 23:42,23.06.2026 18:34,,Čeka preuzimanje,
+jun 2026,6,#1449,Suzana Popovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 22:21,21.06.2026 19:46,23.06.2026 12:36,Isporučeno,1799
+jun 2026,7,#1448,Dragana Trmčić,FK Crvena Zvezda Lampa (2 kom) + Ćirilični natpis,4999,19.06.2026 21:35,21.06.2026 19:46,,Preuzeto,
+jun 2026,8,#1447,Desanka Vujosevic,FK Partizan Lampa,3389,19.06.2026 15:21,21.06.2026 19:46,23.06.2026 13:14,Isporučeno,2299
+jun 2026,9,#1446,Ljubica Janjić,FK Partizan Lampa,3389,19.06.2026 09:01,21.06.2026 19:46,23.06.2026 16:52,Isporučeno,2299
+jun 2026,10,#1445,Jelena Veskov,FK Partizan Lampa (2 kom),5389,18.06.2026 18:48,21.06.2026 19:46,23.06.2026 11:49,Isporučeno,3599
+jun 2026,11,#1444,Nikolina Ilic,FK Partizan Lampa,3389,18.06.2026 16:29,18.06.2026 23:09,22.06.2026 21:24,Isporučeno,2299
+jun 2026,12,#1440,Mirko Bobic,FK Crvena Zvezda Lampa (2 kom),5390,18.06.2026 07:10,18.06.2026 12:12,19.06.2026 20:49,Isporučeno,3600
+jun 2026,13,#1435,Gordana Popov,FK Partizan Lampa,3389,18.06.2026 00:27,18.06.2026 08:15,,Preuzeto,
+jun 2026,14,#1434,Duško Joksimovic,FK Crvena Zvezda Lampa,3389,17.06.2026 21:28,18.06.2026 08:15,19.06.2026 10:32,Isporučeno,2299
+jun 2026,15,#AI1038197,Mislimi Emini,Instagram DM (nema na Shopify),3390,17.06.2026 15:32,18.06.2026 08:15,19.06.2026 16:09,Isporučeno,2300
+jun 2026,16,#1433,Mladen Sredojević,FK Crvena Zvezda Lampa,3389,17.06.2026 12:30,18.06.2026 08:15,19.06.2026 13:37,Isporučeno,2299
+jun 2026,17,#1432,Slavisa Pavlovic,FK Crvena Zvezda Lampa,3389,17.06.2026 11:52,17.06.2026 12:09,18.06.2026 13:16,Isporučeno,2299
+jun 2026,18,#1431,Dario Vranesevic,FK Crvena Zvezda Lampa,3389,16.06.2026 17:37,17.06.2026 12:09,18.06.2026 14:15,Isporučeno,2299
+jun 2026,19,#1429,Predrag Lukić,FK Partizan Lampa,2889,10.06.2026 22:48,11.06.2026 19:53,15.06.2026 12:57,Isporučeno,1799
+jun 2026,20,#1427,Radivoj Vrgotić,FK Partizan Lampa,2889,10.06.2026 09:47,11.06.2026 19:53,15.06.2026 16:03,Isporučeno,1799
+jun 2026,21,#AI1030370,Dragan Pantić,"Instagram DM (COD 8390 -> više kom, proveriti)",8390,09.06.2026 23:15,11.06.2026 19:53,15.06.2026 12:00,Isporučeno,7300
+jun 2026,22,#1425,Branko Dašic,FK Partizan Lampa,2889,09.06.2026 17:04,11.06.2026 19:53,15.06.2026 12:27,Isporučeno,1799
+jun 2026,23,#1424,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 11:04,11.06.2026 19:53,15.06.2026 13:09,Isporučeno,1799
+jun 2026,24,#1423,Momir Mucic,FK Partizan Lampa,2889,09.06.2026 10:37,10.06.2026 17:55,12.06.2026 13:51,Isporučeno,1799
+jun 2026,25,#1422,Marina Matic,FK Partizan Lampa,2889,09.06.2026 10:14,10.06.2026 17:55,12.06.2026 12:33,Isporučeno,1799
+jun 2026,26,#1421,Zoltan Lukač,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 09:56,09.06.2026 18:38,11.06.2026 12:41,Isporučeno,1799
+jun 2026,27,#1420,Vladica Aleksić,FK Crvena Zvezda Lampa,2889,09.06.2026 07:06,10.06.2026 17:55,12.06.2026 14:55,Isporučeno,1799
+jun 2026,28,#1419,Snežana Trišić,FK Partizan Lampa,2889,09.06.2026 06:09,09.06.2026 18:38,11.06.2026 12:05,Isporučeno,1799
+jun 2026,29,#1418,Ljiljana Šerbula,FK Partizan Lampa,2889,08.06.2026 21:59,10.06.2026 17:55,12.06.2026 13:26,Isporučeno,1799
+jun 2026,30,#1417,Slobodan Zivanovic,FK Crvena Zvezda Lampa + Ćirilični natpis,3390,08.06.2026 20:24,10.06.2026 17:55,12.06.2026 14:46,Isporučeno,2300
+jun 2026,31,#1415,Danijela Sentic,FK Crvena Zvezda Lampa,2889,08.06.2026 15:33,09.06.2026 18:38,11.06.2026 10:45,Isporučeno,1799
+jun 2026,32,#1414,Snezana Djurovic,FK Partizan Lampa,2889,08.06.2026 14:16,10.06.2026 17:55,12.06.2026 13:32,Isporučeno,1799
+jun 2026,33,#1413,Slavisa Spesojevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:59,10.06.2026 17:55,12.06.2026 13:38,Isporučeno,1799
+jun 2026,34,#1412,Aleksandar Zarić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:01,10.06.2026 17:55,12.06.2026 14:00,Isporučeno,1799
+jun 2026,35,#1411,Sreten Aleksic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 07:41,10.06.2026 17:55,12.06.2026 12:48,Isporučeno,1799
+jun 2026,36,#1409,Aleksandar Antic,FK Partizan Lampa,2889,07.06.2026 18:41,10.06.2026 17:55,12.06.2026 13:06,Isporučeno,1799
+jun 2026,37,#AI1027978,Milovan Simović,Instagram DM (nema na Shopify),2890,07.06.2026 16:23,07.06.2026 20:43,09.06.2026 15:48,Isporučeno,1800
+jun 2026,38,#AI1027973,Ana Vukadinovic,Instagram DM (nema na Shopify),2890,07.06.2026 16:16,07.06.2026 16:49,09.06.2026 15:23,Isporučeno,1800
+jun 2026,39,#1407,Milan Brajovic,FK Partizan Lampa,2889,07.06.2026 10:13,10.06.2026 17:55,12.06.2026 16:57,Isporučeno,1799
+jun 2026,40,#1406,Dusan Djukic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,07.06.2026 08:22,07.06.2026 16:49,09.06.2026 16:07,Isporučeno,1799
+jun 2026,41,#AI1027398,Vanja Lukić,Instagram DM (nema na Shopify),2890,06.06.2026 15:02,07.06.2026 16:49,09.06.2026 17:25,Isporučeno,1800
+jun 2026,42,#1405,Ivana Jevtic,FK Partizan Lampa,2889,06.06.2026 11:11,07.06.2026 20:43,09.06.2026 14:51,Isporučeno,1799
+jun 2026,43,#1403,Ljubiša Avić,FK Partizan Lampa,2889,06.06.2026 09:01,07.06.2026 16:49,09.06.2026 13:43,Isporučeno,1799
+jun 2026,44,#1402,Mika Birišić,FK Partizan Lampa,2889,05.06.2026 21:59,07.06.2026 16:49,09.06.2026 14:17,Isporučeno,1799
+jun 2026,45,#1401,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,05.06.2026 18:52,07.06.2026 16:49,09.06.2026 12:51,Isporučeno,1799
+jun 2026,46,#1400,Predrag Petrovic,FK Partizan Lampa,2889,05.06.2026 13:00,07.06.2026 16:49,09.06.2026 15:24,Isporučeno,1799
+jun 2026,47,#1399,Dejan Stanic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:47,04.06.2026 22:15,08.06.2026 12:58,Isporučeno,1799
+jun 2026,48,#1398,Ivan Šalajić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:46,04.06.2026 22:15,15.06.2026 16:32,Vraćeno,-390
+jun 2026,49,#AI1025933,Miroslava Pajtašev,Instagram DM (nema na Shopify),2890,04.06.2026 16:20,04.06.2026 22:15,08.06.2026 14:11,Isporučeno,1800
+jun 2026,50,#AI1025920,Negica Pajović,Instagram DM (nema na Shopify),2890,04.06.2026 15:59,04.06.2026 22:15,08.06.2026 12:23,Isporučeno,1800
+jun 2026,51,#1397,Zoran Stojković,FK Partizan Lampa,2889,04.06.2026 15:36,04.06.2026 22:15,08.06.2026 11:14,Isporučeno,1799
+jun 2026,52,#1396,Dragana Detki,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 13:12,04.06.2026 22:15,08.06.2026 12:56,Isporučeno,1799
+jun 2026,53,#1395,Zoran Viskovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 10:42,04.06.2026 11:02,05.06.2026 14:35,Isporučeno,1799
+jun 2026,54,#1394,Blagoja Merdzanovski,FK Partizan Lampa,2889,03.06.2026 23:53,04.06.2026 00:54,05.06.2026 14:02,Isporučeno,1799
+jun 2026,55,#1390,Aleksandra Živanović,FK Partizan Lampa,2889,03.06.2026 10:28,04.06.2026 11:14,10.06.2026 21:15,Isporučeno,1799
+jun 2026,56,#1389,Mladenka Markovic,FK Partizan Lampa,2889,03.06.2026 08:13,04.06.2026 09:29,05.06.2026 13:32,Isporučeno,1799
+jun 2026,57,#1388,Emini Mislim,FK Partizan Lampa,2889,02.06.2026 19:48,02.06.2026 20:42,04.06.2026 15:26,Isporučeno,1799
+jun 2026,58,#1387,Rozalija Aleksijević,FK Crvena Zvezda Lampa,2889,02.06.2026 19:25,02.06.2026 20:42,04.06.2026 15:25,Isporučeno,1799
+jun 2026,59,#1385,Miljan Radović,FK Partizan Lampa + Prioritetna izrada,3288,02.06.2026 15:53,02.06.2026 20:42,04.06.2026 14:46,Isporučeno,2198
+jun 2026,60,#1383,Bojan Gunj,Željko Obradović Lampa,2889,02.06.2026 12:29,02.06.2026 20:42,04.06.2026 14:09,Isporučeno,1799
+jun 2026,61,#1381,Luna Mikulandra,FK Partizan Lampa,2889,02.06.2026 08:41,02.06.2026 20:42,08.06.2026 12:54,Isporučeno,1799
+jun 2026,62,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,04.06.2026 00:54,05.06.2026 14:56,Isporučeno,1799
 
 REZIME,jun 2026
-Ukupno narudžbina,67
-Isporučeno,50
-Preuzeto,8
-Čeka preuzimanje,0
-U obradi,8
+Ukupno narudžbina,62
+Isporučeno,56
+Preuzeto,2
+Čeka preuzimanje,3
+U obradi,0
 Vraćeno,1
-FB reklame (RSD),69348
+FB reklame (RSD),69576
 
 Mesec,Datum,USD,RSD
 jun 2026,01.06.2026,21.22,2176
@@ -197,7 +192,7 @@ jun 2026,18.06.2026,45.26,4641
 jun 2026,19.06.2026,44.44,4557
 jun 2026,20.06.2026,74.37,7627
 jun 2026,21.06.2026,38.52,3950
-jun 2026,22.06.2026,34.61,3549
+jun 2026,22.06.2026,36.83,3777
 `;
 const MONTHS=["","jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
 const KATEGORIJE=["Filament","USB kabl","LED traka","Kutija za pakovanje","Struja","Alat","Ostalo"];
@@ -448,7 +443,7 @@ async function load(){
     const r=extract(parseCSV(EMBEDDED_CSV));
     STATE.orders=r.orders; STATE.ads=r.ads;
     document.getElementById("boot").classList.add("hide");
-    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 22.06.2026";
+    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 23.06.2026";
     render();
   }catch(e){document.getElementById("boot").className="center err";document.getElementById("boot").textContent="Greška: "+e.message;}
 }
