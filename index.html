@@ -277,18 +277,8 @@ function renderPregled(){
   const pm={}; ords.forEach(o=>{let k=o.prod.replace(/\s*\(.*?\)/g,"").replace(/\s*\+.*/,"").trim(); if(/Instagram/i.test(o.prod))k="Instagram DM (nepoznato)"; pm[k]=(pm[k]||0)+1;});
   const lampHtml=Object.entries(pm).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span>${k}</span><b>${v}</b></div>`).join("");
   document.getElementById("app").innerHTML=`
-    <div class="panel" style="padding:12px 16px">
-      <h2>Danas (${TD})</h2>
-      <div class="today">
-        <div class="t"><div class="l">Nove danas (${novoBr} por.)</div><div class="v">${fmt(novoVr)}</div></div>
-        <div class="t"><div class="l">Poslato danas (${brToday} por.)</div><div class="v">${fmt(ukupnoToday)}</div></div>
-        <div class="t"><div class="l">Profit danas</div><div class="v">${fmt(profToday)}</div></div>
-        <div class="t"><div class="l">Reklame danas</div><div class="v">${fmt(adsToday)}</div></div>
-      </div>
-    </div>
     <div class="grid kpis">
       <div class="card hero"><div class="label">Čista zarada (neto − reklame)</div><div class="val">${fmt(cista)}</div></div>
-      <div class="card hero"><div class="label">Na ruke (zarada − materijal)</div><div class="val">${fmt(cista-matTrosak)}</div></div>
       <div class="card amber"><div class="label">Očekivani profit (Preuzeto + Čeka)</div><div class="val">${fmt(dostava)}</div></div>
       <div class="card"><div class="label">Neto profit pre reklama</div><div class="val">${fmt(real)}</div></div>
       <div class="card"><div class="label">Promet isporučenih</div><div class="val">${fmt(promet)}</div></div>
