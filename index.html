@@ -98,11 +98,11 @@
 <script>
 const LS_EXP="3dm_expenses_v1", LS_LAG="3dm_lager_v1", LS_URL="3dm_csv_url", LS_SET="3dm_settings_v1", LS_CONF="3dm_confirm_v1";
 const EMBEDDED_CSV = `Mesec,Br,Broj narudžbine,Kupac,Proizvod,Cena (RSD),Datum naručeno,Datum poslat kuriru,Datum preuzeo kupac,Status,Profit (RSD)
-jun 2026,1,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 14:58,23.06.2026 18:34,,Čeka preuzimanje,
+jun 2026,1,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 14:58,23.06.2026 18:34,,Preuzeto,
 jun 2026,2,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,23.06.2026 11:19,Isporučeno,2299
 jun 2026,3,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,23.06.2026 13:31,Isporučeno,2299
-jun 2026,4,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 07:57,23.06.2026 18:34,,Čeka preuzimanje,
-jun 2026,5,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 23:42,23.06.2026 18:34,,Čeka preuzimanje,
+jun 2026,4,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 07:57,23.06.2026 18:34,,Preuzeto,
+jun 2026,5,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 23:42,23.06.2026 18:34,,Preuzeto,
 jun 2026,6,#1449,Suzana Popovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 22:21,21.06.2026 19:46,23.06.2026 12:36,Isporučeno,1799
 jun 2026,7,#1448,Dragana Trmčić,FK Crvena Zvezda Lampa (2 kom) + Ćirilični natpis,4999,19.06.2026 21:35,21.06.2026 19:46,,Preuzeto,
 jun 2026,8,#1447,Desanka Vujosevic,FK Partizan Lampa,3389,19.06.2026 15:21,21.06.2026 19:46,23.06.2026 13:14,Isporučeno,2299
@@ -164,35 +164,37 @@ jun 2026,62,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,
 REZIME,jun 2026
 Ukupno narudžbina,62
 Isporučeno,56
-Preuzeto,2
-Čeka preuzimanje,3
+Preuzeto,5
+Čeka preuzimanje,0
 U obradi,0
 Vraćeno,1
-FB reklame (RSD),69576
+FB reklame (RSD),71076
 
 Mesec,Datum,USD,RSD
 jun 2026,01.06.2026,21.22,2176
-jun 2026,02.06.2026,38.67,3966
+jun 2026,02.06.2026,38.67,3965
 jun 2026,03.06.2026,38.91,3990
 jun 2026,04.06.2026,42.83,4392
 jun 2026,05.06.2026,45.99,4716
 jun 2026,06.06.2026,36.11,3703
-jun 2026,07.06.2026,43.58,4469
+jun 2026,07.06.2026,43.58,4468
 jun 2026,08.06.2026,37.73,3869
 jun 2026,09.06.2026,39.0,3999
-jun 2026,10.06.2026,39.08,4008
+jun 2026,10.06.2026,39.08,4007
 jun 2026,11.06.2026,17.39,1783
 jun 2026,12.06.2026,0.0,0
 jun 2026,13.06.2026,0.0,0
 jun 2026,14.06.2026,0.0,0
 jun 2026,15.06.2026,0.0,0
-jun 2026,16.06.2026,19.48,1998
-jun 2026,17.06.2026,19.06,1955
+jun 2026,16.06.2026,19.48,1997
+jun 2026,17.06.2026,19.06,1954
 jun 2026,18.06.2026,45.26,4641
 jun 2026,19.06.2026,44.44,4557
-jun 2026,20.06.2026,74.37,7627
+jun 2026,20.06.2026,74.37,7625
 jun 2026,21.06.2026,38.52,3950
-jun 2026,22.06.2026,36.83,3777
+jun 2026,22.06.2026,36.85,3778
+jun 2026,23.06.2026,0.0,0
+jun 2026,24.06.2026,14.69,1506
 `;
 const MONTHS=["","jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
 const KATEGORIJE=["Filament","USB kabl","LED traka","Kutija za pakovanje","Struja","Alat","Ostalo"];
@@ -433,7 +435,7 @@ async function load(){
     const r=extract(parseCSV(EMBEDDED_CSV));
     STATE.orders=r.orders; STATE.ads=r.ads;
     document.getElementById("boot").classList.add("hide");
-    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 23.06.2026";
+    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 24.06.2026";
     render();
   }catch(e){document.getElementById("boot").className="center err";document.getElementById("boot").textContent="Greška: "+e.message;}
 }
