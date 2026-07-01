@@ -78,6 +78,7 @@
     th,td{ padding:7px 6px; font-size:12px; } .col-proizvod{ min-width:120px; }
     .chartBox{ height:230px; } .formrow{ gap:6px; } .today{ grid-template-columns:repeat(2,1fr); gap:6px; } .today .t .v{ font-size:15px; }
   }
+@media(max-width:600px){body{overflow-x:hidden;}.wrap{padding:8px;}.kpis{grid-template-columns:1fr 1fr;}.panel{padding:10px;}.panel h2{font-size:13px;}th,td{padding:6px 5px;font-size:11px;}.col-proizvod{min-width:100px;}.badge{font-size:10px;padding:2px 6px;}.tableScroll{max-height:none;}table{min-width:560px;}.chip{font-size:11px;padding:4px 8px;}h1{font-size:15px;}.card .val{font-size:16px;}.btn.sm{padding:5px 8px;font-size:12px;}}/*RESP2*/
 </style>
 </head>
 <body>
@@ -100,18 +101,18 @@ const LS_EXP="3dm_expenses_v1", LS_LAG="3dm_lager_v1", LS_URL="3dm_csv_url", LS_
 const EMBEDDED_CSV = `Mesec,Br,Broj narudžbine,Kupac,Proizvod,Cena (RSD),Datum naručeno,Datum poslat kuriru,Datum preuzeo kupac,Status,Profit (RSD)
 jun 2026,1,#D37,Biserka Simic,FK Partizan Lampa (Shopify nacrt),2890,29.06.2026 20:33,,,Nacrt,
 jun 2026,2,#D36,Biserka Simic,FK Partizan Lampa (Shopify nacrt),2890,29.06.2026 20:33,,,Nacrt,
-jun 2026,3,#1469,Biserka Simic,FK Partizan Lampa,2890,29.06.2026 20:19,,,U obradi,
-jun 2026,4,#1468,Mirjana Dimitrijevic,FK Partizan Lampa,2890,29.06.2026 07:52,,,U obradi,
-jun 2026,5,#1467,Ksenija Šajtoš,FK Crvena Zvezda Lampa + Ćirilični natpis,2499,28.06.2026 07:52,28.06.2026 23:26,,Preuzeto,
+jun 2026,3,#1469,Biserka Simic,FK Partizan Lampa,2890,29.06.2026 20:19,30.06.2026 20:39,,Čeka preuzimanje,
+jun 2026,4,#1468,Mirjana Dimitrijevic,FK Partizan Lampa,2890,29.06.2026 07:52,30.06.2026 20:39,,Čeka preuzimanje,
+jun 2026,5,#1467,Ksenija Šajtoš,FK Crvena Zvezda Lampa + Ćirilični natpis,2499,28.06.2026 07:52,28.06.2026 23:26,30.06.2026 13:59,Isporučeno,1409
 jun 2026,6,#1466,Daibor Pavičić,FK Partizan Lampa,2890,27.06.2026 18:26,28.06.2026 23:26,,Preuzeto,
-jun 2026,7,#1464,Anastasija Mavlić,FK Partizan Lampa,2890,26.06.2026 22:26,28.06.2026 23:26,,Preuzeto,
-jun 2026,8,#1463,Milan Stankovic,FK Partizan Lampa,2890,26.06.2026 20:40,28.06.2026 23:26,,Preuzeto,
+jun 2026,7,#1464,Anastasija Mavlić,FK Partizan Lampa,2890,26.06.2026 22:26,28.06.2026 23:26,30.06.2026 14:51,Isporučeno,1800
+jun 2026,8,#1463,Milan Stankovic,FK Partizan Lampa,2890,26.06.2026 20:40,28.06.2026 23:26,01.07.2026 11:44,Isporučeno,1800
 jun 2026,9,#D35,Vanja Petrović,FK Partizan Lampa (Shopify nacrt),2890,26.06.2026 16:33,,,Nacrt,
 jun 2026,10,#1462,Stefan Andjelic,FK Partizan Lampa,2890,26.06.2026 08:38,28.06.2026 23:26,,Preuzeto,
 jun 2026,11,#D34,Borislav Cvetkovic,FK Crvena Zvezda Lampa (Shopify nacrt),2889,22.06.2026 18:17,,,Nacrt,
 jun 2026,12,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 14:58,23.06.2026 18:34,25.06.2026 15:23,Isporučeno,1799
 jun 2026,13,#D33,Veljko Jovanovic,FK Crvena Zvezda Lampa (Shopify nacrt),2889,21.06.2026 16:03,,,Nacrt,
-jun 2026,14,#1455,Savo Trifunović,FK Partizan Lampa,3389,20.06.2026 18:49,25.06.2026 20:20,,Preuzeto,
+jun 2026,14,#1455,Savo Trifunović,FK Partizan Lampa,3389,20.06.2026 18:49,25.06.2026 20:20,30.06.2026 16:12,Isporučeno,2299
 jun 2026,15,#D32,Dragan Stevic,FK Partizan Lampa (Shopify nacrt),3389,20.06.2026 16:33,,,Nacrt,
 jun 2026,16,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,23.06.2026 11:19,Isporučeno,2299
 jun 2026,17,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,23.06.2026 13:31,Isporučeno,2299
@@ -179,46 +180,47 @@ jun 2026,78,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,
 
 REZIME,jun 2026
 Ukupno narudžbina,78
-Isporučeno,59
-Preuzeto,6
-Čeka preuzimanje,0
-U obradi,2
+Isporučeno,63
+Preuzeto,2
+Čeka preuzimanje,2
+U obradi,0
 Nacrt,8
 Vraća se,1
 Vraćeno,2
-FB reklame (RSD),90214
+FB reklame (RSD),90107
 
 Mesec,Datum,USD,RSD
-jun 2026,01.06.2026,21.22,2186
-jun 2026,02.06.2026,38.67,3983
-jun 2026,03.06.2026,38.91,4008
-jun 2026,04.06.2026,42.83,4412
-jun 2026,05.06.2026,45.99,4738
-jun 2026,06.06.2026,36.11,3720
-jun 2026,07.06.2026,43.58,4489
-jun 2026,08.06.2026,37.73,3887
-jun 2026,09.06.2026,39.0,4017
-jun 2026,10.06.2026,39.08,4026
-jun 2026,11.06.2026,17.39,1791
+jun 2026,01.06.2026,21.22,2183
+jun 2026,02.06.2026,38.67,3978
+jun 2026,03.06.2026,38.91,4003
+jun 2026,04.06.2026,42.83,4406
+jun 2026,05.06.2026,45.99,4732
+jun 2026,06.06.2026,36.11,3715
+jun 2026,07.06.2026,43.58,4484
+jun 2026,08.06.2026,37.73,3882
+jun 2026,09.06.2026,39.0,4012
+jun 2026,10.06.2026,39.08,4021
+jun 2026,11.06.2026,17.39,1789
 jun 2026,12.06.2026,0.0,0
 jun 2026,13.06.2026,0.0,0
 jun 2026,14.06.2026,0.0,0
 jun 2026,15.06.2026,0.0,0
-jun 2026,16.06.2026,19.48,2007
-jun 2026,17.06.2026,19.06,1963
-jun 2026,18.06.2026,45.26,4662
-jun 2026,19.06.2026,44.44,4578
-jun 2026,20.06.2026,74.37,7661
-jun 2026,21.06.2026,38.52,3968
-jun 2026,22.06.2026,36.85,3796
+jun 2026,16.06.2026,19.48,2004
+jun 2026,17.06.2026,19.06,1961
+jun 2026,18.06.2026,45.26,4656
+jun 2026,19.06.2026,44.44,4572
+jun 2026,20.06.2026,74.37,7651
+jun 2026,21.06.2026,38.52,3963
+jun 2026,22.06.2026,36.85,3791
 jun 2026,23.06.2026,0.0,0
-jun 2026,24.06.2026,18.97,1954
-jun 2026,25.06.2026,38.24,3939
-jun 2026,26.06.2026,43.58,4489
-jun 2026,27.06.2026,42.89,4418
-jun 2026,28.06.2026,30.05,3095
-jun 2026,29.06.2026,23.56,2427
+jun 2026,24.06.2026,18.97,1952
+jun 2026,25.06.2026,38.24,3934
+jun 2026,26.06.2026,43.58,4484
+jun 2026,27.06.2026,42.89,4413
+jun 2026,28.06.2026,30.05,3092
+jun 2026,29.06.2026,23.61,2429
 jun 2026,30.06.2026,0.0,0
+jul 2026,01.07.2026,0.0,0
 `;
 const MONTHS=["","jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
 const KATEGORIJE=["Filament","USB kabl","LED traka","Kutija za pakovanje","Struja","Alat","Ostalo"];
@@ -469,7 +471,7 @@ async function load(){
     const r=extract(parseCSV(EMBEDDED_CSV));
     STATE.orders=r.orders; STATE.ads=r.ads;
     document.getElementById("boot").classList.add("hide");
-    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 30.06.2026";
+    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 01.07.2026";
     render();
   }catch(e){document.getElementById("boot").className="center err";document.getElementById("boot").textContent="Greška: "+e.message;}
 }
