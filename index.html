@@ -269,7 +269,7 @@ function extract(rows){
       ads.push({mesec:mi>=0?r[mi]:null,datum:r[di],usd:parseFloat(r[ui])||0,rsd:num(r[ri])});}}
   return {orders,ads};
 }
-function allMonths(){const s=new Set();STATE.orders.forEach(o=>o.mesec&&s.add(o.mesec));lsGet(LS_EXP,[]).forEach(e=>e.mesec&&s.add(e.mesec));return [...s];}
+function allMonths(){const s=new Set();STATE.orders.forEach(o=>o.mesec&&s.add(o.mesec));STATE.ads.forEach(a=>a.mesec&&s.add(a.mesec));lsGet(LS_EXP,[]).forEach(e=>e.mesec&&s.add(e.mesec));return [...s];}
 function buildMonthSelect(){const sel=document.getElementById("month");const ms=allMonths();if(!ms.length){sel.innerHTML="";return;}if(!STATE.month||!ms.includes(STATE.month))STATE.month=ms[0];sel.innerHTML=ms.map(m=>`<option ${m===STATE.month?"selected":""}>${m}</option>`).join("");}
 function tabsBar(){const t=[["pregled","Pregled"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
 function renderPregled(){
