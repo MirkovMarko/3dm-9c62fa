@@ -99,215 +99,225 @@
 <script>
 const LS_EXP="3dm_expenses_v1", LS_LAG="3dm_lager_v1", LS_URL="3dm_csv_url", LS_SET="3dm_settings_v1", LS_CONF="3dm_confirm_v1";
 const EMBEDDED_CSV = `Mesec,Br,Broj narudžbine,Kupac,Proizvod,Cena (RSD),Datum naručeno,Datum poslat kuriru,Datum preuzeo kupac,Status,Profit (RSD)
-avgust 2026,1,#1555,Vera Plavšić,Partizan personalizovana lampa,3390,26.08.2026 07:24,,,U obradi,
-avgust 2026,2,#1554,Nemanja Damjanovic,Partizan personalizovana lampa,3390,25.08.2026 20:13,,,U obradi,
-avgust 2026,3,#1553,Tamara Stamenkovkic,Partizan personalizovana lampa,3390,25.08.2026 19:36,,,U obradi,
-avgust 2026,4,#1552,Zaneta Bogdanovic,Partizan personalizovana lampa,3390,25.08.2026 19:35,,,U obradi,
-avgust 2026,5,#1551,Dalibor Dimic,Partizan personalizovana lampa,3390,25.08.2026 17:41,,,U obradi,
-avgust 2026,6,#1550,Dragana Lončarević,Partizan personalizovana lampa,3390,25.08.2026 09:39,,,U obradi,
-avgust 2026,7,#1549,Kristina Peric,Partizan personalizovana lampa,3390,24.08.2026 20:05,,,U obradi,
-avgust 2026,8,#D55,Danijel Stanojevic,Partizan personalizovana lampa (Shopify nacrt),3390,24.08.2026 19:17,,,Nacrt,
-avgust 2026,9,#1548,Slobodan Banićević,Partizan personalizovana lampa,3390,24.08.2026 17:01,25.08.2026 17:56,,Čeka preuzimanje,
-avgust 2026,10,#AI1111678,Bane Bokalović,Lampa (Instagram DM),3390,24.08.2026 12:00,,,U obradi,
-avgust 2026,11,#1546,Veljko Popović,Partizan personalizovana lampa,3390,24.08.2026 10:56,25.08.2026 17:56,,Čeka preuzimanje,
-avgust 2026,12,#1542,Lidija Stosic,Partizan personalizovana lampa,3390,24.08.2026 08:22,25.08.2026 17:56,,Čeka preuzimanje,
-avgust 2026,13,#1541,Goran Novakovic,Partizan personalizovana lampa,3390,23.08.2026 22:11,25.08.2026 17:56,,Čeka preuzimanje,
-avgust 2026,14,#D54,Milan Matic,Partizan personalizovana lampa (Shopify nacrt),3390,23.08.2026 17:48,,,Nacrt,
-avgust 2026,15,#1540,Marija Milanović,Partizan personalizovana lampa,3390,23.08.2026 14:43,24.08.2026 16:50,,Preuzeto,
-avgust 2026,16,#D53,Bane Bokalović,Partizan personalizovana lampa (Shopify nacrt),3390,23.08.2026 10:48,,,Nacrt,
-avgust 2026,17,#D52,Hana Marinkovi,Partizan personalizovana lampa (Shopify nacrt),3390,22.08.2026 12:04,,,Nacrt,
-avgust 2026,18,#1538,Biljana Pantic,Partizan personalizovana lampa,3390,22.08.2026 07:57,24.08.2026 16:50,,Preuzeto,
-avgust 2026,19,#D51,Biljana Pantic,Partizan personalizovana lampa (Shopify nacrt),3390,22.08.2026 07:17,,,Nacrt,
-avgust 2026,20,#1537,Zorica Ilija,Partizan personalizovana lampa,3390,21.08.2026 21:16,24.08.2026 16:50,,Preuzeto,
-avgust 2026,21,#1536,ivica lepojev,Partizan personalizovana lampa,3390,21.08.2026 18:47,24.08.2026 16:50,,Preuzeto,
-avgust 2026,22,#1535,Biljana Obradovic,Partizan personalizovana lampa,3390,21.08.2026 09:55,24.08.2026 16:50,,Preuzeto,
-avgust 2026,23,#1534,Zoran Jovanovic,Partizan personalizovana lampa,3390,21.08.2026 08:59,24.08.2026 16:50,,Preuzeto,
-avgust 2026,24,#1533,Marko Alempijevic,Partizan personalizovana lampa,3390,21.08.2026 07:15,22.08.2026 12:21,25.08.2026 15:54,Isporučeno,2300
-avgust 2026,25,#D50,Zoran Jovanovic,Partizan personalizovana lampa (Shopify nacrt),3390,20.08.2026 20:17,,,Nacrt,
-avgust 2026,26,#D49,Teodora Milojevic,Partizan personalizovana lampa (Shopify nacrt),3390,20.08.2026 09:33,,,Nacrt,
-avgust 2026,27,#1530,Mira Melović,Partizan personalizovana lampa,3390,20.08.2026 09:00,24.08.2026 16:50,,Preuzeto,
-avgust 2026,28,#1529,Elmedina Bajraktarevic,Partizan personalizovana lampa,3390,19.08.2026 21:09,24.08.2026 19:46,,Preuzeto,
-avgust 2026,29,#1528,Kristina Čanić,Personalizovana lampa + natpis,2499,19.08.2026 21:01,22.08.2026 12:21,25.08.2026 12:30,Isporučeno,1409
-avgust 2026,30,#1527,Ivana Ječmenić,Partizan personalizovana lampa,3390,19.08.2026 16:51,22.08.2026 12:21,25.08.2026 14:44,Isporučeno,2300
-avgust 2026,31,#1526,Vladislava Vlaškalić,Partizan personalizovana lampa,3390,19.08.2026 14:26,22.08.2026 12:21,25.08.2026 15:22,Isporučeno,2300
-avgust 2026,32,#D48,Tijana Lazarevic,Partizan personalizovana lampa (Shopify nacrt),2890,19.08.2026 12:33,,,Nacrt,
-avgust 2026,33,#1524,Stefan Risimović,Partizan personalizovana lampa,3390,19.08.2026 12:17,22.08.2026 12:21,25.08.2026 15:02,Isporučeno,2300
-avgust 2026,34,#1522,Bojan Zivkovic,Partizan personalizovana lampa,3390,19.08.2026 10:46,22.08.2026 12:21,25.08.2026 13:52,Isporučeno,2300
-avgust 2026,35,#1521,Nenad Ivanović,Partizan personalizovana lampa,3390,19.08.2026 08:54,22.08.2026 12:21,25.08.2026 16:15,Isporučeno,2300
-avgust 2026,36,#1520,Amir Kalinka,Partizan personalizovana lampa,3390,19.08.2026 08:42,22.08.2026 12:21,25.08.2026 14:03,Isporučeno,2300
-avgust 2026,37,#D47,Goran Mihajlović,Partizan personalizovana lampa (Shopify nacrt),3390,19.08.2026 08:33,,,Nacrt,
-avgust 2026,38,#1519,Goran Mihajlović,Partizan personalizovana lampa,3390,19.08.2026 08:17,20.08.2026 17:51,24.08.2026 17:14,Isporučeno,2300
-avgust 2026,39,#1518,Bozidarka Marjanović,Partizan personalizovana lampa,3390,19.08.2026 07:12,20.08.2026 17:51,,Preuzeto,
-avgust 2026,40,#1516,Kujtim Demir,Partizan personalizovana lampa,3390,18.08.2026 08:20,19.08.2026 20:45,21.08.2026 13:33,Isporučeno,2300
-avgust 2026,41,#1515,Muhamed Braha,Partizan personalizovana lampa,3390,18.08.2026 00:09,22.08.2026 12:21,,Preuzeto,
-avgust 2026,42,#1514,Slavica Lukovac,Partizan personalizovana lampa,3390,17.08.2026 18:36,20.08.2026 17:51,25.08.2026 15:15,Isporučeno,2300
-avgust 2026,43,#D46,Dejan Colakovic,Partizan personalizovana lampa (Shopify nacrt),3390,17.08.2026 11:33,,,Nacrt,
-avgust 2026,44,#D45,Dragan Lukic,Partizan personalizovana lampa (Shopify nacrt),3390,17.08.2026 06:03,,,Nacrt,
-avgust 2026,45,#D44,Igor Trisic,Partizan personalizovana lampa (Shopify nacrt),2890,12.08.2026 14:03,,,Nacrt,
-avgust 2026,46,#1512,Aleksandar Vukomanović,Partizan personalizovana lampa,2890,06.08.2026 12:41,16.08.2026 17:13,18.08.2026 15:01,Isporučeno,1800
-avgust 2026,47,#1509,Kristiana Lazarevic,Partizan personalizovana lampa (2 kom),6780,03.08.2026 20:53,16.08.2026 17:13,18.08.2026 18:08,Isporučeno,4990
-jul 2026,48,#AI1072926,Luka Simeunović,Lampa (Instagram DM),3390,30.07.2026 12:00,02.08.2026 19:59,04.08.2026 17:26,Isporučeno,2300
-jul 2026,49,#1508,Dragana Stevanovic,Partizan personalizovana lampa,3390,29.07.2026 23:47,02.08.2026 19:59,10.08.2026 14:27,Vraćeno,-390
-jul 2026,50,#1507,Vasa Lazičić,Partizan personalizovana lampa,3390,29.07.2026 21:34,02.08.2026 19:59,04.08.2026 15:27,Isporučeno,2300
-jul 2026,51,#1488B,Vera Krajnovic,Partizan personalizovana lampa (2 kom),6780,29.07.2026 09:00,29.07.2026 22:56,31.07.2026 14:09,Isporučeno,4990
-jul 2026,52,#1506,Nikola Radomirovic,Partizan personalizovana lampa,3390,29.07.2026 04:43,02.08.2026 19:59,04.08.2026 15:52,Isporučeno,2300
-jul 2026,53,#1505,Tomica Milosevic,Partizan personalizovana lampa,3390,28.07.2026 12:54,29.07.2026 22:56,31.07.2026 14:17,Isporučeno,2300
-jul 2026,54,#1504,Adnan Huseinagić,Partizan personalizovana lampa,3390,28.07.2026 10:25,29.07.2026 22:56,31.07.2026 11:16,Isporučeno,2300
-jul 2026,55,#D43,Nemanja Tufegdzic,Partizan personalizovana lampa (Shopify nacrt),3390,28.07.2026 08:33,,,Nacrt,
-jul 2026,56,#1503B,Sladjana Timotic,Partizan personalizovana lampa (ponovno slanje),3390,28.07.2026 04:46,16.08.2026 17:13,21.08.2026 13:54,Vraćeno,-390
-jul 2026,57,#1503,Sladjana Timotic,Partizan personalizovana lampa,3390,28.07.2026 04:46,02.08.2026 19:59,07.08.2026 13:40,Vraćeno,-390
-jul 2026,58,#1502,Ivan Miljkovic,Partizan personalizovana lampa,3390,27.07.2026 19:03,29.07.2026 00:23,31.07.2026 17:32,Isporučeno,2300
-jul 2026,59,#1501,milan radoja,Partizan personalizovana lampa,3390,27.07.2026 03:07,27.07.2026 21:34,29.07.2026 12:37,Isporučeno,2300
-jul 2026,60,#1500,Vlada Mladenovic,Partizan personalizovana lampa,3390,26.07.2026 17:59,27.07.2026 21:34,29.07.2026 12:07,Isporučeno,2300
-jul 2026,61,#1499,Zdravko Mrkaic,Partizan personalizovana lampa,3390,26.07.2026 16:11,26.07.2026 19:45,28.07.2026 14:37,Isporučeno,2300
-jul 2026,62,#1497,Kosta Tomić,Partizan personalizovana lampa (2 kom),6780,24.07.2026 19:01,27.07.2026 21:34,29.07.2026 16:53,Isporučeno,4990
-jul 2026,63,#1495,Albert Panic,Partizan personalizovana lampa,3390,24.07.2026 13:31,26.07.2026 19:45,28.07.2026 13:20,Isporučeno,2300
-jul 2026,64,#1494,Goran Kocic,Partizan personalizovana lampa,3390,24.07.2026 09:38,26.07.2026 19:45,28.07.2026 14:38,Isporučeno,2300
-jul 2026,65,#1493,Adnan Huseinagic,Partizan personalizovana lampa,3390,24.07.2026 08:59,26.07.2026 20:02,28.07.2026 12:06,Isporučeno,2300
-jul 2026,66,#1492,Aleksandar Milanovic,Partizan personalizovana lampa,3390,24.07.2026 06:46,02.08.2026 19:59,07.08.2026 13:40,Vraćeno,-390
-jul 2026,67,#1490,Momcilo Stamatovic,Partizan personalizovana lampa (2 kom),6780,24.07.2026 06:17,26.07.2026 19:45,28.07.2026 14:30,Isporučeno,4990
-jul 2026,68,#1488,Vera Krajnovic,Partizan personalizovana lampa,3390,23.07.2026 07:32,24.07.2026 00:19,27.07.2026 13:43,Isporučeno,2300
-jul 2026,69,#1487,Beriz Zilkic,Partizan personalizovana lampa,3390,22.07.2026 09:07,24.07.2026 00:19,27.07.2026 11:35,Isporučeno,2300
-jul 2026,70,#1486,Marija Živanović,Partizan personalizovana lampa,3390,21.07.2026 10:23,21.07.2026 11:19,23.07.2026 17:47,Isporučeno,2300
-jul 2026,71,#1485,Milena Kuzmanovic,Partizan personalizovana lampa,3390,20.07.2026 18:36,22.07.2026 00:09,24.07.2026 12:08,Isporučeno,2300
-jul 2026,72,#1484,Predrag Đorđević,Partizan personalizovana lampa,3390,19.07.2026 18:05,22.07.2026 00:09,23.07.2026 13:54,Isporučeno,2300
-jul 2026,73,#1483,Vanja Pavlović,Partizan personalizovana lampa,3390,19.07.2026 15:53,22.07.2026 00:09,24.07.2026 14:22,Isporučeno,2300
-jul 2026,74,#1480,Jelena Skoric,Partizan personalizovana lampa,3390,18.07.2026 08:10,20.07.2026 22:51,24.07.2026 11:58,Isporučeno,2300
-jul 2026,75,#D40,Selman Skrijelj,Partizan personalizovana lampa (Shopify nacrt),3390,18.07.2026 07:33,,,Nacrt,
-jul 2026,76,#1476,Aleksandra Todorovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2499,14.07.2026 13:26,15.07.2026 18:17,20.07.2026 18:01,Isporučeno,1409
-jul 2026,77,#AI1056515,Teodosija Popov,Instagram DM (nema na Shopify),2890,12.07.2026 11:20,13.07.2026 00:57,15.07.2026 17:55,Isporučeno,1800
-jul 2026,78,#D39,Denić Tatjana,FK Partizan Lampa (Shopify nacrt),2890,06.07.2026 18:04,,,Nacrt,
-jul 2026,79,#1475,Selena Kostić,FK Partizan Lampa (2 kom),4780,05.07.2026 17:50,07.07.2026 01:40,09.07.2026 17:29,Isporučeno,2990
-jul 2026,80,#1474,Miladin Protić,FK Partizan Lampa,2890,05.07.2026 10:31,06.07.2026 01:22,09.07.2026 17:29,Isporučeno,1800
-jul 2026,81,#1473,Djura Kalnak,FK Partizan Lampa,2890,05.07.2026 07:18,06.07.2026 01:22,08.07.2026 17:55,Isporučeno,1800
-jun 2026,82,#D37,Biserka Simic,FK Partizan Lampa (Shopify nacrt),2890,29.06.2026 20:33,,,Nacrt,
-jun 2026,83,#D36,Biserka Simic,FK Partizan Lampa (Shopify nacrt),2890,29.06.2026 20:33,,,Nacrt,
-jun 2026,84,#1469,Biserka Simic,FK Partizan Lampa,2890,29.06.2026 20:19,30.06.2026 20:39,02.07.2026 10:57,Isporučeno,1800
-jun 2026,85,#1468,Mirjana Dimitrijevic,FK Partizan Lampa,2890,29.06.2026 07:52,30.06.2026 20:39,02.07.2026 14:19,Isporučeno,1800
-jun 2026,86,#1467,Ksenija Šajtoš,FK Crvena Zvezda Lampa + Ćirilični natpis,2499,28.06.2026 07:52,28.06.2026 23:26,30.06.2026 13:59,Isporučeno,1409
-jun 2026,87,#1466,Daibor Pavičić,FK Partizan Lampa,2890,27.06.2026 18:26,28.06.2026 23:26,06.07.2026 14:25,Vraćeno,-390
-jun 2026,88,#1464,Anastasija Mavlić,FK Partizan Lampa,2890,26.06.2026 22:26,28.06.2026 23:26,30.06.2026 14:51,Isporučeno,1800
-jun 2026,89,#1463,Milan Stankovic,FK Partizan Lampa,2890,26.06.2026 20:40,28.06.2026 23:26,01.07.2026 11:44,Isporučeno,1800
-jun 2026,90,#D35,Vanja Petrović,FK Partizan Lampa (Shopify nacrt),2890,26.06.2026 16:33,,,Nacrt,
-jun 2026,91,#1462,Stefan Andjelic,FK Partizan Lampa,2890,26.06.2026 08:38,28.06.2026 23:26,01.07.2026 19:28,Isporučeno,1800
-jun 2026,92,#D34,Borislav Cvetkovic,FK Crvena Zvezda Lampa (Shopify nacrt),2889,22.06.2026 18:17,,,Nacrt,
-jun 2026,93,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 14:58,23.06.2026 18:34,25.06.2026 15:23,Isporučeno,1799
-jun 2026,94,#D33,Veljko Jovanovic,FK Crvena Zvezda Lampa (Shopify nacrt),2889,21.06.2026 16:03,,,Nacrt,
-jun 2026,95,#1455,Savo Trifunović,FK Partizan Lampa,3389,20.06.2026 18:49,25.06.2026 20:20,30.06.2026 16:12,Isporučeno,2299
-jun 2026,96,#D32,Dragan Stevic,FK Partizan Lampa (Shopify nacrt),3389,20.06.2026 16:33,,,Nacrt,
-jun 2026,97,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,23.06.2026 11:19,Isporučeno,2299
-jun 2026,98,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,23.06.2026 13:31,Isporučeno,2299
-jun 2026,99,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 07:57,23.06.2026 18:34,25.06.2026 18:00,Isporučeno,1799
-jun 2026,100,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 23:42,23.06.2026 18:34,26.06.2026 14:50,Isporučeno,1799
-jun 2026,101,#1449,Suzana Popovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 22:21,21.06.2026 19:46,23.06.2026 12:36,Isporučeno,1799
-jun 2026,102,#1448,Dragana Trmčić,FK Crvena Zvezda Lampa (2 kom) + Ćirilični natpis,4999,19.06.2026 21:35,21.06.2026 19:46,30.06.2026 17:01,Vraćeno,-390
-jun 2026,103,#1447,Desanka Vujosevic,FK Partizan Lampa,3389,19.06.2026 15:21,21.06.2026 19:46,23.06.2026 13:14,Isporučeno,2299
-jun 2026,104,#1446,Ljubica Janjić,FK Partizan Lampa,3389,19.06.2026 09:01,21.06.2026 19:46,23.06.2026 16:52,Isporučeno,2299
-jun 2026,105,#D31,Katarina Pekovic,FK Crvena Zvezda Lampa + Ćirilični natpis (Shopify nacrt),3389,19.06.2026 08:47,,,Nacrt,
-jun 2026,106,#1445,Jelena Veskov,FK Partizan Lampa (2 kom),5389,18.06.2026 18:48,21.06.2026 19:46,23.06.2026 11:49,Isporučeno,3599
-jun 2026,107,#1444,Nikolina Ilic,FK Partizan Lampa,3389,18.06.2026 16:29,18.06.2026 23:09,22.06.2026 21:24,Isporučeno,2299
-jun 2026,108,#D30,Goran Stijovic,FK Partizan Lampa (Shopify nacrt),3389,18.06.2026 10:47,,,Nacrt,
-jun 2026,109,#1440,Mirko Bobic,FK Crvena Zvezda Lampa (2 kom),5390,18.06.2026 07:10,18.06.2026 12:12,19.06.2026 20:49,Isporučeno,3600
-jun 2026,110,#1435,Gordana Popov,FK Partizan Lampa,3389,18.06.2026 00:27,18.06.2026 08:15,,Vraćeno,-390
-jun 2026,111,#1434,Duško Joksimovic,FK Crvena Zvezda Lampa,3389,17.06.2026 21:28,18.06.2026 08:15,19.06.2026 10:32,Isporučeno,2299
-jun 2026,112,#AI1038197,Mislimi Emini,Instagram DM (nema na Shopify),3390,17.06.2026 15:32,18.06.2026 08:15,19.06.2026 16:09,Isporučeno,2300
-jun 2026,113,#1433,Mladen Sredojević,FK Crvena Zvezda Lampa,3389,17.06.2026 12:30,18.06.2026 08:15,19.06.2026 13:37,Isporučeno,2299
-jun 2026,114,#1432,Slavisa Pavlovic,FK Crvena Zvezda Lampa,3389,17.06.2026 11:52,17.06.2026 12:09,18.06.2026 13:16,Isporučeno,2299
-jun 2026,115,#1431,Dario Vranesevic,FK Crvena Zvezda Lampa,3389,16.06.2026 17:37,17.06.2026 12:09,18.06.2026 14:15,Isporučeno,2299
-jun 2026,116,#1429,Predrag Lukić,FK Partizan Lampa,2889,10.06.2026 22:48,11.06.2026 19:53,15.06.2026 12:57,Isporučeno,1799
-jun 2026,117,#1427,Radivoj Vrgotić,FK Partizan Lampa,2889,10.06.2026 09:47,11.06.2026 19:53,15.06.2026 16:03,Isporučeno,1799
-jun 2026,118,#AI1030370,Dragan Pantić,"Instagram DM (COD 8390 -> više kom, proveriti)",8390,09.06.2026 23:15,11.06.2026 19:53,15.06.2026 12:00,Isporučeno,7300
-jun 2026,119,#1425,Branko Dašic,FK Partizan Lampa,2889,09.06.2026 17:04,11.06.2026 19:53,15.06.2026 12:27,Isporučeno,1799
-jun 2026,120,#1424,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 11:04,11.06.2026 19:53,15.06.2026 13:09,Isporučeno,1799
-jun 2026,121,#1423,Momir Mucic,FK Partizan Lampa,2889,09.06.2026 10:37,10.06.2026 17:55,12.06.2026 13:51,Isporučeno,1799
-jun 2026,122,#1422,Marina Matic,FK Partizan Lampa,2889,09.06.2026 10:14,10.06.2026 17:55,12.06.2026 12:33,Isporučeno,1799
-jun 2026,123,#1421,Zoltan Lukač,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 09:56,09.06.2026 18:38,11.06.2026 12:41,Isporučeno,1799
-jun 2026,124,#1420,Vladica Aleksić,FK Crvena Zvezda Lampa,2889,09.06.2026 07:06,10.06.2026 17:55,12.06.2026 14:55,Isporučeno,1799
-jun 2026,125,#1419,Snežana Trišić,FK Partizan Lampa,2889,09.06.2026 06:09,09.06.2026 18:38,11.06.2026 12:05,Isporučeno,1799
-jun 2026,126,#1418,Ljiljana Šerbula,FK Partizan Lampa,2889,08.06.2026 21:59,10.06.2026 17:55,12.06.2026 13:26,Isporučeno,1799
-jun 2026,127,#1417,Slobodan Zivanovic,FK Crvena Zvezda Lampa + Ćirilični natpis,3390,08.06.2026 20:24,10.06.2026 17:55,12.06.2026 14:46,Isporučeno,2300
-jun 2026,128,#1415,Danijela Sentic,FK Crvena Zvezda Lampa,2889,08.06.2026 15:33,09.06.2026 18:38,11.06.2026 10:45,Isporučeno,1799
-jun 2026,129,#1414,Snezana Djurovic,FK Partizan Lampa,2889,08.06.2026 14:16,10.06.2026 17:55,12.06.2026 13:32,Isporučeno,1799
-jun 2026,130,#1413,Slavisa Spesojevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:59,10.06.2026 17:55,12.06.2026 13:38,Isporučeno,1799
-jun 2026,131,#1412,Aleksandar Zarić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:01,10.06.2026 17:55,12.06.2026 14:00,Isporučeno,1799
-jun 2026,132,#1411,Sreten Aleksic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 07:41,10.06.2026 17:55,12.06.2026 12:48,Isporučeno,1799
-jun 2026,133,#1409,Aleksandar Antic,FK Partizan Lampa,2889,07.06.2026 18:41,10.06.2026 17:55,12.06.2026 13:06,Isporučeno,1799
-jun 2026,134,#AI1027978,Milovan Simović,Instagram DM (nema na Shopify),2890,07.06.2026 16:23,07.06.2026 20:43,09.06.2026 15:48,Isporučeno,1800
-jun 2026,135,#AI1027973,Ana Vukadinovic,Instagram DM (nema na Shopify),2890,07.06.2026 16:16,07.06.2026 16:49,09.06.2026 15:23,Isporučeno,1800
-jun 2026,136,#1407,Milan Brajovic,FK Partizan Lampa,2889,07.06.2026 10:13,10.06.2026 17:55,12.06.2026 16:57,Isporučeno,1799
-jun 2026,137,#1406,Dusan Djukic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,07.06.2026 08:22,07.06.2026 16:49,09.06.2026 16:07,Isporučeno,1799
-jun 2026,138,#AI1027398,Vanja Lukić,Instagram DM (nema na Shopify),2890,06.06.2026 15:02,07.06.2026 16:49,09.06.2026 17:25,Isporučeno,1800
-jun 2026,139,#1405,Ivana Jevtic,FK Partizan Lampa,2889,06.06.2026 11:11,07.06.2026 20:43,09.06.2026 14:51,Isporučeno,1799
-jun 2026,140,#1403,Ljubiša Avić,FK Partizan Lampa,2889,06.06.2026 09:01,07.06.2026 16:49,09.06.2026 13:43,Isporučeno,1799
-jun 2026,141,#1402,Mika Birišić,FK Partizan Lampa,2889,05.06.2026 21:59,07.06.2026 16:49,09.06.2026 14:17,Isporučeno,1799
-jun 2026,142,#1401,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,05.06.2026 18:52,07.06.2026 16:49,09.06.2026 12:51,Isporučeno,1799
-jun 2026,143,#1400,Predrag Petrovic,FK Partizan Lampa,2889,05.06.2026 13:00,07.06.2026 16:49,09.06.2026 15:24,Isporučeno,1799
-jun 2026,144,#1399,Dejan Stanic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:47,04.06.2026 22:15,08.06.2026 12:58,Isporučeno,1799
-jun 2026,145,#1398,Ivan Šalajić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:46,04.06.2026 22:15,15.06.2026 16:32,Vraćeno,-390
-jun 2026,146,#AI1025933,Miroslava Pajtašev,Instagram DM (nema na Shopify),2890,04.06.2026 16:20,04.06.2026 22:15,08.06.2026 14:11,Isporučeno,1800
-jun 2026,147,#AI1025920,Negica Pajović,Instagram DM (nema na Shopify),2890,04.06.2026 15:59,04.06.2026 22:15,08.06.2026 12:23,Isporučeno,1800
-jun 2026,148,#1397,Zoran Stojković,FK Partizan Lampa,2889,04.06.2026 15:36,04.06.2026 22:15,08.06.2026 11:14,Isporučeno,1799
-jun 2026,149,#1396,Dragana Detki,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 13:12,04.06.2026 22:15,08.06.2026 12:56,Isporučeno,1799
-jun 2026,150,#1395,Zoran Viskovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 10:42,04.06.2026 11:02,05.06.2026 14:35,Isporučeno,1799
-jun 2026,151,#1394,Blagoja Merdzanovski,FK Partizan Lampa,2889,03.06.2026 23:53,04.06.2026 00:54,05.06.2026 14:02,Isporučeno,1799
-jun 2026,152,#1390,Aleksandra Živanović,FK Partizan Lampa,2889,03.06.2026 10:28,04.06.2026 11:14,10.06.2026 21:15,Isporučeno,1799
-jun 2026,153,#1389,Mladenka Markovic,FK Partizan Lampa,2889,03.06.2026 08:13,04.06.2026 09:29,05.06.2026 13:32,Isporučeno,1799
-jun 2026,154,#1388,Emini Mislim,FK Partizan Lampa,2889,02.06.2026 19:48,02.06.2026 20:42,04.06.2026 15:26,Isporučeno,1799
-jun 2026,155,#1387,Rozalija Aleksijević,FK Crvena Zvezda Lampa,2889,02.06.2026 19:25,02.06.2026 20:42,04.06.2026 15:25,Isporučeno,1799
-jun 2026,156,#1385,Miljan Radović,FK Partizan Lampa + Prioritetna izrada,3288,02.06.2026 15:53,02.06.2026 20:42,04.06.2026 14:46,Isporučeno,2198
-jun 2026,157,#1383,Bojan Gunj,Željko Obradović Lampa,2889,02.06.2026 12:29,02.06.2026 20:42,04.06.2026 14:09,Isporučeno,1799
-jun 2026,158,#1381,Luna Mikulandra,FK Partizan Lampa,2889,02.06.2026 08:41,02.06.2026 20:42,08.06.2026 12:54,Isporučeno,1799
-jun 2026,159,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,04.06.2026 00:54,05.06.2026 14:56,Isporučeno,1799
+avgust 2026,1,#D59,Tatjana Tadic,Partizan personalizovana lampa (Shopify nacrt),3390,28.08.2026 17:33,,,Nacrt,
+avgust 2026,2,#1562,Dragan Pejin,Partizan personalizovana lampa,3390,27.08.2026 22:33,,,U obradi,
+avgust 2026,3,#1561,Darko Milicevic,Partizan personalizovana lampa,3390,27.08.2026 22:18,,,U obradi,
+avgust 2026,4,#1560,Sinan Krasnici,Partizan personalizovana lampa,3390,27.08.2026 20:17,,,U obradi,
+avgust 2026,5,#D58,Sandra Savic,Partizan personalizovana lampa (Shopify nacrt),3390,27.08.2026 15:33,,,Nacrt,
+avgust 2026,6,#1559,Aleksandar Vulovic,Partizan personalizovana lampa,3390,27.08.2026 14:32,,,U obradi,
+avgust 2026,7,#D57,Dragana Piščević,Partizan personalizovana lampa (Shopify nacrt),3390,27.08.2026 10:04,,,Nacrt,
+avgust 2026,8,#1557,Nedeljko Marčeta,Partizan personalizovana lampa,3390,27.08.2026 08:14,,,U obradi,
+avgust 2026,9,#D56,Predrag Radosavljević,Partizan personalizovana lampa (Shopify nacrt),3390,27.08.2026 00:03,,,Nacrt,
+avgust 2026,10,#1556,Alena Trivunovic,Partizan personalizovana lampa,3390,26.08.2026 17:55,,,U obradi,
+avgust 2026,11,#1555,Vera Plavšić,Partizan personalizovana lampa,3390,26.08.2026 07:24,26.08.2026 20:23,28.08.2026 10:46,Isporučeno,2300
+avgust 2026,12,#1554,Nemanja Damjanovic,Partizan personalizovana lampa,3390,25.08.2026 20:13,27.08.2026 15:27,,Preuzeto,
+avgust 2026,13,#1553,Tamara Stamenkovkic,Partizan personalizovana lampa,3390,25.08.2026 19:36,,,U obradi,
+avgust 2026,14,#1552,Zaneta Bogdanovic,Partizan personalizovana lampa,3390,25.08.2026 19:35,27.08.2026 15:27,,Preuzeto,
+avgust 2026,15,#1551,Dalibor Dimic,Partizan personalizovana lampa,3390,25.08.2026 17:41,26.08.2026 20:23,28.08.2026 12:55,Isporučeno,2300
+avgust 2026,16,#1550,Dragana Lončarević,Partizan personalizovana lampa,3390,25.08.2026 09:39,26.08.2026 20:23,28.08.2026 12:59,Isporučeno,2300
+avgust 2026,17,#1549,Kristina Peric,Partizan personalizovana lampa,3390,24.08.2026 20:05,26.08.2026 20:23,,Preuzeto,
+avgust 2026,18,#D55,Danijel Stanojevic,Partizan personalizovana lampa (Shopify nacrt),3390,24.08.2026 19:17,,,Nacrt,
+avgust 2026,19,#1548,Slobodan Banićević,Partizan personalizovana lampa,3390,24.08.2026 17:01,25.08.2026 17:56,27.08.2026 15:09,Isporučeno,2300
+avgust 2026,20,#AI1111678,Bane Bokalović,Lampa (Instagram DM),3390,24.08.2026 12:00,26.08.2026 20:23,28.08.2026 14:32,Isporučeno,2300
+avgust 2026,21,#1546,Veljko Popović,Partizan personalizovana lampa,3390,24.08.2026 10:56,25.08.2026 17:56,27.08.2026 14:48,Isporučeno,2300
+avgust 2026,22,#1542,Lidija Stosic,Partizan personalizovana lampa,3390,24.08.2026 08:22,25.08.2026 17:56,27.08.2026 11:50,Isporučeno,2300
+avgust 2026,23,#1541,Goran Novakovic,Partizan personalizovana lampa,3390,23.08.2026 22:11,25.08.2026 17:56,28.08.2026 12:12,Isporučeno,2300
+avgust 2026,24,#D54,Milan Matic,Partizan personalizovana lampa (Shopify nacrt),3390,23.08.2026 17:48,,,Nacrt,
+avgust 2026,25,#1540,Marija Milanović,Partizan personalizovana lampa,3390,23.08.2026 14:43,24.08.2026 16:50,26.08.2026 15:32,Isporučeno,2300
+avgust 2026,26,#D53,Bane Bokalović,Partizan personalizovana lampa (Shopify nacrt),3390,23.08.2026 10:48,,,Nacrt,
+avgust 2026,27,#D52,Hana Marinkovi,Partizan personalizovana lampa (Shopify nacrt),3390,22.08.2026 12:04,,,Nacrt,
+avgust 2026,28,#1538,Biljana Pantic,Partizan personalizovana lampa,3390,22.08.2026 07:57,24.08.2026 16:50,26.08.2026 12:28,Isporučeno,2300
+avgust 2026,29,#D51,Biljana Pantic,Partizan personalizovana lampa (Shopify nacrt),3390,22.08.2026 07:17,,,Nacrt,
+avgust 2026,30,#1537,Zorica Ilija,Partizan personalizovana lampa,3390,21.08.2026 21:16,24.08.2026 16:50,26.08.2026 15:41,Isporučeno,2300
+avgust 2026,31,#1536,ivica lepojev,Partizan personalizovana lampa,3390,21.08.2026 18:47,24.08.2026 16:50,26.08.2026 15:23,Isporučeno,2300
+avgust 2026,32,#1535,Biljana Obradovic,Partizan personalizovana lampa,3390,21.08.2026 09:55,24.08.2026 16:50,27.08.2026 14:23,Isporučeno,2300
+avgust 2026,33,#1534,Zoran Jovanovic,Partizan personalizovana lampa,3390,21.08.2026 08:59,24.08.2026 16:50,26.08.2026 14:39,Isporučeno,2300
+avgust 2026,34,#1533,Marko Alempijevic,Partizan personalizovana lampa,3390,21.08.2026 07:15,22.08.2026 12:21,25.08.2026 15:54,Isporučeno,2300
+avgust 2026,35,#D50,Zoran Jovanovic,Partizan personalizovana lampa (Shopify nacrt),3390,20.08.2026 20:17,,,Nacrt,
+avgust 2026,36,#D49,Teodora Milojevic,Partizan personalizovana lampa (Shopify nacrt),3390,20.08.2026 09:33,,,Nacrt,
+avgust 2026,37,#1530,Mira Melović,Partizan personalizovana lampa,3390,20.08.2026 09:00,24.08.2026 16:50,28.08.2026 13:06,Isporučeno,2300
+avgust 2026,38,#1529,Elmedina Bajraktarevic,Partizan personalizovana lampa,3390,19.08.2026 21:09,24.08.2026 19:46,26.08.2026 13:34,Isporučeno,2300
+avgust 2026,39,#1528,Kristina Čanić,Personalizovana lampa + natpis,2499,19.08.2026 21:01,22.08.2026 12:21,25.08.2026 12:30,Isporučeno,1409
+avgust 2026,40,#1527,Ivana Ječmenić,Partizan personalizovana lampa,3390,19.08.2026 16:51,22.08.2026 12:21,25.08.2026 14:44,Isporučeno,2300
+avgust 2026,41,#1526,Vladislava Vlaškalić,Partizan personalizovana lampa,3390,19.08.2026 14:26,22.08.2026 12:21,25.08.2026 15:22,Isporučeno,2300
+avgust 2026,42,#D48,Tijana Lazarevic,Partizan personalizovana lampa (Shopify nacrt),2890,19.08.2026 12:33,,,Nacrt,
+avgust 2026,43,#1524,Stefan Risimović,Partizan personalizovana lampa,3390,19.08.2026 12:17,22.08.2026 12:21,25.08.2026 15:02,Isporučeno,2300
+avgust 2026,44,#1522,Bojan Zivkovic,Partizan personalizovana lampa,3390,19.08.2026 10:46,22.08.2026 12:21,25.08.2026 13:52,Isporučeno,2300
+avgust 2026,45,#1521,Nenad Ivanović,Partizan personalizovana lampa,3390,19.08.2026 08:54,22.08.2026 12:21,25.08.2026 16:15,Isporučeno,2300
+avgust 2026,46,#1520,Amir Kalinka,Partizan personalizovana lampa,3390,19.08.2026 08:42,22.08.2026 12:21,25.08.2026 14:03,Isporučeno,2300
+avgust 2026,47,#D47,Goran Mihajlović,Partizan personalizovana lampa (Shopify nacrt),3390,19.08.2026 08:33,,,Nacrt,
+avgust 2026,48,#1519,Goran Mihajlović,Partizan personalizovana lampa,3390,19.08.2026 08:17,20.08.2026 17:51,24.08.2026 17:14,Isporučeno,2300
+avgust 2026,49,#1518,Bozidarka Marjanović,Partizan personalizovana lampa,3390,19.08.2026 07:12,20.08.2026 17:51,,Preuzeto,
+avgust 2026,50,#1516,Kujtim Demir,Partizan personalizovana lampa,3390,18.08.2026 08:20,19.08.2026 20:45,21.08.2026 13:33,Isporučeno,2300
+avgust 2026,51,#1515,Muhamed Braha,Partizan personalizovana lampa,3390,18.08.2026 00:09,22.08.2026 12:21,,Preuzeto,
+avgust 2026,52,#1514,Slavica Lukovac,Partizan personalizovana lampa,3390,17.08.2026 18:36,20.08.2026 17:51,25.08.2026 15:15,Isporučeno,2300
+avgust 2026,53,#D46,Dejan Colakovic,Partizan personalizovana lampa (Shopify nacrt),3390,17.08.2026 11:33,,,Nacrt,
+avgust 2026,54,#D45,Dragan Lukic,Partizan personalizovana lampa (Shopify nacrt),3390,17.08.2026 06:03,,,Nacrt,
+avgust 2026,55,#D44,Igor Trisic,Partizan personalizovana lampa (Shopify nacrt),2890,12.08.2026 14:03,,,Nacrt,
+avgust 2026,56,#1512,Aleksandar Vukomanović,Partizan personalizovana lampa,2890,06.08.2026 12:41,16.08.2026 17:13,18.08.2026 15:01,Isporučeno,1800
+avgust 2026,57,#1509,Kristiana Lazarevic,Partizan personalizovana lampa (2 kom),6780,03.08.2026 20:53,16.08.2026 17:13,18.08.2026 18:08,Isporučeno,4990
+jul 2026,58,#AI1072926,Luka Simeunović,Lampa (Instagram DM),3390,30.07.2026 12:00,02.08.2026 19:59,04.08.2026 17:26,Isporučeno,2300
+jul 2026,59,#1508,Dragana Stevanovic,Partizan personalizovana lampa,3390,29.07.2026 23:47,02.08.2026 19:59,10.08.2026 14:27,Vraćeno,-390
+jul 2026,60,#1507,Vasa Lazičić,Partizan personalizovana lampa,3390,29.07.2026 21:34,02.08.2026 19:59,04.08.2026 15:27,Isporučeno,2300
+jul 2026,61,#1488B,Vera Krajnovic,Partizan personalizovana lampa (2 kom),6780,29.07.2026 09:00,29.07.2026 22:56,31.07.2026 14:09,Isporučeno,4990
+jul 2026,62,#1506,Nikola Radomirovic,Partizan personalizovana lampa,3390,29.07.2026 04:43,02.08.2026 19:59,04.08.2026 15:52,Isporučeno,2300
+jul 2026,63,#1505,Tomica Milosevic,Partizan personalizovana lampa,3390,28.07.2026 12:54,29.07.2026 22:56,31.07.2026 14:17,Isporučeno,2300
+jul 2026,64,#1504,Adnan Huseinagić,Partizan personalizovana lampa,3390,28.07.2026 10:25,29.07.2026 22:56,31.07.2026 11:16,Isporučeno,2300
+jul 2026,65,#D43,Nemanja Tufegdzic,Partizan personalizovana lampa (Shopify nacrt),3390,28.07.2026 08:33,,,Nacrt,
+jul 2026,66,#1503B,Sladjana Timotic,Partizan personalizovana lampa (ponovno slanje),3390,28.07.2026 04:46,16.08.2026 17:13,21.08.2026 13:54,Vraćeno,-390
+jul 2026,67,#1503,Sladjana Timotic,Partizan personalizovana lampa,3390,28.07.2026 04:46,02.08.2026 19:59,07.08.2026 13:40,Vraćeno,-390
+jul 2026,68,#1502,Ivan Miljkovic,Partizan personalizovana lampa,3390,27.07.2026 19:03,29.07.2026 00:23,31.07.2026 17:32,Isporučeno,2300
+jul 2026,69,#1501,milan radoja,Partizan personalizovana lampa,3390,27.07.2026 03:07,27.07.2026 21:34,29.07.2026 12:37,Isporučeno,2300
+jul 2026,70,#1500,Vlada Mladenovic,Partizan personalizovana lampa,3390,26.07.2026 17:59,27.07.2026 21:34,29.07.2026 12:07,Isporučeno,2300
+jul 2026,71,#1499,Zdravko Mrkaic,Partizan personalizovana lampa,3390,26.07.2026 16:11,26.07.2026 19:45,28.07.2026 14:37,Isporučeno,2300
+jul 2026,72,#1497,Kosta Tomić,Partizan personalizovana lampa (2 kom),6780,24.07.2026 19:01,27.07.2026 21:34,29.07.2026 16:53,Isporučeno,4990
+jul 2026,73,#1495,Albert Panic,Partizan personalizovana lampa,3390,24.07.2026 13:31,26.07.2026 19:45,28.07.2026 13:20,Isporučeno,2300
+jul 2026,74,#1494,Goran Kocic,Partizan personalizovana lampa,3390,24.07.2026 09:38,26.07.2026 19:45,28.07.2026 14:38,Isporučeno,2300
+jul 2026,75,#1493,Adnan Huseinagic,Partizan personalizovana lampa,3390,24.07.2026 08:59,26.07.2026 20:02,28.07.2026 12:06,Isporučeno,2300
+jul 2026,76,#1492,Aleksandar Milanovic,Partizan personalizovana lampa,3390,24.07.2026 06:46,02.08.2026 19:59,07.08.2026 13:40,Vraćeno,-390
+jul 2026,77,#1490,Momcilo Stamatovic,Partizan personalizovana lampa (2 kom),6780,24.07.2026 06:17,26.07.2026 19:45,28.07.2026 14:30,Isporučeno,4990
+jul 2026,78,#1488,Vera Krajnovic,Partizan personalizovana lampa,3390,23.07.2026 07:32,24.07.2026 00:19,27.07.2026 13:43,Isporučeno,2300
+jul 2026,79,#1487,Beriz Zilkic,Partizan personalizovana lampa,3390,22.07.2026 09:07,24.07.2026 00:19,27.07.2026 11:35,Isporučeno,2300
+jul 2026,80,#1486,Marija Živanović,Partizan personalizovana lampa,3390,21.07.2026 10:23,21.07.2026 11:19,23.07.2026 17:47,Isporučeno,2300
+jul 2026,81,#1485,Milena Kuzmanovic,Partizan personalizovana lampa,3390,20.07.2026 18:36,22.07.2026 00:09,24.07.2026 12:08,Isporučeno,2300
+jul 2026,82,#1484,Predrag Đorđević,Partizan personalizovana lampa,3390,19.07.2026 18:05,22.07.2026 00:09,23.07.2026 13:54,Isporučeno,2300
+jul 2026,83,#1483,Vanja Pavlović,Partizan personalizovana lampa,3390,19.07.2026 15:53,22.07.2026 00:09,24.07.2026 14:22,Isporučeno,2300
+jul 2026,84,#1480,Jelena Skoric,Partizan personalizovana lampa,3390,18.07.2026 08:10,20.07.2026 22:51,24.07.2026 11:58,Isporučeno,2300
+jul 2026,85,#D40,Selman Skrijelj,Partizan personalizovana lampa (Shopify nacrt),3390,18.07.2026 07:33,,,Nacrt,
+jul 2026,86,#1476,Aleksandra Todorovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2499,14.07.2026 13:26,15.07.2026 18:17,20.07.2026 18:01,Isporučeno,1409
+jul 2026,87,#AI1056515,Teodosija Popov,Instagram DM (nema na Shopify),2890,12.07.2026 11:20,13.07.2026 00:57,15.07.2026 17:55,Isporučeno,1800
+jul 2026,88,#D39,Denić Tatjana,FK Partizan Lampa (Shopify nacrt),2890,06.07.2026 18:04,,,Nacrt,
+jul 2026,89,#1475,Selena Kostić,FK Partizan Lampa (2 kom),4780,05.07.2026 17:50,07.07.2026 01:40,09.07.2026 17:29,Isporučeno,2990
+jul 2026,90,#1474,Miladin Protić,FK Partizan Lampa,2890,05.07.2026 10:31,06.07.2026 01:22,09.07.2026 17:29,Isporučeno,1800
+jul 2026,91,#1473,Djura Kalnak,FK Partizan Lampa,2890,05.07.2026 07:18,06.07.2026 01:22,08.07.2026 17:55,Isporučeno,1800
+jun 2026,92,#D37,Biserka Simic,FK Partizan Lampa (Shopify nacrt),2890,29.06.2026 20:33,,,Nacrt,
+jun 2026,93,#D36,Biserka Simic,FK Partizan Lampa (Shopify nacrt),2890,29.06.2026 20:33,,,Nacrt,
+jun 2026,94,#1469,Biserka Simic,FK Partizan Lampa,2890,29.06.2026 20:19,30.06.2026 20:39,02.07.2026 10:57,Isporučeno,1800
+jun 2026,95,#1468,Mirjana Dimitrijevic,FK Partizan Lampa,2890,29.06.2026 07:52,30.06.2026 20:39,02.07.2026 14:19,Isporučeno,1800
+jun 2026,96,#1467,Ksenija Šajtoš,FK Crvena Zvezda Lampa + Ćirilični natpis,2499,28.06.2026 07:52,28.06.2026 23:26,30.06.2026 13:59,Isporučeno,1409
+jun 2026,97,#1466,Daibor Pavičić,FK Partizan Lampa,2890,27.06.2026 18:26,28.06.2026 23:26,06.07.2026 14:25,Vraćeno,-390
+jun 2026,98,#1464,Anastasija Mavlić,FK Partizan Lampa,2890,26.06.2026 22:26,28.06.2026 23:26,30.06.2026 14:51,Isporučeno,1800
+jun 2026,99,#1463,Milan Stankovic,FK Partizan Lampa,2890,26.06.2026 20:40,28.06.2026 23:26,01.07.2026 11:44,Isporučeno,1800
+jun 2026,100,#D35,Vanja Petrović,FK Partizan Lampa (Shopify nacrt),2890,26.06.2026 16:33,,,Nacrt,
+jun 2026,101,#1462,Stefan Andjelic,FK Partizan Lampa,2890,26.06.2026 08:38,28.06.2026 23:26,01.07.2026 19:28,Isporučeno,1800
+jun 2026,102,#D34,Borislav Cvetkovic,FK Crvena Zvezda Lampa (Shopify nacrt),2889,22.06.2026 18:17,,,Nacrt,
+jun 2026,103,#1460,Dragana Milosevic,FK Partizan Lampa,2889,22.06.2026 14:58,23.06.2026 18:34,25.06.2026 15:23,Isporučeno,1799
+jun 2026,104,#D33,Veljko Jovanovic,FK Crvena Zvezda Lampa (Shopify nacrt),2889,21.06.2026 16:03,,,Nacrt,
+jun 2026,105,#1455,Savo Trifunović,FK Partizan Lampa,3389,20.06.2026 18:49,25.06.2026 20:20,30.06.2026 16:12,Isporučeno,2299
+jun 2026,106,#D32,Dragan Stevic,FK Partizan Lampa (Shopify nacrt),3389,20.06.2026 16:33,,,Nacrt,
+jun 2026,107,#1453,Dejan Popovic,FK Partizan Lampa,3389,20.06.2026 15:52,21.06.2026 19:46,23.06.2026 11:19,Isporučeno,2299
+jun 2026,108,#1452,Anica Matic,FK Partizan Lampa,3389,20.06.2026 15:03,21.06.2026 19:46,23.06.2026 13:31,Isporučeno,2299
+jun 2026,109,#1451,Mirjana Antonic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,20.06.2026 07:57,23.06.2026 18:34,25.06.2026 18:00,Isporučeno,1799
+jun 2026,110,#1450,Valjarević Srđan,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 23:42,23.06.2026 18:34,26.06.2026 14:50,Isporučeno,1799
+jun 2026,111,#1449,Suzana Popovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,19.06.2026 22:21,21.06.2026 19:46,23.06.2026 12:36,Isporučeno,1799
+jun 2026,112,#1448,Dragana Trmčić,FK Crvena Zvezda Lampa (2 kom) + Ćirilični natpis,4999,19.06.2026 21:35,21.06.2026 19:46,30.06.2026 17:01,Vraćeno,-390
+jun 2026,113,#1447,Desanka Vujosevic,FK Partizan Lampa,3389,19.06.2026 15:21,21.06.2026 19:46,23.06.2026 13:14,Isporučeno,2299
+jun 2026,114,#1446,Ljubica Janjić,FK Partizan Lampa,3389,19.06.2026 09:01,21.06.2026 19:46,23.06.2026 16:52,Isporučeno,2299
+jun 2026,115,#D31,Katarina Pekovic,FK Crvena Zvezda Lampa + Ćirilični natpis (Shopify nacrt),3389,19.06.2026 08:47,,,Nacrt,
+jun 2026,116,#1445,Jelena Veskov,FK Partizan Lampa (2 kom),5389,18.06.2026 18:48,21.06.2026 19:46,23.06.2026 11:49,Isporučeno,3599
+jun 2026,117,#1444,Nikolina Ilic,FK Partizan Lampa,3389,18.06.2026 16:29,18.06.2026 23:09,22.06.2026 21:24,Isporučeno,2299
+jun 2026,118,#D30,Goran Stijovic,FK Partizan Lampa (Shopify nacrt),3389,18.06.2026 10:47,,,Nacrt,
+jun 2026,119,#1440,Mirko Bobic,FK Crvena Zvezda Lampa (2 kom),5390,18.06.2026 07:10,18.06.2026 12:12,19.06.2026 20:49,Isporučeno,3600
+jun 2026,120,#1435,Gordana Popov,FK Partizan Lampa,3389,18.06.2026 00:27,18.06.2026 08:15,,Vraćeno,-390
+jun 2026,121,#1434,Duško Joksimovic,FK Crvena Zvezda Lampa,3389,17.06.2026 21:28,18.06.2026 08:15,19.06.2026 10:32,Isporučeno,2299
+jun 2026,122,#AI1038197,Mislimi Emini,Instagram DM (nema na Shopify),3390,17.06.2026 15:32,18.06.2026 08:15,19.06.2026 16:09,Isporučeno,2300
+jun 2026,123,#1433,Mladen Sredojević,FK Crvena Zvezda Lampa,3389,17.06.2026 12:30,18.06.2026 08:15,19.06.2026 13:37,Isporučeno,2299
+jun 2026,124,#1432,Slavisa Pavlovic,FK Crvena Zvezda Lampa,3389,17.06.2026 11:52,17.06.2026 12:09,18.06.2026 13:16,Isporučeno,2299
+jun 2026,125,#1431,Dario Vranesevic,FK Crvena Zvezda Lampa,3389,16.06.2026 17:37,17.06.2026 12:09,18.06.2026 14:15,Isporučeno,2299
+jun 2026,126,#1429,Predrag Lukić,FK Partizan Lampa,2889,10.06.2026 22:48,11.06.2026 19:53,15.06.2026 12:57,Isporučeno,1799
+jun 2026,127,#1427,Radivoj Vrgotić,FK Partizan Lampa,2889,10.06.2026 09:47,11.06.2026 19:53,15.06.2026 16:03,Isporučeno,1799
+jun 2026,128,#AI1030370,Dragan Pantić,"Instagram DM (COD 8390 -> više kom, proveriti)",8390,09.06.2026 23:15,11.06.2026 19:53,15.06.2026 12:00,Isporučeno,7300
+jun 2026,129,#1425,Branko Dašic,FK Partizan Lampa,2889,09.06.2026 17:04,11.06.2026 19:53,15.06.2026 12:27,Isporučeno,1799
+jun 2026,130,#1424,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 11:04,11.06.2026 19:53,15.06.2026 13:09,Isporučeno,1799
+jun 2026,131,#1423,Momir Mucic,FK Partizan Lampa,2889,09.06.2026 10:37,10.06.2026 17:55,12.06.2026 13:51,Isporučeno,1799
+jun 2026,132,#1422,Marina Matic,FK Partizan Lampa,2889,09.06.2026 10:14,10.06.2026 17:55,12.06.2026 12:33,Isporučeno,1799
+jun 2026,133,#1421,Zoltan Lukač,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,09.06.2026 09:56,09.06.2026 18:38,11.06.2026 12:41,Isporučeno,1799
+jun 2026,134,#1420,Vladica Aleksić,FK Crvena Zvezda Lampa,2889,09.06.2026 07:06,10.06.2026 17:55,12.06.2026 14:55,Isporučeno,1799
+jun 2026,135,#1419,Snežana Trišić,FK Partizan Lampa,2889,09.06.2026 06:09,09.06.2026 18:38,11.06.2026 12:05,Isporučeno,1799
+jun 2026,136,#1418,Ljiljana Šerbula,FK Partizan Lampa,2889,08.06.2026 21:59,10.06.2026 17:55,12.06.2026 13:26,Isporučeno,1799
+jun 2026,137,#1417,Slobodan Zivanovic,FK Crvena Zvezda Lampa + Ćirilični natpis,3390,08.06.2026 20:24,10.06.2026 17:55,12.06.2026 14:46,Isporučeno,2300
+jun 2026,138,#1415,Danijela Sentic,FK Crvena Zvezda Lampa,2889,08.06.2026 15:33,09.06.2026 18:38,11.06.2026 10:45,Isporučeno,1799
+jun 2026,139,#1414,Snezana Djurovic,FK Partizan Lampa,2889,08.06.2026 14:16,10.06.2026 17:55,12.06.2026 13:32,Isporučeno,1799
+jun 2026,140,#1413,Slavisa Spesojevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:59,10.06.2026 17:55,12.06.2026 13:38,Isporučeno,1799
+jun 2026,141,#1412,Aleksandar Zarić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 10:01,10.06.2026 17:55,12.06.2026 14:00,Isporučeno,1799
+jun 2026,142,#1411,Sreten Aleksic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,08.06.2026 07:41,10.06.2026 17:55,12.06.2026 12:48,Isporučeno,1799
+jun 2026,143,#1409,Aleksandar Antic,FK Partizan Lampa,2889,07.06.2026 18:41,10.06.2026 17:55,12.06.2026 13:06,Isporučeno,1799
+jun 2026,144,#AI1027978,Milovan Simović,Instagram DM (nema na Shopify),2890,07.06.2026 16:23,07.06.2026 20:43,09.06.2026 15:48,Isporučeno,1800
+jun 2026,145,#AI1027973,Ana Vukadinovic,Instagram DM (nema na Shopify),2890,07.06.2026 16:16,07.06.2026 16:49,09.06.2026 15:23,Isporučeno,1800
+jun 2026,146,#1407,Milan Brajovic,FK Partizan Lampa,2889,07.06.2026 10:13,10.06.2026 17:55,12.06.2026 16:57,Isporučeno,1799
+jun 2026,147,#1406,Dusan Djukic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,07.06.2026 08:22,07.06.2026 16:49,09.06.2026 16:07,Isporučeno,1799
+jun 2026,148,#AI1027398,Vanja Lukić,Instagram DM (nema na Shopify),2890,06.06.2026 15:02,07.06.2026 16:49,09.06.2026 17:25,Isporučeno,1800
+jun 2026,149,#1405,Ivana Jevtic,FK Partizan Lampa,2889,06.06.2026 11:11,07.06.2026 20:43,09.06.2026 14:51,Isporučeno,1799
+jun 2026,150,#1403,Ljubiša Avić,FK Partizan Lampa,2889,06.06.2026 09:01,07.06.2026 16:49,09.06.2026 13:43,Isporučeno,1799
+jun 2026,151,#1402,Mika Birišić,FK Partizan Lampa,2889,05.06.2026 21:59,07.06.2026 16:49,09.06.2026 14:17,Isporučeno,1799
+jun 2026,152,#1401,Sandra Milicevic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,05.06.2026 18:52,07.06.2026 16:49,09.06.2026 12:51,Isporučeno,1799
+jun 2026,153,#1400,Predrag Petrovic,FK Partizan Lampa,2889,05.06.2026 13:00,07.06.2026 16:49,09.06.2026 15:24,Isporučeno,1799
+jun 2026,154,#1399,Dejan Stanic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:47,04.06.2026 22:15,08.06.2026 12:58,Isporučeno,1799
+jun 2026,155,#1398,Ivan Šalajić,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 17:46,04.06.2026 22:15,15.06.2026 16:32,Vraćeno,-390
+jun 2026,156,#AI1025933,Miroslava Pajtašev,Instagram DM (nema na Shopify),2890,04.06.2026 16:20,04.06.2026 22:15,08.06.2026 14:11,Isporučeno,1800
+jun 2026,157,#AI1025920,Negica Pajović,Instagram DM (nema na Shopify),2890,04.06.2026 15:59,04.06.2026 22:15,08.06.2026 12:23,Isporučeno,1800
+jun 2026,158,#1397,Zoran Stojković,FK Partizan Lampa,2889,04.06.2026 15:36,04.06.2026 22:15,08.06.2026 11:14,Isporučeno,1799
+jun 2026,159,#1396,Dragana Detki,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 13:12,04.06.2026 22:15,08.06.2026 12:56,Isporučeno,1799
+jun 2026,160,#1395,Zoran Viskovic,FK Crvena Zvezda Lampa + Ćirilični natpis,2889,04.06.2026 10:42,04.06.2026 11:02,05.06.2026 14:35,Isporučeno,1799
+jun 2026,161,#1394,Blagoja Merdzanovski,FK Partizan Lampa,2889,03.06.2026 23:53,04.06.2026 00:54,05.06.2026 14:02,Isporučeno,1799
+jun 2026,162,#1390,Aleksandra Živanović,FK Partizan Lampa,2889,03.06.2026 10:28,04.06.2026 11:14,10.06.2026 21:15,Isporučeno,1799
+jun 2026,163,#1389,Mladenka Markovic,FK Partizan Lampa,2889,03.06.2026 08:13,04.06.2026 09:29,05.06.2026 13:32,Isporučeno,1799
+jun 2026,164,#1388,Emini Mislim,FK Partizan Lampa,2889,02.06.2026 19:48,02.06.2026 20:42,04.06.2026 15:26,Isporučeno,1799
+jun 2026,165,#1387,Rozalija Aleksijević,FK Crvena Zvezda Lampa,2889,02.06.2026 19:25,02.06.2026 20:42,04.06.2026 15:25,Isporučeno,1799
+jun 2026,166,#1385,Miljan Radović,FK Partizan Lampa + Prioritetna izrada,3288,02.06.2026 15:53,02.06.2026 20:42,04.06.2026 14:46,Isporučeno,2198
+jun 2026,167,#1383,Bojan Gunj,Željko Obradović Lampa,2889,02.06.2026 12:29,02.06.2026 20:42,04.06.2026 14:09,Isporučeno,1799
+jun 2026,168,#1381,Luna Mikulandra,FK Partizan Lampa,2889,02.06.2026 08:41,02.06.2026 20:42,08.06.2026 12:54,Isporučeno,1799
+jun 2026,169,#1380,Stefan Radovanov,FK Crvena Zvezda Lampa,2889,01.06.2026 09:43,04.06.2026 00:54,05.06.2026 14:56,Isporučeno,1799
 
 REZIME,jun 2026
-Ukupno narudžbina,159
-Isporučeno,106
-Preuzeto,10
-Čeka preuzimanje,4
-U obradi,8
-Nacrt,23
+Ukupno narudžbina,169
+Isporučeno,122
+Preuzeto,5
+Čeka preuzimanje,0
+U obradi,7
+Nacrt,27
 Vraća se,0
 Vraćeno,8
-FB reklame (RSD),150521
+FB reklame (RSD),160083
 
 Mesec,Datum,USD,RSD
-jun 2026,01.06.2026,21.22,2134
-jun 2026,02.06.2026,38.67,3889
-jun 2026,03.06.2026,38.91,3914
-jun 2026,04.06.2026,42.83,4308
-jun 2026,05.06.2026,45.99,4626
-jun 2026,06.06.2026,36.11,3632
-jun 2026,07.06.2026,43.58,4383
-jun 2026,08.06.2026,37.73,3795
-jun 2026,09.06.2026,39.0,3923
-jun 2026,10.06.2026,39.08,3931
-jun 2026,11.06.2026,17.39,1749
+jun 2026,01.06.2026,21.22,2136
+jun 2026,02.06.2026,38.67,3893
+jun 2026,03.06.2026,38.91,3918
+jun 2026,04.06.2026,42.83,4312
+jun 2026,05.06.2026,45.99,4630
+jun 2026,06.06.2026,36.11,3636
+jun 2026,07.06.2026,43.58,4388
+jun 2026,08.06.2026,37.73,3799
+jun 2026,09.06.2026,39.0,3927
+jun 2026,10.06.2026,39.08,3935
+jun 2026,11.06.2026,17.39,1751
 jun 2026,12.06.2026,0.0,0
 jun 2026,13.06.2026,0.0,0
 jun 2026,14.06.2026,0.0,0
 jun 2026,15.06.2026,0.0,0
-jun 2026,16.06.2026,19.48,1959
-jun 2026,17.06.2026,19.06,1917
-jun 2026,18.06.2026,45.26,4552
-jun 2026,19.06.2026,44.44,4470
-jun 2026,20.06.2026,74.37,7480
-jun 2026,21.06.2026,38.52,3874
-jun 2026,22.06.2026,36.85,3706
+jun 2026,16.06.2026,19.48,1961
+jun 2026,17.06.2026,19.06,1919
+jun 2026,18.06.2026,45.26,4557
+jun 2026,19.06.2026,44.44,4474
+jun 2026,20.06.2026,74.37,7488
+jun 2026,21.06.2026,38.52,3878
+jun 2026,22.06.2026,36.85,3710
 jun 2026,23.06.2026,0.0,0
-jun 2026,24.06.2026,18.97,1908
-jun 2026,25.06.2026,38.24,3846
-jun 2026,26.06.2026,43.58,4383
-jun 2026,27.06.2026,42.89,4314
-jun 2026,28.06.2026,30.05,3022
-jun 2026,29.06.2026,23.61,2375
+jun 2026,24.06.2026,18.97,1910
+jun 2026,25.06.2026,38.24,3850
+jun 2026,26.06.2026,43.58,4388
+jun 2026,27.06.2026,42.89,4318
+jun 2026,28.06.2026,30.05,3025
+jun 2026,29.06.2026,23.61,2377
 jun 2026,30.06.2026,0.0,0
 jul 2026,01.07.2026,0.0,0
 jul 2026,02.07.2026,0.0,0
-jul 2026,03.07.2026,10.04,1010
-jul 2026,04.07.2026,12.32,1239
-jul 2026,05.07.2026,16.26,1635
-jul 2026,06.07.2026,14.27,1435
-jul 2026,07.07.2026,5.87,590
+jul 2026,03.07.2026,10.04,1011
+jul 2026,04.07.2026,12.32,1240
+jul 2026,05.07.2026,16.26,1637
+jul 2026,06.07.2026,14.27,1437
+jul 2026,07.07.2026,5.87,591
 jul 2026,08.07.2026,0.0,0
 jul 2026,09.07.2026,0.0,0
 jul 2026,10.07.2026,0.0,0
@@ -318,29 +328,31 @@ jul 2026,14.07.2026,0.0,0
 jul 2026,15.07.2026,0.0,0
 jul 2026,16.07.2026,0.0,0
 jul 2026,17.07.2026,1.83,184
-jul 2026,18.07.2026,16.44,1654
-jul 2026,19.07.2026,17.54,1764
-jul 2026,20.07.2026,14.28,1436
-jul 2026,21.07.2026,16.09,1618
-jul 2026,22.07.2026,15.66,1575
-jul 2026,23.07.2026,18.01,1811
-jul 2026,24.07.2026,22.61,2274
-jul 2026,25.07.2026,19.29,1940
-jul 2026,26.07.2026,21.09,2121
-jul 2026,27.07.2026,21.46,2158
-jul 2026,28.07.2026,23.99,2413
-jul 2026,29.07.2026,31.18,3136
-jul 2026,30.07.2026,13.96,1404
-avgust 2026,17.08.2026,34.11,3431
-avgust 2026,18.08.2026,38.95,3918
-avgust 2026,19.08.2026,42.49,4274
-avgust 2026,20.08.2026,36.47,3668
-avgust 2026,21.08.2026,30.05,3022
-avgust 2026,22.08.2026,27.61,2777
-avgust 2026,23.08.2026,31.7,3188
-avgust 2026,24.08.2026,32.35,3254
-avgust 2026,25.08.2026,29.55,2972
-avgust 2026,26.08.2026,5.27,530
+jul 2026,18.07.2026,16.44,1655
+jul 2026,19.07.2026,17.54,1766
+jul 2026,20.07.2026,14.28,1438
+jul 2026,21.07.2026,16.09,1620
+jul 2026,22.07.2026,15.66,1577
+jul 2026,23.07.2026,18.01,1813
+jul 2026,24.07.2026,22.61,2276
+jul 2026,25.07.2026,19.29,1942
+jul 2026,26.07.2026,21.09,2123
+jul 2026,27.07.2026,21.46,2161
+jul 2026,28.07.2026,23.99,2415
+jul 2026,29.07.2026,31.18,3139
+jul 2026,30.07.2026,13.96,1406
+avgust 2026,17.08.2026,34.11,3434
+avgust 2026,18.08.2026,38.95,3922
+avgust 2026,19.08.2026,42.49,4278
+avgust 2026,20.08.2026,36.47,3672
+avgust 2026,21.08.2026,30.05,3025
+avgust 2026,22.08.2026,27.61,2780
+avgust 2026,23.08.2026,31.7,3192
+avgust 2026,24.08.2026,32.35,3257
+avgust 2026,25.08.2026,29.55,2975
+avgust 2026,26.08.2026,25.51,2568
+avgust 2026,27.08.2026,43.07,4336
+avgust 2026,28.08.2026,30.12,3033
 `;
 const MONTHS=["","januar","februar","mart","april","maj","jun","jul","avgust","septembar","oktobar","novembar","decembar"];
 const KATEGORIJE=["Filament","USB kabl","LED traka","Kutija za pakovanje","Struja","Alat","Ostalo"];
@@ -591,7 +603,7 @@ async function load(){
     const r=extract(parseCSV(EMBEDDED_CSV));
     STATE.orders=r.orders; STATE.ads=r.ads;
     document.getElementById("boot").classList.add("hide");
-    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 26.08.2026";
+    document.getElementById("sub").textContent=(synced?"☁ Sinhronizovano (baza)":"⚠ Bez baze (lokalno)")+" • profit iz Podešavanja • narudžbine 28.08.2026";
     render();
   }catch(e){document.getElementById("boot").className="center err";document.getElementById("boot").textContent="Greška: "+e.message;}
 }
