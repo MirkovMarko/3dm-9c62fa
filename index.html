@@ -546,8 +546,8 @@ function renderPregled(){
   document.getElementById("app").innerHTML=`
     <div class="grid kpis">
       <div class="card hero"><div class="label">\ud83d\udcb0 Čist profit (posle reklama)</div><div class="val">${fmt(cista)}</div></div>
-      <div class="card"><div class="label">\ud83d\udcc8 Prihod</div><div class="val">${fmt(prihod)}</div></div>
-      <div class="card"><div class="label">\ud83e\uddfe Profit pre reklama</div><div class="val">${fmt(real)}</div></div>
+      <div class="card"><div class="label">\ud83d\udcb5 Prihod naplaćen (isporučeno)</div><div class="val">${fmt(promet)}</div></div>
+      <div class="card"><div class="label">\u23f3 Očekivano (još nije naplaćeno)</div><div class="val">${fmt(prihod-promet)}</div></div>
       <div class="card"><div class="label">\ud83d\udcc9 Rashodi ukupno</div><div class="val">${fmt(mat+post+adsRsd)}</div></div>
       <div class="card"><div class="label">\ud83d\udce3 Reklame</div><div class="val">${fmt(adsRsd)}</div></div>
       <div class="card"><div class="label">\ud83e\uddf5 Materijal (filament, kutije\u2026)</div><div class="val">${fmt(mat)}</div></div>
