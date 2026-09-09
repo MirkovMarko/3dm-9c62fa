@@ -79,6 +79,30 @@
     .chartBox{ height:230px; } .formrow{ gap:6px; } .today{ grid-template-columns:repeat(2,1fr); gap:6px; } .today .t .v{ font-size:15px; }
   }
 @media(max-width:600px){body{overflow-x:hidden;}.wrap{padding:8px;}.kpis{grid-template-columns:1fr 1fr;}.panel{padding:10px;}.panel h2{font-size:13px;}th,td{padding:6px 5px;font-size:11px;}.col-proizvod{min-width:100px;}.badge{font-size:10px;padding:2px 6px;}.tableScroll{max-height:none;}table{min-width:560px;}.chip{font-size:11px;padding:4px 8px;}h1{font-size:15px;}.card .val{font-size:16px;}.btn.sm{padding:5px 8px;font-size:12px;}}/*RESP2*/
+/*MODERN*/
+body{background:linear-gradient(180deg,#eef2f8,#e7ecf3 40%,#eef2f8);min-height:100vh;}
+.wrap{max-width:1120px;}
+h1{font-weight:800;letter-spacing:-.02em;font-size:22px;}
+.sub{color:#8a93a3;}
+.tabs{border-bottom-color:#dde2ea;}
+.tab.active{color:#059669;border-bottom-color:#059669;}
+.btn.primary{background:linear-gradient(135deg,#059669,#10b981 55%,#34d399);border:none;}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+.card{border:none;border-radius:18px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 6px 20px rgba(16,24,40,.07);transition:transform .15s ease,box-shadow .15s ease;}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(16,24,40,.13);}
+.card .label{font-size:12.5px;text-transform:none;letter-spacing:0;color:#8a93a3;font-weight:600;}
+.card .val{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-top:6px;}
+.card.hero{background:linear-gradient(135deg,#059669,#10b981 55%,#34d399);color:#fff;box-shadow:0 10px 30px rgba(5,150,105,.32);}
+.card.hero .label{color:#d1fae5;}
+.card.hero .val{font-size:32px;}
+.panel{border:none;border-radius:18px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 6px 20px rgba(16,24,40,.06);}
+.panel h2{font-size:15px;font-weight:700;}
+.chip{border:none;box-shadow:0 1px 3px rgba(16,24,40,.1);}
+.chip.active{outline:2px solid #059669;}
+.btn{border-radius:11px;border-color:#dfe3ea;}
+.badge{border-radius:8px;}
+@media(max-width:600px){.card .val{font-size:20px;}.card.hero .val{font-size:24px;}.kpis{grid-template-columns:1fr 1fr;gap:10px;}.kpis .card.hero{grid-column:1/-1;}h1{font-size:18px;}}
+/*/MODERN*/
 </style>
 </head>
 <body>
@@ -483,12 +507,13 @@ function renderPregled(){
   const ords=STATE.orders.filter(o=>o.mesec===m).sort((a,b)=>ts(b.d1)-ts(a.d1));
   const ads=STATE.ads.filter(a=>!a.mesec||a.mesec===m);
   const exp=lsGet(LS_EXP,[]).filter(e=>e.mesec===m);
-  const cnt={}; let promet=0,real=0,dostava=0,priprema=0;
+  const cnt={}; let promet=0,real=0,dostava=0,priprema=0,prihod=0,mat=0,post=0;
+  const _PB=settings().postarina;
   ords.forEach(o=>{cnt[o.status]=(cnt[o.status]||0)+1; const bp=baseProfit(o);
-    if(o.status==="Isporučeno"){promet+=o.cena; real+=bp;}
-    else if(o.status==="Vraćeno"||o.status==="Vraća se"){real+=-settings().postarina;}
-    else if(o.status==="Preuzeto"||o.status==="Čeka preuzimanje"){real+=bp; dostava+=bp;}
-    else if(o.status==="U obradi"){priprema+=bp; if(isConfirmed(o)){real+=bp; dostava+=bp;}}});
+    const _c=(o.status==="Isporučeno"||o.status==="Preuzeto"||o.status==="Čeka preuzimanje"||(o.status==="U obradi"&&isConfirmed(o)));
+    if(o.status==="Vraćeno"||o.status==="Vraća se"){real+=-_PB; post+=_PB;}
+    else if(_c){real+=bp; prihod+=o.cena; mat+=costOf(o.prod); post+=_PB; if(o.status==="Isporučeno")promet+=o.cena; else dostava+=bp;}
+    else if(o.status==="U obradi"){priprema+=bp;}});
   const adsRsd=ads.reduce((s,a)=>s+a.rsd,0), cista=real-adsRsd, matTrosak=exp.reduce((s,e)=>s+e.iznos,0);
   const poslato=ords.filter(o=>(o.d2||"").trim()).length, postarinaPay=poslato*settings().postarina;
   const RW=STATE.roasWin||30,_nowTs=ts(todayStr()),_cut=_nowTs-(RW-1)*86400000;
@@ -520,13 +545,12 @@ function renderPregled(){
   const lampHtml=Object.entries(pm).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span>${k}</span><b>${v}</b></div>`).join("");
   document.getElementById("app").innerHTML=`
     <div class="grid kpis">
-      <div class="card hero"><div class="label">Čista zarada (isporučeno+stiglo+potvrđeno − reklame)</div><div class="val">${fmt(cista)}</div></div>
-      <div class="card amber"><div class="label">U dostavi + potvrđeno (procena)</div><div class="val">${fmt(dostava)}</div></div>
-      <div class="card"><div class="label">Neto profit pre reklama</div><div class="val">${fmt(real)}</div></div>
-      <div class="card"><div class="label">Promet isporučenih</div><div class="val">${fmt(promet)}</div></div>
-      <div class="card"><div class="label">FB reklame</div><div class="val">${fmt(adsRsd)}</div></div>
-      <div class="card"><div class="label">Troškovi materijala (${m})</div><div class="val">${fmt(matTrosak)}</div></div>
-      <div class="card"><div class="label">Poštarina za platiti (${poslato} poslato)</div><div class="val">${fmt(postarinaPay)}</div></div>
+      <div class="card hero"><div class="label">\ud83d\udcb0 Čist profit (posle reklama)</div><div class="val">${fmt(cista)}</div></div>
+      <div class="card"><div class="label">\ud83d\udcc8 Prihod</div><div class="val">${fmt(prihod)}</div></div>
+      <div class="card"><div class="label">\ud83e\uddfe Profit pre reklama</div><div class="val">${fmt(real)}</div></div>
+      <div class="card"><div class="label">\ud83d\udcc9 Rashodi ukupno</div><div class="val">${fmt(mat+post+adsRsd)}</div></div>
+      <div class="card"><div class="label">\ud83d\udce3 Reklame</div><div class="val">${fmt(adsRsd)}</div></div>
+      <div class="card"><div class="label">\ud83e\uddf5 Materijal (filament, kutije\u2026)</div><div class="val">${fmt(mat)}</div></div>
     </div>
     <div class="chips" id="chips">
       <div class="chip ${STATE.statusFilter===null?'active':''}" data-s="__all"><span class="dot" style="background:#1d2330"></span>Sve<span class="n">${ords.length}</span></div>${chips}
