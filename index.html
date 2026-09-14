@@ -553,7 +553,7 @@ function renderPregled(){
     if(o.status==="Vraćeno"||o.status==="Vraća se"){real+=-_PB; post+=_PB;}
     else if(_c){real+=bp; prihod+=o.cena; mat+=costOf(o.prod); post+=_PB; if(o.status==="Isporučeno")promet+=o.cena; else dostava+=bp;}
     else if(o.status==="U obradi"){priprema+=bp;}});
-  const adsRsd=ads.reduce((s,a)=>s+a.rsd,0), cista=real-adsRsd, matTrosak=exp.reduce((s,e)=>s+e.iznos,0);
+  const adsRsd=ads.reduce((s,a)=>s+a.rsd,0), cista=prihod-post-adsRsd, matTrosak=exp.reduce((s,e)=>s+e.iznos,0);
   const poslato=ords.filter(o=>(o.d2||"").trim()).length, postarinaPay=poslato*settings().postarina;
   const RW=STATE.roasWin||30,_nowTs=ts(todayStr()),_cut=_nowTs-(RW-1)*86400000;
   const adsWin=ads.filter(a=>{const t=ts(a.datum);return t>=_cut&&t<=_nowTs;}).reduce((s,a)=>s+a.rsd,0);
