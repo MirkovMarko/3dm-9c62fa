@@ -288,12 +288,24 @@ function renderTroskovi(){
   document.getElementById("e_add").onclick=()=>{const datum=val("e_datum"),kat=val("e_kat"),opis=val("e_opis"),kol=val("e_kol"),iznos=num(val("e_iznos"));if(!datum||!kat||!iznos){alert("Unesi datum, kategoriju i iznos.");return;}const mes=monthOf(datum)||m;const arr=lsGet(LS_EXP,[]);arr.push({id:Date.now()+"",mesec:mes,datum,kat,opis,kol,iznos});lsSet(LS_EXP,arr);if(mes!==STATE.month)STATE.month=mes;render();};
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Obrisati ovaj trošak?"))return;lsSet(LS_EXP,lsGet(LS_EXP,[]).filter(e=>e.id!==b.dataset.del));render();});
 }
+function lagerPametniHTML(){
+  var L=window.LAGER2||[],K=window.KAPACITET||[],B=window.BOMCENA||[];
+  if(!L.length) return '<div class="panel"><h2>Pametni lager</h2><div class="muted">Nema podataka iz baze.</div></div>';
+  var boja={"KRITIČNO":"#c4332b","NISKO":"#e0a32e","NORMALNO":"#0f8a4d","NEEVIDENTIRANO":"#777"};
+  var red=L.map(function(r){var d=(r.dani_do_nestanka==null)?"—":r.dani_do_nestanka+" dana";return '<tr><td>'+r.naziv+'</td><td class="nowrap">'+(+r.stanje)+' '+r.jed+'</td><td>'+(r.dnevno?(+r.dnevno).toFixed(3):"—")+'</td><td>'+d+'</td><td><span style="color:'+(boja[r.status]||"#777")+';font-weight:600">'+r.status+'</span></td><td class="nowrap">'+fmt(+r.vrednost_rsd)+'</td></tr>';}).join("");
+  var kap=K.map(function(k){return '<tr><td>'+k.proizvod+'</td><td><b>'+k.moguce_lampi+'</b> lampi</td><td>'+k.ogranicenje+' ('+(+k.ogranicenje_stanje)+')</td></tr>';}).join("");
+  var cen=B.map(function(b){return '<tr><td>'+b.proizvod+'</td><td>'+fmt(+b.cena_materijala)+'</td><td>'+fmt(900)+'</td><td>'+((+b.razlika>0?"+":"")+fmt(+b.razlika))+'</td></tr>';}).join("");
+  var uk=L.reduce(function(s,r){return s+(+r.vrednost_rsd||0);},0);
+  return '<div class="panel"><h2>📦 Pametni lager (iz baze)</h2><div class="muted" style="font-size:11px;margin-bottom:10px">Presek 24.09.2026. Potrošnja se skida automatski po BOM-u kad porudžbina dobije datum slanja. Dani do nestanka = prosečna potrošnja poslednjih 14 dana.</div><div class="tableScroll"><table><thead><tr><th>Stavka</th><th>Stanje</th><th>Dnevno</th><th>Do nestanka</th><th>Status</th><th>Vrednost</th></tr></thead><tbody>'+red+'</tbody></table></div><div style="margin-top:8px;font-size:12px">Ukupna vrednost zaliha: <b>'+fmt(uk)+'</b></div></div>'
+  +'<div class="panel"><h2>💡 Koliko lampi mogu da napravim</h2><div class="tableScroll"><table><thead><tr><th>Proizvod</th><th>Moguće</th><th>Ograničenje</th></tr></thead><tbody>'+kap+'</tbody></table></div></div>'
+  +'<div class="panel"><h2>🧮 Materijal po lampi — staro vs BOM</h2><div class="muted" style="font-size:11px;margin-bottom:10px">Samo poređenje. U obračun profita i dalje ulazi 900 RSD po lampi.</div><div class="tableScroll"><table><thead><tr><th>Proizvod</th><th>BOM × nabavne</th><th>Staro (flat)</th><th>Razlika</th></tr></thead><tbody>'+cen+'</tbody></table></div></div>';
+}
 function renderLager(){
   let items=lsGet(LS_LAG,null); if(items===null){items=LAGER_DEFAULT.slice();lsSet(LS_LAG,items);}
   const rows=items.map((it,i)=>`<tr><td>${it.naziv}</td><td class="nowrap"><button class="qbtn" data-dec="${i}">−</button> <input class="qty" data-q="${i}" value="${it.kol}" inputmode="decimal"> <button class="qbtn" data-inc="${i}">+</button></td><td>${it.jed}</td><td><button class="iconbtn" data-rem="${i}">✕</button></td></tr>`).join("");
-  document.getElementById("app").innerHTML=`
+  document.getElementById("app").innerHTML=lagerPametniHTML()+`
     <div class="panel">
-      <h2>Lager (stanje zaliha)</h2>
+      <h2>Lager — ručni popis (stara tabela)</h2>
       <div class="muted" style="font-size:11px;margin-bottom:10px">Ažuriraj količine na popisu na par dana.</div>
       <div class="tableScroll"><table><thead><tr><th>Stavka</th><th>Količina</th><th>Jed.</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
       <div class="formrow" style="margin-top:14px">
@@ -394,6 +406,7 @@ function csvEsc(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v)?('"'+v.rep
 async function ucitajIzBaze(){ var sb=sbInit();
   var res=await Promise.all([sb.from("orders").select("broj,kupac,proizvod,cena,d1,d2,d3,status,mesec"), sb.from("ad_spend").select("datum,mesec,usd,rsd"), sb.from("app_state").select("key,data")]);
   var o=res[0],a=res[1],s=res[2];
+  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];}
   if(o.error||a.error||s.error) throw new Error((o.error||a.error||s.error).message);
   var map={}; (s.data||[]).forEach(function(r){map[r.key]=r.data;});
   var back={expenses:LS_EXP,lager:LS_LAG,settings:LS_SET,confirm:LS_CONF,povrati:LS_POV};
