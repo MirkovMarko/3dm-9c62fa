@@ -173,6 +173,85 @@ function extract(rows){
 function allMonths(){const s=new Set();STATE.orders.forEach(o=>o.mesec&&s.add(o.mesec));STATE.ads.forEach(a=>a.mesec&&s.add(a.mesec));lsGet(LS_EXP,[]).forEach(e=>e.mesec&&s.add(e.mesec));return [...s];}
 function buildMonthSelect(){const sel=document.getElementById("month");const ms=allMonths();if(!ms.length){sel.innerHTML="";return;}if(!STATE.month||!ms.includes(STATE.month))STATE.month=(ms.includes(monthOf(todayStr()))?monthOf(todayStr()):ms[0]);sel.innerHTML=ms.map(m=>`<option ${m===STATE.month?"selected":""}>${m}</option>`).join("");}
 function tabsBar(){const t=[["pregled","Pregled"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
+function danaUMesecu(m){var M={januar:0,februar:1,mart:2,april:3,maj:4,jun:5,jul:6,avgust:7,septembar:8,oktobar:9,novembar:10,decembar:11};var p=String(m).split(" ");var mi=M[p[0]],y=+p[1];if(mi==null||!y)return 30;return new Date(y,mi+1,0).getDate();}
+function danUMesecu(s){var t=String(s||"").trim();var mm=t.match(/^(\d{2})\./);return mm?+mm[1]:0;}
+function serijaProfita(m,ords,ads){
+ var D=danaUMesecu(m),S=settings(),PB=S.postarina||390,POV=lsGet(LS_POV,{});
+ var fiksni=(S.fiksni_troskovi||[]).reduce(function(s,f){return s+(+f.mesecno||0);},0);
+ var d=new Array(D+1).fill(0);
+ function idx(x){var v=danUMesecu(x);if(!v)return 1;return Math.min(Math.max(v,1),D);}
+ ords.forEach(function(o){var kom=qtyOf(o);
+  if(o.status==="Isporučeno"||o.status==="Preuzeto"||o.status==="Čeka preuzimanje"){var i=idx(o.d3||o.d2||o.d1);d[i]+=(+o.cena||0)-900*kom;}
+  if((o.d2||"").trim()){d[idx(o.d2)]-=PB;}
+  if(o.status==="Vraćeno"&&!POV[o.broj]){d[idx(o.d3||o.d2||o.d1)]-=900*kom;}
+ });
+ ads.forEach(function(a){var v=String(a.datum||"");var dd=+v.slice(0,2);if(dd)d[Math.min(Math.max(dd,1),D)]-=(+a.rsd||0);});
+ for(var i=1;i<=D;i++)d[i]-=fiksni/D;
+ var kum=[],s=0;for(var j=1;j<=D;j++){s+=d[j];kum.push(Math.round(s));}
+ return {dana:D,kum:kum};
+}
+function asistentStavke(m,cista,ords){
+ var L=window.LAGER2||[],out=[],S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);
+ var D=danaUMesecu(m),danas=new Date().getDate(),dan=Math.min(danas,D);
+ var kr=L.filter(function(r){return r.status==="KRITIČNO"&&r.prati_se;});
+ var ni=L.filter(function(r){return r.status==="NISKO";});
+ if(kr.length)out.push({n:"r",t:"Materijal na izmaku: "+kr.map(function(r){return r.naziv.toLowerCase();}).join(", ")+".",d:kr.map(function(r){return r.naziv+" — stanje "+r.stanje+" "+r.jed+", još oko "+(r.dani_do_nestanka==null?"?":r.dani_do_nestanka)+" dana";})});
+ if(ni.length)out.push({n:"y",t:"Uskoro treba naručiti: "+ni.map(function(r){return r.naziv.toLowerCase();}).join(", ")+".",d:ni.map(function(r){return r.naziv+" — stanje "+r.stanje+" "+r.jed+", još oko "+(r.dani_do_nestanka==null?"?":r.dani_do_nestanka)+" dana";})});
+ var now=ts(todayStr());
+ var ceka=ords.filter(function(o){return o.status==="Čeka preuzimanje"&&ts(o.d2)&&(now-ts(o.d2))>2*86400000;});
+ if(ceka.length)out.push({n:"r",t:ceka.length+" "+(ceka.length===1?"paket čeka":"paketa čekaju")+" u paketomatu duže od 2 dana — kupci ih još nisu podigli.",d:ceka.map(function(o){return o.broj+" — "+o.kupac+", poslato "+o.d2;})});
+ var obr=ords.filter(function(o){return o.status==="U obradi"&&!(o.d2||"").trim()&&ts(o.d1)&&(now-ts(o.d1))>2*86400000;});
+ if(obr.length)out.push({n:"y",t:obr.length+" "+(obr.length===1?"narudžbina stoji":"narudžbina stoji")+" u obradi duže od 2 dana — nisu još poslate.",d:obr.map(function(o){return o.broj+" — "+o.kupac+", naručeno "+o.d1;})});
+ var posl=ords.filter(function(o){return (o.d2||"").trim();}).length;
+ var vrac=ords.filter(function(o){return o.status==="Vraćeno";}).length;
+ var stopa=posl?vrac/posl:0;
+ if(posl>=10&&stopa>0.08)out.push({n:"r",t:"Stopa povrata je "+(stopa*100).toFixed(1)+"% ("+vrac+" od "+posl+" poslatih) — svaki povrat košta 390 dinara poštarine plus materijal.",d:ords.filter(function(o){return o.status==="Vraćeno";}).map(function(o){return o.broj+" — "+o.kupac;})});
+ else if(posl>=10)out.push({n:"g",t:"Stopa povrata je "+(stopa*100).toFixed(1)+"% — u redu.",d:[]});
+ var trebalo=Math.round(cilj*dan/D);
+ if(cista>=trebalo)out.push({n:"g",t:"Ispred si plana: do danas je trebalo "+fmt(trebalo)+", a zaradio si "+fmt(cista)+".",d:[]});
+ else out.push({n:"y",t:"Kasniš za planom "+fmt(trebalo-cista)+": do "+dan+". dana je trebalo "+fmt(trebalo)+", a zaradio si "+fmt(cista)+".",d:[]});
+ return out;
+}
+function pregledTopHTML(m,cista,ords,ads){
+ var S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);
+ var D=danaUMesecu(m),dan=Math.min(new Date().getDate(),D);
+ var pct=cilj>0?Math.max(0,Math.min(100,Math.round(cista/cilj*100))):0;
+ var trebalo=Math.round(cilj*dan/D), zaostatak=trebalo-cista;
+ var boja=zaostatak<=0?"#0f8a4d":(zaostatak>cilj*0.15?"#c4332b":"#e0a32e");
+ var A=asistentStavke(m,cista,ords);
+ var ik={r:"🔴",y:"🟡",g:"🟢"};
+ var asist=A.map(function(a,i){
+  var det=a.d&&a.d.length?'<div id="det'+i+'" style="display:none;margin:6px 0 2px 26px;font-size:12px;color:#555">'+a.d.map(function(x){return "• "+x;}).join("<br>")+"</div>":"";
+  var kl=a.d&&a.d.length?' <span class="muted" style="font-size:11px;cursor:pointer" data-det="'+i+'">(detalji)</span>':"";
+  return '<div style="padding:7px 0;border-bottom:1px solid #f0f1f4"><span style="font-size:15px">'+ik[a.n]+"</span> "+a.t+kl+det+"</div>";
+ }).join("");
+ var T=(window.TASKS||[]).filter(function(t){return t.status==="otvoren";}).sort(function(x,y){return (x.prioritet-y.prioritet)||String(x.rok||"9").localeCompare(String(y.rok||"9"));});
+ var sada=T.length?T.slice(0,4).map(function(t,i){
+   var p=t.prioritet===1?"🔴":(t.prioritet===2?"🟡":"⚪");
+   var d=t.detalj?'<div id="tsk'+i+'" style="display:none;margin:4px 0 2px 26px;font-size:12px;color:#555">'+t.detalj+"</div>":"";
+   var kl=t.detalj?' <span class="muted" style="font-size:11px;cursor:pointer" data-tsk="'+i+'">(detalji)</span>':"";
+   return '<div style="padding:7px 0;border-bottom:1px solid #f0f1f4">'+p+" "+t.naslov+(t.rok?' <span class="muted" style="font-size:11px">do '+t.rok+"</span>":"")+kl+d+"</div>";
+ }).join(""):'<div class="muted" style="font-size:12px">Nema otvorenih zadataka.</div>';
+ return '<div class="panel"><h2>🎯 Cilj meseca</h2>'
+  +'<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><div style="font-size:26px;font-weight:700">'+fmt(cista)+'</div><div class="muted">od '+fmt(cilj)+" ("+pct+"%)</div></div>"
+  +'<div style="height:10px;background:#eef0f4;border-radius:6px;margin:10px 0;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+boja+'"></div></div>'
+  +'<div style="font-size:12px;color:'+boja+'">'+(zaostatak<=0?("Ispred plana za "+fmt(-zaostatak)):("Zaostatak "+fmt(zaostatak)+" u odnosu na tempo"))+' • '+dan+"/"+D+' dana • cilj se menja preko Claude-a</div>'
+  +'<div class="chartbox" style="height:220px;margin-top:12px"><canvas id="chCilj"></canvas></div>'
+  +"</div>"
+  +'<div class="twocol"><div class="panel"><h2>🧑‍💼 Poslovni asistent</h2>'+(asist||'<div class="muted" style="font-size:12px">Sve je u redu.</div>')+"</div>"
+  +'<div class="panel"><h2>⚡ Šta sada?</h2>'+sada+'<div class="muted" style="font-size:11px;margin-top:8px">Zadatke upisuje Claude preko konektora.</div></div></div>';
+}
+function pregledTopWire(m,cista,ords,ads){
+ document.querySelectorAll("[data-det]").forEach(function(b){b.onclick=function(){var e=document.getElementById("det"+b.dataset.det);if(e)e.style.display=e.style.display==="none"?"block":"none";};});
+ document.querySelectorAll("[data-tsk]").forEach(function(b){b.onclick=function(){var e=document.getElementById("tsk"+b.dataset.tsk);if(e)e.style.display=e.style.display==="none"?"block":"none";};});
+ var ob=document.getElementById("btnOrd");
+ if(ob)ob.onclick=function(){var w=document.getElementById("ordWrap");if(!w)return;var h=w.style.display==="none";w.style.display=h?"block":"none";ob.textContent=h?"Sakrij tabelu":"Prikaži tabelu";};
+ var c=document.getElementById("chCilj");
+ if(c&&window.Chart){var S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);var r=serijaProfita(m,ords,ads);
+  var lab=[],tempo=[];for(var i=1;i<=r.dana;i++){lab.push(i);tempo.push(Math.round(cilj*i/r.dana));}
+  new Chart(c,{type:"line",data:{labels:lab,datasets:[{label:"Kumulativni profit",data:r.kum,borderColor:"#1f6fd6",backgroundColor:"rgba(31,111,214,.12)",fill:true,tension:.25,pointRadius:0,borderWidth:2},{label:"Potreban tempo",data:tempo,borderColor:"#c4332b",borderDash:[6,4],fill:false,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:12,font:{size:11}}},tooltip:{callbacks:{label:function(x){return x.dataset.label+": "+x.parsed.y.toLocaleString("sr-RS")+" RSD";}}}},scales:{y:{ticks:{callback:function(v){return (v/1000)+"k";}}}}}});
+ }
+}
 function renderPregled(){
   const m=STATE.month;
   const ords=STATE.orders.filter(o=>o.mesec===m).sort((a,b)=>ts(b.d1)-ts(a.d1));
@@ -218,7 +297,7 @@ function renderPregled(){
     return `<tr style="${isObrada&&conf[o.broj]?'background:#eafaf0':''}">${isObrada?`<td style="text-align:center;color:#0f8a4d;font-weight:700">${conf[o.broj]?'✓':''}</td>`:''}<td>${o.br}</td><td class="nowrap">${o.broj}</td><td>${o.kupac}</td><td class="col-proizvod">${o.prod}</td><td class="num">${o.cena.toLocaleString("sr-RS")}</td><td class="nowrap">${o.d1}</td><td><span class="badge" style="color:${mm.c};background:${mm.b}">${o.status}</span></td><td class="num">${pf}</td></tr>`;}).join("");
   const pm={}; ords.forEach(o=>{let k=o.prod.replace(/\s*\(.*?\)/g,"").replace(/\s*\+.*/,"").trim(); if(/Instagram/i.test(o.prod))k="Instagram DM (nepoznato)"; pm[k]=(pm[k]||0)+1;});
   const lampHtml=Object.entries(pm).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span>${k}</span><b>${v}</b></div>`).join("");
-  document.getElementById("app").innerHTML=`
+  document.getElementById("app").innerHTML=pregledTopHTML(m,cista,ords,ads)+`
     <div class="grid kpis">
       <div class="card hero"><div class="label">\ud83d\udcb0 Čist profit (posle reklama)</div><div class="val">${fmt(cista)}</div></div>
       <div class="card"><div class="label">\ud83d\udcb5 Prihod naplaćen (isporučeno)</div><div class="val">${fmt(promet)}</div></div>
@@ -232,15 +311,16 @@ function renderPregled(){
     </div>
     ${izradaPanel}
     <div class="twocol">
-      <div class="panel"><h2>Narudžbine — ${m}</h2>
+      <div class="panel"><h2>Narudžbine — ${m} <button class="btn" id="btnOrd" style="float:right;font-size:11px;padding:3px 10px">Prikaži tabelu</button></h2><div id="ordWrap" style="display:none">
         <div class="tableScroll"><table><thead><tr>${isObrada?'<th>\u2713</th>':''}<th>#</th><th>Narudžbina</th><th>Kupac</th><th class="col-proizvod">Proizvod</th><th class="num">Cena</th><th>Naručeno</th><th>Status</th><th class="num">Profit</th></tr></thead><tbody>${tbody}</tbody></table></div>
-        <div class="muted" style="font-size:11px;margin-top:6px">Prikazano ${rows.length} od ${ords.length} • ~ = procena (još nije naplaćeno)</div>
+        <div class="muted" style="font-size:11px;margin-top:6px">Prikazano ${rows.length} od ${ords.length} • ~ = procena (još nije naplaćeno)</div></div>
       </div>
       <div>
         <div class="panel"><h2>Dnevni trošak reklama (RSD)</h2><div class="chartBox"><canvas id="ch"></canvas></div></div>
         ${roasPanel}<div class="panel"><h2>Po proizvodu</h2>${lampHtml||'<div class="muted">nema</div>'}</div>
       </div>
     </div>`;
+  pregledTopWire(m,cista,ords,ads);
   document.querySelectorAll("[data-roas]").forEach(b=>b.onclick=()=>{STATE.roasWin=+b.dataset.roas;render();});
   document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{const s=c.dataset.s;STATE.statusFilter=(s==="__all")?null:(STATE.statusFilter===s?null:s);render();});
   
@@ -406,7 +486,7 @@ function csvEsc(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v)?('"'+v.rep
 async function ucitajIzBaze(){ var sb=sbInit();
   var res=await Promise.all([sb.from("orders").select("broj,kupac,proizvod,cena,d1,d2,d3,status,mesec"), sb.from("ad_spend").select("datum,mesec,usd,rsd"), sb.from("app_state").select("key,data")]);
   var o=res[0],a=res[1],s=res[2];
-  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];}
+  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").eq("status","otvoren");window.TASKS=tk.data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];}
   if(o.error||a.error||s.error) throw new Error((o.error||a.error||s.error).message);
   var map={}; (s.data||[]).forEach(function(r){map[r.key]=r.data;});
   var back={expenses:LS_EXP,lager:LS_LAG,settings:LS_SET,confirm:LS_CONF,povrati:LS_POV};
