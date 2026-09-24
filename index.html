@@ -172,7 +172,7 @@ function extract(rows){
 }
 function allMonths(){const s=new Set();STATE.orders.forEach(o=>o.mesec&&s.add(o.mesec));STATE.ads.forEach(a=>a.mesec&&s.add(a.mesec));lsGet(LS_EXP,[]).forEach(e=>e.mesec&&s.add(e.mesec));return [...s];}
 function buildMonthSelect(){const sel=document.getElementById("month");const ms=allMonths();if(!ms.length){sel.innerHTML="";return;}if(!STATE.month||!ms.includes(STATE.month))STATE.month=(ms.includes(monthOf(todayStr()))?monthOf(todayStr()):ms[0]);sel.innerHTML=ms.map(m=>`<option ${m===STATE.month?"selected":""}>${m}</option>`).join("");}
-function tabsBar(){const t=[["pregled","Pregled"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
+function tabsBar(){const t=[["pregled","Pregled"],["narudzbine","Narudžbine"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
 function danaUMesecu(m){var M={januar:0,februar:1,mart:2,april:3,maj:4,jun:5,jul:6,avgust:7,septembar:8,oktobar:9,novembar:10,decembar:11};var p=String(m).split(" ");var mi=M[p[0]],y=+p[1];if(mi==null||!y)return 30;return new Date(y,mi+1,0).getDate();}
 function danUMesecu(s){var t=String(s||"").trim();var mm=t.match(/^(\d{2})\./);return mm?+mm[1]:0;}
 function serijaProfita(m,ords,ads){
@@ -192,25 +192,39 @@ function serijaProfita(m,ords,ads){
 }
 function asistentStavke(m,cista,ords){
  var L=window.LAGER2||[],out=[],S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);
- var D=danaUMesecu(m),danas=new Date().getDate(),dan=Math.min(danas,D);
+ var D=danaUMesecu(m),dan=Math.min(new Date().getDate(),D),now=ts(todayStr()),DAY=86400000;
+ function dS(d){var x=ts(d);return x?Math.floor((now-x)/DAY):null;}
+ function det(r){return r.naziv+" — stanje "+r.stanje+" "+r.jed+", još oko "+(r.dani_do_nestanka==null?"?":r.dani_do_nestanka)+" dana (potrošnja "+(r.dnevno==null?"?":r.dnevno)+" "+r.jed+"/dan, "+r.izvor_potrosnje+")";}
  var kr=L.filter(function(r){return r.status==="KRITIČNO"&&r.prati_se;});
  var ni=L.filter(function(r){return r.status==="NISKO";});
- if(kr.length)out.push({n:"r",t:"Materijal na izmaku: "+kr.map(function(r){return r.naziv.toLowerCase();}).join(", ")+".",d:kr.map(function(r){return r.naziv+" — stanje "+r.stanje+" "+r.jed+", još oko "+(r.dani_do_nestanka==null?"?":r.dani_do_nestanka)+" dana";})});
- if(ni.length)out.push({n:"y",t:"Uskoro treba naručiti: "+ni.map(function(r){return r.naziv.toLowerCase();}).join(", ")+".",d:ni.map(function(r){return r.naziv+" — stanje "+r.stanje+" "+r.jed+", još oko "+(r.dani_do_nestanka==null?"?":r.dani_do_nestanka)+" dana";})});
- var now=ts(todayStr());
- var ceka=ords.filter(function(o){return o.status==="Čeka preuzimanje"&&ts(o.d2)&&(now-ts(o.d2))>2*86400000;});
- if(ceka.length)out.push({n:"r",t:ceka.length+" "+(ceka.length===1?"paket čeka":"paketa čekaju")+" u paketomatu duže od 2 dana — kupci ih još nisu podigli.",d:ceka.map(function(o){return o.broj+" — "+o.kupac+", poslato "+o.d2;})});
- var obr=ords.filter(function(o){return o.status==="U obradi"&&!(o.d2||"").trim()&&ts(o.d1)&&(now-ts(o.d1))>2*86400000;});
- if(obr.length)out.push({n:"y",t:obr.length+" "+(obr.length===1?"narudžbina stoji":"narudžbina stoji")+" u obradi duže od 2 dana — nisu još poslate.",d:obr.map(function(o){return o.broj+" — "+o.kupac+", naručeno "+o.d1;})});
- var posl=ords.filter(function(o){return (o.d2||"").trim();}).length;
- var vrac=ords.filter(function(o){return o.status==="Vraćeno";}).length;
- var stopa=posl?vrac/posl:0;
- if(posl>=10&&stopa>0.08)out.push({n:"r",t:"Stopa povrata je "+(stopa*100).toFixed(1)+"% ("+vrac+" od "+posl+" poslatih) — svaki povrat košta 390 dinara poštarine plus materijal.",d:ords.filter(function(o){return o.status==="Vraćeno";}).map(function(o){return o.broj+" — "+o.kupac;})});
- else if(posl>=10)out.push({n:"g",t:"Stopa povrata je "+(stopa*100).toFixed(1)+"% — u redu.",d:[]});
+ if(kr.length)out.push({n:"r",t:"Materijal na izmaku: "+kr.map(function(r){return r.naziv.toLowerCase();}).join(", ")+" — stani i naruči danas.",d:kr.map(det)});
+ if(ni.length)out.push({n:"y",t:"Uskoro treba naručiti: "+ni.map(function(r){return r.naziv.toLowerCase();}).join(", ")+".",d:ni.map(det)});
+ var neevid=L.filter(function(r){return !r.prati_se;});
+ if(neevid.length)out.push({n:"y",t:neevid.length===1?"Jedna stavka nije evidentirana u lageru, pa ne ulazi u račun koliko lampi možeš da napraviš.":(neevid.length+" stavke nisu evidentirane u lageru."),d:neevid.map(function(r){return r.naziv+" — upiši stanje u "+r.jed;})});
+ var ceka=ords.filter(function(o){return o.status==="Čeka preuzimanje"&&dS(o.d2||o.d1)>2;});
+ if(ceka.length)out.push({n:"r",t:ceka.length+(ceka.length===1?" paket čeka":" paketa čeka")+" u paketomatu duže od 2 dana — kupci ih još nisu podigli.",d:ceka.map(function(o){return o.broj+" — "+o.kupac+", poslato "+o.d2+" ("+dS(o.d2||o.d1)+" dana)";})});
+ var zagl=ords.filter(function(o){return o.status==="Preuzeto"&&dS(o.d2||o.d1)>5;});
+ if(zagl.length)out.push({n:"r",t:zagl.length+(zagl.length===1?" paket je preuzet":" paketa su preuzeta")+" od kurira pre više od 5 dana, a još nema potvrde isporuke — proveri kod kurirske.",d:zagl.map(function(o){return o.broj+" — "+o.kupac+", preuzeto "+o.d2+" ("+dS(o.d2||o.d1)+" dana)";})});
+ var obr=ords.filter(function(o){return o.status==="U obradi"&&!(o.d2||"").trim()&&dS(o.d1)>2;});
+ if(obr.length)out.push({n:"y",t:obr.length+(obr.length===1?" narudžbina stoji":" narudžbina stoji")+" u obradi duže od 2 dana — nisu još poslate.",d:obr.map(function(o){return o.broj+" — "+o.kupac+", naručeno "+o.d1+" ("+dS(o.d1)+" dana)";})});
+ var posl=ords.filter(function(o){return (o.d2||"").trim();});
+ var vrac=ords.filter(function(o){return o.status==="Vraćeno";});
+ var uPov=ords.filter(function(o){return o.status==="Vraća se";});
+ var uk=vrac.length+uPov.length, stopa=posl.length?uk/posl.length:0;
+ if(posl.length>=10){
+  var pn=stopa>0.08?"r":(stopa>0.05?"y":"g");
+  var pt="Stopa povrata "+(stopa*100).toFixed(1)+"% — "+vrac.length+" vraćeno i "+uPov.length+" na putu nazad, od "+posl.length+" poslatih.";
+  if(pn!=="g")pt+=" Svaki povrat košta 390 dinara poštarine plus materijal.";
+  out.push({n:pn,t:pt,d:vrac.map(function(o){return "Vraćeno: "+o.broj+" — "+o.kupac;}).concat(uPov.map(function(o){return "Vraća se: "+o.broj+" — "+o.kupac;}))});
+ }
+ var mx=0;(STATE.orders||[]).forEach(function(o){var x=ts(o.d1);if(x>mx)mx=x;});
+ var fa=mx?Math.floor((now-mx)/DAY):null;
+ if(fa!=null&&fa>1)out.push({n:"r",t:"Poslednja narudžbina je stigla pre "+fa+" dana — ili je prodaja stala, ili sinhronizacija nije prošla.",d:[]});
  var trebalo=Math.round(cilj*dan/D);
  if(cista>=trebalo)out.push({n:"g",t:"Ispred si plana: do danas je trebalo "+fmt(trebalo)+", a zaradio si "+fmt(cista)+".",d:[]});
  else out.push({n:"y",t:"Kasniš za planom "+fmt(trebalo-cista)+": do "+dan+". dana je trebalo "+fmt(trebalo)+", a zaradio si "+fmt(cista)+".",d:[]});
- return out;
+ var rang={r:0,y:1,g:2};
+ return out.sort(function(a,b){return rang[a.n]-rang[b.n];});
 }
 function pregledTopHTML(m,cista,ords,ads){
  var S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);
@@ -249,7 +263,9 @@ function pregledTopWire(m,cista,ords,ads){
  var c=document.getElementById("chCilj");
  if(c&&window.Chart){var S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);var r=serijaProfita(m,ords,ads);
   var lab=[],tempo=[];for(var i=1;i<=r.dana;i++){lab.push(i);tempo.push(Math.round(cilj*i/r.dana));}
-  new Chart(c,{type:"line",data:{labels:lab,datasets:[{label:"Kumulativni profit",data:r.kum,borderColor:"#1f6fd6",backgroundColor:"rgba(31,111,214,.12)",fill:true,tension:.25,pointRadius:0,borderWidth:2},{label:"Potreban tempo",data:tempo,borderColor:"#c4332b",borderDash:[6,4],fill:false,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:12,font:{size:11}}},tooltip:{callbacks:{label:function(x){return x.dataset.label+": "+x.parsed.y.toLocaleString("sr-RS")+" RSD";}}}},scales:{y:{ticks:{callback:function(v){return (v/1000)+"k";}}}}}});
+  var tekuci=(m===monthOf(todayStr())),dnDanas=Math.min(new Date().getDate(),r.dana);
+  var kumP=r.kum.map(function(v,ix){return (tekuci&&(ix+1)>dnDanas)?null:v;});
+  new Chart(c,{type:"line",data:{labels:lab,datasets:[{label:"Kumulativni profit",data:kumP,borderColor:"#1f6fd6",spanGaps:false,backgroundColor:"rgba(31,111,214,.12)",fill:true,tension:.25,pointRadius:0,borderWidth:2},{label:"Potreban tempo",data:tempo,borderColor:"#c4332b",borderDash:[6,4],fill:false,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:12,font:{size:11}}},tooltip:{callbacks:{label:function(x){return x.dataset.label+": "+x.parsed.y.toLocaleString("sr-RS")+" RSD";}}}},scales:{y:{ticks:{callback:function(v){return (v/1000)+"k";}}}}}});
  }
 }
 function renderPregled(){
@@ -297,14 +313,14 @@ function renderPregled(){
     return `<tr style="${isObrada&&conf[o.broj]?'background:#eafaf0':''}">${isObrada?`<td style="text-align:center;color:#0f8a4d;font-weight:700">${conf[o.broj]?'✓':''}</td>`:''}<td>${o.br}</td><td class="nowrap">${o.broj}</td><td>${o.kupac}</td><td class="col-proizvod">${o.prod}</td><td class="num">${o.cena.toLocaleString("sr-RS")}</td><td class="nowrap">${o.d1}</td><td><span class="badge" style="color:${mm.c};background:${mm.b}">${o.status}</span></td><td class="num">${pf}</td></tr>`;}).join("");
   const pm={}; ords.forEach(o=>{let k=o.prod.replace(/\s*\(.*?\)/g,"").replace(/\s*\+.*/,"").trim(); if(/Instagram/i.test(o.prod))k="Instagram DM (nepoznato)"; pm[k]=(pm[k]||0)+1;});
   const lampHtml=Object.entries(pm).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span>${k}</span><b>${v}</b></div>`).join("");
-  document.getElementById("app").innerHTML=pregledTopHTML(m,cista,ords,ads)+`
+  document.getElementById("app").innerHTML=(STATE.tab==="narudzbine"?"":pregledTopHTML(m,cista,ords,ads))+`<div id="dioPregled" style="display:${STATE.tab==="narudzbine"?"none":"block"}">
     <div class="grid kpis">
       <div class="card hero"><div class="label">\ud83d\udcb0 Čist profit (posle reklama)</div><div class="val">${fmt(cista)}</div></div>
       <div class="card"><div class="label">\ud83d\udcb5 Prihod naplaćen (isporučeno)</div><div class="val">${fmt(promet)}</div></div>
       <div class="card"><div class="label">\u23f3 Očekivano (još nije naplaćeno)</div><div class="val">${fmt(prihod-promet)}</div></div>
       <div class="card"><div class="label">\ud83d\udcc9 Rashodi ukupno</div><div class="val">${fmt(rashodiUk)}</div></div>
       <div class="card"><div class="label">\ud83d\udce3 Reklame</div><div class="val">${fmt(adsRsd)}</div></div>
-      <div class="card"><div class="label">🧵 Materijal (filament, kutije…)</div><div class="val">${fmt(mat)}</div></div><div class="card"><div class="label">🛠 U pripremi (procena)</div><div class="val">${(function(){try{var pn=0;ords.forEach(function(o){if(o.status==="U obradi"&&!(o.d2||"").trim())pn+=(o.cena-_PB-costOf(o.prod));});var i=0,v=0;STATE.orders.forEach(function(o){if((o.d2||"").trim()){if(o.status==="Isporučeno")i++;else if(o.status==="Vraćeno")v++;}});var st=(i+v)>0?i/(i+v):0;return fmt(Math.round(pn*st));}catch(e){return "—";}})()}</div><div class="muted" style="font-size:10px">${(function(){try{var k=0,b=0;ords.forEach(function(o){if(o.status==="U obradi"&&!(o.d2||"").trim()){k++;b+=o.cena;}});return k+" kom • "+b.toLocaleString("sr-RS")+" bruto • procena";}catch(e){return "";}})()}</div></div></div>${(function(){try{var now=ts(todayStr()),DAY=86400000;function dS(d){var x=ts(d);return x?Math.floor((now-x)/DAY):null;}var A=[];var mx=0;STATE.orders.forEach(function(o){var x=ts(o.d1);if(x>mx)mx=x;});var fa=Math.floor((now-mx)/DAY);A.push(["Podaci: poslednja narudžbina pre "+fa+" dana",fa>1?"r":"g"]);var ce=[],pr=[],ob=[];ords.forEach(function(o){var ds=dS(o.d2||o.d1);if(o.status==="Čeka preuzimanje"&&ds!=null&&ds>2)ce.push(o.broj);if(o.status==="Preuzeto"&&ds!=null&&ds>5)pr.push(o.broj);if(o.status==="U obradi"&&!isConfirmed(o)){var e=dS(o.d1);if(e!=null&&e>2)ob.push(o.broj);}});A.push(["Čeka preuzimanje >2 dana: "+(ce.length?ce.join(", "):"nema"),ce.length?"r":"g"]);A.push(["Preuzeto zaglavljeno >5 dana: "+(pr.length?pr.join(", "):"nema"),pr.length?"r":"g"]);A.push(["U obradi nepotvrđeno >2 dana: "+(ob.length?ob.join(", "):"nema"),ob.length?"r":"g"]);var bk={};ords.forEach(function(o){var day=(o.d1||"").slice(0,10),k=(o.kupac||"").toLowerCase().trim()+"|"+day;(bk[k]=bk[k]||[]).push(o);});var du=[];Object.keys(bk).forEach(function(k){var a=bk[k];if(a.some(function(o){return /^#D/.test(o.broj);})&&a.some(function(o){return !/^#D/.test(o.broj);}))du.push(a[0].kupac);});A.push(["Mogući duplikat (nacrt+porudžbina): "+(du.length?du.join(", "):"nema"),du.length?"y":"g"]);var su=[];ords.forEach(function(o){var q=qtyOf(o.prod);if(q>0&&o.cena/q>4000)su.push(o.broj);});A.push(["Sumnjiva cena/količina: "+(su.length?su.join(", "):"nema"),su.length?"y":"g"]);var pc=0,ps=0;ords.forEach(function(o){if((o.d2||"").trim())ps++;if(o.status==="Vraćeno"||o.status==="Vraća se")pc++;});var st=ps>0?pc/ps:0;A.push(["Stopa povrata: "+(st*100).toFixed(1)+"%",st>0.05?"r":(st>=0.04?"y":"g")]);var lag=lsGet("3dm_lager_v1",[]);var l14=0;STATE.orders.forEach(function(o){var x=ts(o.d1);if(x&&(now-x)<=14*DAY&&(o.status==="Isporučeno"||o.status==="Preuzeto"||o.status==="Čeka preuzimanje"))l14+=qtyOf(o.prod);});var pd=l14/14;function dz(k,u){return (pd>0&&u>0)?Math.floor(k/(pd*u)):null;}var pla=0;lag.forEach(function(it){if(/PLA|filament/i.test(it.naziv))pla+=(+it.kol||0);});function gk(rx){var f=lag.find(function(it){return rx.test(it.naziv);});return f?(+f.kol||0):0;}[["PLA (svi)",dz(pla,0.2)],["LED traka",dz(gk(/LED/i),1)],["USB kabl",dz(gk(/USB/i),1)],["Kutija",dz(gk(/Kutija/i),1)]].forEach(function(rr){A.push(["Lager "+rr[0]+": "+(rr[1]==null?"—":rr[1]+" dana"),(rr[1]!=null&&rr[1]<7)?"r":"g"]);});var C={r:"#c4332b",y:"#e0a32e",g:"#0f8a4d"};var rows=A.map(function(a){return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span style="width:9px;height:9px;border-radius:50%;background:'+C[a[1]]+'"></span><span>'+a[0]+'</span></div>';}).join("");return '<div class="panel"><h2>🩺 Zdravlje podataka</h2>'+rows+'<div class="muted" style="font-size:10px;margin-top:6px">Potrošnja/lampi: 200g PLA, 1m LED, 1 USB, 1 kutija. Crveno=hitno.</div></div>';}catch(e){return "";}})()}<div class="grid kpis" style="display:none">
+      <div class="card"><div class="label">🧵 Materijal (filament, kutije…)</div><div class="val">${fmt(mat)}</div></div><div class="card"><div class="label">🛠 U pripremi (procena)</div><div class="val">${(function(){try{var pn=0;ords.forEach(function(o){if(o.status==="U obradi"&&!(o.d2||"").trim())pn+=(o.cena-_PB-costOf(o.prod));});var i=0,v=0;STATE.orders.forEach(function(o){if((o.d2||"").trim()){if(o.status==="Isporučeno")i++;else if(o.status==="Vraćeno")v++;}});var st=(i+v)>0?i/(i+v):0;return fmt(Math.round(pn*st));}catch(e){return "—";}})()}</div><div class="muted" style="font-size:10px">${(function(){try{var k=0,b=0;ords.forEach(function(o){if(o.status==="U obradi"&&!(o.d2||"").trim()){k++;b+=o.cena;}});return k+" kom • "+b.toLocaleString("sr-RS")+" bruto • procena";}catch(e){return "";}})()}</div></div></div>${(function(){try{var now=ts(todayStr()),DAY=86400000;function dS(d){var x=ts(d);return x?Math.floor((now-x)/DAY):null;}var A=[];var mx=0;STATE.orders.forEach(function(o){var x=ts(o.d1);if(x>mx)mx=x;});var fa=Math.floor((now-mx)/DAY);A.push(["Podaci: poslednja narudžbina pre "+fa+" dana",fa>1?"r":"g"]);var ce=[],pr=[],ob=[];ords.forEach(function(o){var ds=dS(o.d2||o.d1);if(o.status==="Čeka preuzimanje"&&ds!=null&&ds>2)ce.push(o.broj);if(o.status==="Preuzeto"&&ds!=null&&ds>5)pr.push(o.broj);if(o.status==="U obradi"&&!isConfirmed(o)){var e=dS(o.d1);if(e!=null&&e>2)ob.push(o.broj);}});A.push(["Čeka preuzimanje >2 dana: "+(ce.length?ce.join(", "):"nema"),ce.length?"r":"g"]);A.push(["Preuzeto zaglavljeno >5 dana: "+(pr.length?pr.join(", "):"nema"),pr.length?"r":"g"]);A.push(["U obradi nepotvrđeno >2 dana: "+(ob.length?ob.join(", "):"nema"),ob.length?"r":"g"]);var bk={};ords.forEach(function(o){var day=(o.d1||"").slice(0,10),k=(o.kupac||"").toLowerCase().trim()+"|"+day;(bk[k]=bk[k]||[]).push(o);});var du=[];Object.keys(bk).forEach(function(k){var a=bk[k];if(a.some(function(o){return /^#D/.test(o.broj);})&&a.some(function(o){return !/^#D/.test(o.broj);}))du.push(a[0].kupac);});A.push(["Mogući duplikat (nacrt+porudžbina): "+(du.length?du.join(", "):"nema"),du.length?"y":"g"]);var su=[];ords.forEach(function(o){var q=qtyOf(o.prod);if(q>0&&o.cena/q>4000)su.push(o.broj);});A.push(["Sumnjiva cena/količina: "+(su.length?su.join(", "):"nema"),su.length?"y":"g"]);var pc=0,ps=0;ords.forEach(function(o){if((o.d2||"").trim())ps++;if(o.status==="Vraćeno"||o.status==="Vraća se")pc++;});var st=ps>0?pc/ps:0;A.push(["Stopa povrata: "+(st*100).toFixed(1)+"%",st>0.05?"r":(st>=0.04?"y":"g")]);var lag=lsGet("3dm_lager_v1",[]);var l14=0;STATE.orders.forEach(function(o){var x=ts(o.d1);if(x&&(now-x)<=14*DAY&&(o.status==="Isporučeno"||o.status==="Preuzeto"||o.status==="Čeka preuzimanje"))l14+=qtyOf(o.prod);});var pd=l14/14;function dz(k,u){return (pd>0&&u>0)?Math.floor(k/(pd*u)):null;}var pla=0;lag.forEach(function(it){if(/PLA|filament/i.test(it.naziv))pla+=(+it.kol||0);});function gk(rx){var f=lag.find(function(it){return rx.test(it.naziv);});return f?(+f.kol||0):0;}[["PLA (svi)",dz(pla,0.2)],["LED traka",dz(gk(/LED/i),1)],["USB kabl",dz(gk(/USB/i),1)],["Kutija",dz(gk(/Kutija/i),1)]].forEach(function(rr){A.push(["Lager "+rr[0]+": "+(rr[1]==null?"—":rr[1]+" dana"),(rr[1]!=null&&rr[1]<7)?"r":"g"]);});var C={r:"#c4332b",y:"#e0a32e",g:"#0f8a4d"};var rows=A.map(function(a){return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f1f4;font-size:13px"><span style="width:9px;height:9px;border-radius:50%;background:'+C[a[1]]+'"></span><span>'+a[0]+'</span></div>';}).join("");return ''&&'<div class="panel">'+rows+'<div class="muted" style="font-size:10px;margin-top:6px">Potrošnja/lampi: 200g PLA, 1m LED, 1 USB, 1 kutija. Crveno=hitno.</div></div>';}catch(e){return "";}})()}</div><div id="dioNarudzbine" style="display:${STATE.tab==="narudzbine"?"block":"none"}"><div class="grid kpis" style="display:none">
     </div>
     <div class="chips" id="chips">
       <div class="chip ${STATE.statusFilter===null?'active':''}" data-s="__all"><span class="dot" style="background:#1d2330"></span>Sve<span class="n">${ords.length}</span></div>${chips}
@@ -319,7 +335,7 @@ function renderPregled(){
         <div class="panel"><h2>Dnevni trošak reklama (RSD)</h2><div class="chartBox"><canvas id="ch"></canvas></div></div>
         ${roasPanel}<div class="panel"><h2>Po proizvodu</h2>${lampHtml||'<div class="muted">nema</div>'}</div>
       </div>
-    </div>`;
+    </div></div>`;
   pregledTopWire(m,cista,ords,ads);
   document.querySelectorAll("[data-roas]").forEach(b=>b.onclick=()=>{STATE.roasWin=+b.dataset.roas;render();});
   document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{const s=c.dataset.s;STATE.statusFilter=(s==="__all")?null:(STATE.statusFilter===s?null:s);render();});
@@ -455,7 +471,7 @@ function renderObrada(){
     </div>`;
   
 }
-function render(){buildMonthSelect();tabsBar();if(STATE.tab==="pregled")renderPregled();else if(STATE.tab==="troskovi")renderTroskovi();else if(STATE.tab==="lager")renderLager();else renderSettings();}
+function render(){buildMonthSelect();tabsBar();if(STATE.tab==="pregled"||STATE.tab==="narudzbine")renderPregled();else if(STATE.tab==="troskovi")renderTroskovi();else if(STATE.tab==="lager")renderLager();else renderSettings();}
 function exportData(){const data={expenses:lsGet(LS_EXP,[]),lager:lsGet(LS_LAG,[]),settings:settings()};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="3dm-backup.json";a.click();}
 async function load(){
   localStorage.removeItem(LS_URL);
