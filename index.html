@@ -226,6 +226,22 @@ function asistentStavke(m,cista,ords){
  var rang={r:0,y:1,g:2};
  return out.sort(function(a,b){return rang[a.n]-rang[b.n];});
 }
+function analizaHTML(){
+ var A=window.ANALIZA;
+ if(!A) return '<div class="panel"><h2>📋 Analiza</h2><div class="muted" style="font-size:12px">Još nema nijedne analize. Napiši <b>SASTANAK</b> Claude-u.</div></div>';
+ var d=new Date(A.datum), sati=(Date.now()-d.getTime())/3600000;
+ var p2=function(n){return (n<10?"0":"")+n;};
+ var kada=p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()+". u "+p2(d.getHours())+":"+p2(d.getMinutes());
+ var star=sati>36;
+ var upoz=star?'<div style="background:#fdf3e7;border:1px solid #e7c9a0;color:#8a5a12;padding:7px 10px;border-radius:7px;font-size:12px;margin-bottom:8px">Analiza zastarela — napiši <b>SASTANAK</b> Claude-u.</div>':"";
+ var sek=Array.isArray(A.sekcije)?A.sekcije:[];
+ var sh=sek.map(function(s){return '<div style="padding:7px 0;border-bottom:1px solid #f0f1f4"><b>'+(s.naslov||"")+"</b><div style=\"font-size:13px;color:#444;margin-top:3px\">"+(s.tekst||"")+"</div></div>";}).join("");
+ var det=sh?'<div id="analizaSek" style="display:none;margin-top:10px">'+sh+"</div>":"";
+ var kl=sh?' <span class="muted" style="font-size:11px;cursor:pointer" id="analizaTgl">(pune sekcije)</span>':"";
+ return '<div class="panel"><h2>📋 Analiza</h2>'+upoz
+  +'<div class="muted" style="font-size:11px;margin-bottom:6px">'+(A.naslov||"")+" • "+kada+(A.period?" • "+A.period:"")+kl+"</div>"
+  +'<div style="font-size:13px;line-height:1.5">'+(A.zakljucak_tekst||"")+"</div>"+det+"</div>";
+}
 function pregledTopHTML(m,cista,ords,ads){
  var S=settings(),cilj=+((S&&S.cilj_mesecni)||150000);
  var D=danaUMesecu(m),dan=Math.min(new Date().getDate(),D);
@@ -239,7 +255,7 @@ function pregledTopHTML(m,cista,ords,ads){
   var kl=a.d&&a.d.length?' <span class="muted" style="font-size:11px;cursor:pointer" data-det="'+i+'">(detalji)</span>':"";
   return '<div style="padding:7px 0;border-bottom:1px solid #f0f1f4"><span style="font-size:15px">'+ik[a.n]+"</span> "+a.t+kl+det+"</div>";
  }).join("");
- var T=(window.TASKS||[]).filter(function(t){return t.status==="otvoren";}).sort(function(x,y){return (x.prioritet-y.prioritet)||String(x.rok||"9").localeCompare(String(y.rok||"9"));});
+ var T=(window.TASKS||[]).filter(function(t){return t.status!=="zavrseno";}).sort(function(x,y){return (x.prioritet-y.prioritet)||String(x.rok||"9").localeCompare(String(y.rok||"9"));});
  var sada=T.length?T.slice(0,4).map(function(t,i){
    var p=t.prioritet===1?"🔴":(t.prioritet===2?"🟡":"⚪");
    var d=t.detalj?'<div id="tsk'+i+'" style="display:none;margin:4px 0 2px 26px;font-size:12px;color:#555">'+t.detalj+"</div>":"";
@@ -252,12 +268,15 @@ function pregledTopHTML(m,cista,ords,ads){
   +'<div style="font-size:12px;color:'+boja+'">'+(zaostatak<=0?("Ispred plana za "+fmt(-zaostatak)):("Zaostatak "+fmt(zaostatak)+" u odnosu na tempo"))+' • '+dan+"/"+D+' dana • cilj se menja preko Claude-a</div>'
   +'<div class="chartbox" style="height:220px;margin-top:12px"><canvas id="chCilj"></canvas></div>'
   +"</div>"
+  +analizaHTML()
   +'<div class="twocol"><div class="panel"><h2>🧑‍💼 Poslovni asistent</h2>'+(asist||'<div class="muted" style="font-size:12px">Sve je u redu.</div>')+"</div>"
   +'<div class="panel"><h2>⚡ Šta sada?</h2>'+sada+'<div class="muted" style="font-size:11px;margin-top:8px">Zadatke upisuje Claude preko konektora.</div></div></div>';
 }
 function pregledTopWire(m,cista,ords,ads){
  document.querySelectorAll("[data-det]").forEach(function(b){b.onclick=function(){var e=document.getElementById("det"+b.dataset.det);if(e)e.style.display=e.style.display==="none"?"block":"none";};});
  document.querySelectorAll("[data-tsk]").forEach(function(b){b.onclick=function(){var e=document.getElementById("tsk"+b.dataset.tsk);if(e)e.style.display=e.style.display==="none"?"block":"none";};});
+ var at=document.getElementById("analizaTgl");
+ if(at)at.onclick=function(){var e=document.getElementById("analizaSek");if(e)e.style.display=e.style.display==="none"?"block":"none";};
  var ob=document.getElementById("btnOrd");
  if(ob)ob.onclick=function(){var w=document.getElementById("ordWrap");if(!w)return;var h=w.style.display==="none";w.style.display=h?"block":"none";ob.textContent=h?"Sakrij tabelu":"Prikaži tabelu";};
  var c=document.getElementById("chCilj");
@@ -502,7 +521,7 @@ function csvEsc(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v)?('"'+v.rep
 async function ucitajIzBaze(){ var sb=sbInit();
   var res=await Promise.all([sb.from("orders").select("broj,kupac,proizvod,cena,d1,d2,d3,status,mesec"), sb.from("ad_spend").select("datum,mesec,usd,rsd"), sb.from("app_state").select("key,data")]);
   var o=res[0],a=res[1],s=res[2];
-  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").eq("status","otvoren");window.TASKS=tk.data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];}
+  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").neq("status","zavrseno");window.TASKS=tk.data||[];var an=await sb.from("analyses").select("*").order("datum",{ascending:false}).limit(1);window.ANALIZA=(an.data&&an.data[0])||null;}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];window.ANALIZA=null;}
   if(o.error||a.error||s.error) throw new Error((o.error||a.error||s.error).message);
   var map={}; (s.data||[]).forEach(function(r){map[r.key]=r.data;});
   var back={expenses:LS_EXP,lager:LS_LAG,settings:LS_SET,confirm:LS_CONF,povrati:LS_POV};
