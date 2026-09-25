@@ -172,7 +172,7 @@ function extract(rows){
 }
 function allMonths(){const s=new Set();STATE.orders.forEach(o=>o.mesec&&s.add(o.mesec));STATE.ads.forEach(a=>a.mesec&&s.add(a.mesec));lsGet(LS_EXP,[]).forEach(e=>e.mesec&&s.add(e.mesec));return [...s];}
 function buildMonthSelect(){const sel=document.getElementById("month");const ms=allMonths();if(!ms.length){sel.innerHTML="";return;}if(!STATE.month||!ms.includes(STATE.month))STATE.month=(ms.includes(monthOf(todayStr()))?monthOf(todayStr()):ms[0]);sel.innerHTML=ms.map(m=>`<option ${m===STATE.month?"selected":""}>${m}</option>`).join("");}
-function tabsBar(){const t=[["pregled","Pregled"],["narudzbine","Narudžbine"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
+function tabsBar(){const t=[["pregled","Pregled"],["narudzbine","Narudžbine"],["reklame","Reklame"],["troskovi","Troškovi"],["lager","Lager"],["podesavanja","Podešavanja"]];document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button class="tab ${STATE.tab===k?"active":""}" data-t="${k}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{STATE.tab=b.dataset.t;STATE.statusFilter=null;render();});}
 function danaUMesecu(m){var M={januar:0,februar:1,mart:2,april:3,maj:4,jun:5,jul:6,avgust:7,septembar:8,oktobar:9,novembar:10,decembar:11};var p=String(m).split(" ");var mi=M[p[0]],y=+p[1];if(mi==null||!y)return 30;return new Date(y,mi+1,0).getDate();}
 function danUMesecu(s){var t=String(s||"").trim();var mm=t.match(/^(\d{2})\./);return mm?+mm[1]:0;}
 function serijaProfita(m,ords,ads){
@@ -415,6 +415,49 @@ function lagerPametniHTML(){
   +'<div class="panel"><h2>💡 Koliko lampi mogu da napravim</h2><div class="tableScroll"><table><thead><tr><th>Proizvod</th><th>Moguće</th><th>Ograničenje</th></tr></thead><tbody>'+kap+'</tbody></table></div></div>'
   +'<div class="panel"><h2>🧮 Materijal po lampi — staro vs BOM</h2><div class="muted" style="font-size:11px;margin-bottom:10px">Samo poređenje. U obračun profita i dalje ulazi 900 RSD po lampi.</div><div class="tableScroll"><table><thead><tr><th>Proizvod</th><th>BOM × nabavne</th><th>Staro (flat)</th><th>Razlika</th></tr></thead><tbody>'+cen+'</tbody></table></div></div>';
 }
+function renderReklame(){
+ var R=(window.REKLAME||[]), K=(window.ZNANJE||[]);
+ var boja={SKALIRATI:"#0f8a4d",OSTAVITI:"#1f6fd6",OPTIMIZOVATI:"#e0a32e",TESTIRATI:"#7a5af8",UGASITI:"#c4332b"};
+ var S=settings(), cilj=+((S&&S.ciljni_cpa)||1100);
+ function n(x,s){return (x==null||x==="")?"—":(s?(+x)+s:(+x).toLocaleString("sr-RS"));}
+ var kartice=R.map(function(r){
+  var p=r.presuda||null, b=p?boja[p]:"#888";
+  var cpa=r.cpa_7d!=null?+r.cpa_7d:null;
+  var cpaBoja=cpa==null?"#888":(cpa<=cilj?"#0f8a4d":(cpa<=1951?"#e0a32e":"#c4332b"));
+  var trend=(r.ctr_7d!=null&&r.ctr_pret_7d!=null&&+r.ctr_pret_7d>0)?Math.round((+r.ctr_7d/+r.ctr_pret_7d-1)*100):null;
+  var tznak=trend==null?"":(trend>0?"▲ +"+trend+"%":"▼ "+trend+"%");
+  var tboja=trend==null?"#888":(trend>=0?"#0f8a4d":(trend<-20?"#c4332b":"#e0a32e"));
+  return '<div class="panel" style="border-left:4px solid '+b+'">'
+   +'<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">'
+   +'<h2 style="margin:0">'+r.naziv+'</h2>'
+   +(p?'<span style="background:'+b+';color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">'+p+"</span>":'<span class="muted" style="font-size:11px">bez presude</span>')
+   +"</div>"
+   +'<div class="muted" style="font-size:11px;margin:2px 0 10px">'+(r.format||"—")+" • "+(r.status||"—")+(r.trajanje_videa_s?" • "+r.trajanje_videa_s+"s":"")+(r.presuda_datum?" • presuda "+r.presuda_datum:"")+(r.pouzdanost?" • pouzdanost "+r.pouzdanost:"")+"</div>"
+   +(r.razlog?'<div style="font-size:13px;line-height:1.5;margin-bottom:6px">'+r.razlog+"</div>":"")
+   +(r.akcija?'<div style="font-size:13px;line-height:1.5;background:#f6f7f9;border-radius:7px;padding:8px 10px;margin-bottom:10px"><b>Akcija:</b> '+r.akcija+"</div>":"")
+   +'<div class="tableScroll"><table><thead><tr><th>CPA 7d</th><th>Cilj / granica</th><th>Potrošnja 7d</th><th>Kupovine 7d</th><th>CTR 7d</th><th>Trend CTR</th><th>Frekvencija</th><th>Hook rate</th><th>LPV→kupovina</th><th>Komentari</th></tr></thead><tbody><tr>'
+   +'<td style="color:'+cpaBoja+';font-weight:700">'+(cpa==null?"—":fmt(cpa))+"</td>"
+   +"<td>"+fmt(cilj)+" / "+fmt(1951)+"</td>"
+   +"<td>"+(r.rsd_7d==null?"—":fmt(+r.rsd_7d))+"</td>"
+   +"<td>"+n(r.kup_7d)+"</td>"
+   +"<td>"+n(r.ctr_7d,"%")+"</td>"
+   +'<td style="color:'+tboja+'">'+(tznak||"—")+"</td>"
+   +"<td>"+n(r.frekvencija_7d)+"</td>"
+   +"<td>"+n(r.hook_rate_7d,"%")+"</td>"
+   +"<td>"+n(r.lpv_u_kupovinu_7d,"%")+"</td>"
+   +"<td>"+n(r.komentari_7d)+"</td>"
+   +"</tr></tbody></table></div>"
+   +'<div class="muted" style="font-size:11px;margin-top:6px">Za ceo život: '+(r.usd_ukupno==null?"—":(+r.usd_ukupno)+" USD")+", "+n(r.kupovine_ukupno)+" kupovina, CPA "+(r.cpa_ukupno==null?"—":fmt(+r.cpa_ukupno))+"</div>"
+   +"</div>";
+ }).join("");
+ var zn=K.map(function(z){
+  var ik={lekcija:"💡",test:"🧪",meta_novost:"📣"};
+  return '<div style="padding:9px 0;border-bottom:1px solid #f0f1f4"><b>'+(ik[z.tip]||"•")+" "+z.naslov+'</b> <span class="muted" style="font-size:11px">'+z.datum+'</span><div style="font-size:13px;color:#444;margin-top:3px">'+z.tekst+"</div></div>";
+ }).join("");
+ document.getElementById("app").innerHTML=(kartice||'<div class="panel"><div class="muted">Nema oglasa u bazi.</div></div>')
+  +'<div class="panel"><h2>📚 Znanje</h2>'+(zn||'<div class="muted" style="font-size:12px">Još nema zabeleženih lekcija.</div>')
+  +'<div class="muted" style="font-size:11px;margin-top:8px">Presude i lekcije upisuje Claude preko konektora. Granični CPA '+fmt(1951)+' = (3.390 − BOM − 390) × stopa preuzimanja.</div></div>';
+}
 function renderLager(){
   let items=lsGet(LS_LAG,null); if(items===null){items=LAGER_DEFAULT.slice();lsSet(LS_LAG,items);}
   const rows=items.map((it,i)=>`<tr><td>${it.naziv}</td><td class="nowrap"><button class="qbtn" data-dec="${i}">−</button> <input class="qty" data-q="${i}" value="${it.kol}" inputmode="decimal"> <button class="qbtn" data-inc="${i}">+</button></td><td>${it.jed}</td><td><button class="iconbtn" data-rem="${i}">✕</button></td></tr>`).join("");
@@ -490,7 +533,7 @@ function renderObrada(){
     </div>`;
   
 }
-function render(){buildMonthSelect();tabsBar();if(STATE.tab==="pregled"||STATE.tab==="narudzbine")renderPregled();else if(STATE.tab==="troskovi")renderTroskovi();else if(STATE.tab==="lager")renderLager();else renderSettings();}
+function render(){buildMonthSelect();tabsBar();if(STATE.tab==="pregled"||STATE.tab==="narudzbine")renderPregled();else if(STATE.tab==="reklame")renderReklame();else if(STATE.tab==="troskovi")renderTroskovi();else if(STATE.tab==="lager")renderLager();else renderSettings();}
 function exportData(){const data={expenses:lsGet(LS_EXP,[]),lager:lsGet(LS_LAG,[]),settings:settings()};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="3dm-backup.json";a.click();}
 async function load(){
   localStorage.removeItem(LS_URL);
@@ -521,7 +564,7 @@ function csvEsc(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v)?('"'+v.rep
 async function ucitajIzBaze(){ var sb=sbInit();
   var res=await Promise.all([sb.from("orders").select("broj,kupac,proizvod,cena,d1,d2,d3,status,mesec"), sb.from("ad_spend").select("datum,mesec,usd,rsd"), sb.from("app_state").select("key,data")]);
   var o=res[0],a=res[1],s=res[2];
-  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").neq("status","zavrseno");window.TASKS=tk.data||[];var an=await sb.from("analyses").select("*").order("datum",{ascending:false}).limit(1);window.ANALIZA=(an.data&&an.data[0])||null;}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];window.ANALIZA=null;}
+  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").neq("status","zavrseno");window.TASKS=tk.data||[];var an=await sb.from("analyses").select("*").order("datum",{ascending:false}).limit(1);window.ANALIZA=(an.data&&an.data[0])||null;var rk=await Promise.all([sb.from("v_reklame").select("*"),sb.from("ad_knowledge").select("*").order("datum",{ascending:false}).limit(20)]);window.REKLAME=rk[0].data||[];window.ZNANJE=rk[1].data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];window.ANALIZA=null;window.REKLAME=[];window.ZNANJE=[];}
   if(o.error||a.error||s.error) throw new Error((o.error||a.error||s.error).message);
   var map={}; (s.data||[]).forEach(function(r){map[r.key]=r.data;});
   var back={expenses:LS_EXP,lager:LS_LAG,settings:LS_SET,confirm:LS_CONF,povrati:LS_POV};
