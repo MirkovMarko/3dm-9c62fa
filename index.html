@@ -403,6 +403,19 @@ function renderTroskovi(){
   document.getElementById("e_add").onclick=()=>{const datum=val("e_datum"),kat=val("e_kat"),opis=val("e_opis"),kol=val("e_kol"),iznos=num(val("e_iznos"));if(!datum||!kat||!iznos){alert("Unesi datum, kategoriju i iznos.");return;}const mes=monthOf(datum)||m;const arr=lsGet(LS_EXP,[]);arr.push({id:Date.now()+"",mesec:mes,datum,kat,opis,kol,iznos});lsSet(LS_EXP,arr);if(mes!==STATE.month)STATE.month=mes;render();};
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Obrisati ovaj trošak?"))return;lsSet(LS_EXP,lsGet(LS_EXP,[]).filter(e=>e.id!==b.dataset.del));render();});
 }
+function artikliHTML(){
+ var A=window.ARTIKLI||[];
+ if(!A.length) return "";
+ var ime={PA_FK:"FK Partizan",PA_KK:"KK Partizan",ZV:"Zvezda"};
+ var vr={gotova:"Gotova lampa",lice:"Lice"};
+ var red=A.filter(function(r){return r.na_stanju>0;}).map(function(r){
+  return '<tr><td>'+(vr[r.vrsta]||r.vrsta)+'</td><td>'+(ime[r.tip]||r.tip)+'</td><td><b>'+r.na_stanju+'</b></td><td style="font-size:12px;color:#555">'+(r.imena||"")+'</td></tr>';
+ }).join("");
+ if(!red) return '<div class="panel"><h2>\ud83c\udff7\ufe0f Sa imenom na lageru</h2><div class="muted" style="font-size:12px">Nema odštampanih lica ni gotovih lampi.</div></div>';
+ return '<div class="panel"><h2>\ud83c\udff7\ufe0f Sa imenom na lageru</h2>'
+  +'<div class="muted" style="font-size:11px;margin-bottom:8px">Ovo su komadi vezani za konkretno ime. Skidaju se sa lagera samo kad stigne porudžbina baš sa tim imenom.</div>'
+  +'<div class="tableScroll"><table><thead><tr><th>Šta</th><th>Tip</th><th>Kom</th><th>Imena</th></tr></thead><tbody>'+red+"</tbody></table></div></div>";
+}
 function lagerPametniHTML(){
   var L=window.LAGER2||[],K=window.KAPACITET||[],B=window.BOMCENA||[];
   if(!L.length) return '<div class="panel"><h2>Pametni lager</h2><div class="muted">Nema podataka iz baze.</div></div>';
@@ -412,6 +425,7 @@ function lagerPametniHTML(){
   var cen=B.map(function(b){return '<tr><td>'+b.proizvod+'</td><td>'+fmt(+b.cena_materijala)+'</td><td>'+fmt(900)+'</td><td>'+((+b.razlika>0?"+":"")+fmt(+b.razlika))+'</td></tr>';}).join("");
   var uk=L.reduce(function(s,r){return s+(+r.vrednost_rsd||0);},0);
   return '<div class="panel"><h2>📦 Pametni lager (iz baze)</h2><div class="muted" style="font-size:11px;margin-bottom:10px">Presek 24.09.2026. Potrošnja se skida automatski po BOM-u kad porudžbina dobije datum slanja. Dani do nestanka = prosečna potrošnja poslednjih 14 dana.</div><div class="tableScroll"><table><thead><tr><th>Stavka</th><th>Stanje</th><th>Dnevno</th><th>Do nestanka</th><th>Status</th><th>Vrednost</th></tr></thead><tbody>'+red+'</tbody></table></div><div style="margin-top:8px;font-size:12px">Ukupna vrednost zaliha: <b>'+fmt(uk)+'</b></div></div>'
+  +artikliHTML()
   +'<div class="panel"><h2>💡 Koliko lampi mogu da napravim</h2><div class="tableScroll"><table><thead><tr><th>Proizvod</th><th>Moguće</th><th>Ograničenje</th></tr></thead><tbody>'+kap+'</tbody></table></div></div>'
   +'<div class="panel"><h2>🧮 Materijal po lampi — staro vs BOM</h2><div class="muted" style="font-size:11px;margin-bottom:10px">Samo poređenje. U obračun profita i dalje ulazi 900 RSD po lampi.</div><div class="tableScroll"><table><thead><tr><th>Proizvod</th><th>BOM × nabavne</th><th>Staro (flat)</th><th>Razlika</th></tr></thead><tbody>'+cen+'</tbody></table></div></div>';
 }
@@ -564,7 +578,7 @@ function csvEsc(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v)?('"'+v.rep
 async function ucitajIzBaze(){ var sb=sbInit();
   var res=await Promise.all([sb.from("orders").select("broj,kupac,proizvod,cena,d1,d2,d3,status,mesec"), sb.from("ad_spend").select("datum,mesec,usd,rsd"), sb.from("app_state").select("key,data")]);
   var o=res[0],a=res[1],s=res[2];
-  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").neq("status","zavrseno");window.TASKS=tk.data||[];var an=await sb.from("analyses").select("*").order("datum",{ascending:false}).limit(1);window.ANALIZA=(an.data&&an.data[0])||null;var rk=await Promise.all([sb.from("v_reklame").select("*"),sb.from("ad_knowledge").select("*").order("datum",{ascending:false}).limit(20)]);window.REKLAME=rk[0].data||[];window.ZNANJE=rk[1].data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];window.ANALIZA=null;window.REKLAME=[];window.ZNANJE=[];}
+  try{var lg=await Promise.all([sb.from("v_lager").select("*"),sb.from("v_kapacitet").select("*"),sb.from("v_bom_cena").select("*")]);window.LAGER2=lg[0].data||[];window.KAPACITET=lg[1].data||[];window.BOMCENA=lg[2].data||[];var tk=await sb.from("tasks").select("*").neq("status","zavrseno");window.TASKS=tk.data||[];var an=await sb.from("analyses").select("*").order("datum",{ascending:false}).limit(1);window.ANALIZA=(an.data&&an.data[0])||null;var rk=await Promise.all([sb.from("v_reklame").select("*"),sb.from("ad_knowledge").select("*").order("datum",{ascending:false}).limit(20)]);window.REKLAME=rk[0].data||[];window.ZNANJE=rk[1].data||[];var ar=await sb.from("v_artikli").select("*");window.ARTIKLI=ar.data||[];}catch(e){window.LAGER2=[];window.KAPACITET=[];window.BOMCENA=[];window.TASKS=[];window.ANALIZA=null;window.REKLAME=[];window.ZNANJE=[];window.ARTIKLI=[];}
   if(o.error||a.error||s.error) throw new Error((o.error||a.error||s.error).message);
   var map={}; (s.data||[]).forEach(function(r){map[r.key]=r.data;});
   var back={expenses:LS_EXP,lager:LS_LAG,settings:LS_SET,confirm:LS_CONF,povrati:LS_POV};
