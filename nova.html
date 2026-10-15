@@ -1,0 +1,987 @@
+<!doctype html>
+<!--
+  3DM — NOVI INTERFEJS (nova.html)
+  ================================================================
+  OVO JE NOVI FAJL. STARI PROGRAM JE index.html I NE SME DA SE MENJA OVDE.
+  Od v1.3 upisuje SAMO preko funkcija lager_prijem, lager_popis, primi_nabavku_raspodela, sacuvaj_podesavanja; od v1.5 i stampac_sacuvaj, stampac_dogadjaj_dodaj, stampac_dogadjaj_ponisti, stampac_dobit_upisi (uvek uz potvrdu). Čita istu bazu (Supabase auwkcdfsflhptaggasbv). Ništa ne upisuje u bazu.
+  Uputstvo za izmene u bilo kom chatu: NOVI-INTERFEJS.md (u projektu).
+  Sve što se najčešće menja je u bloku CONFIG odmah ispod skripte.
+-->
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3DM Odluka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Radionica noću: tamno plavo-ljubičasta pozadina, a jedini jaki element je sjaj lampe u boji semafora. */
+:root{
+  --bg:#eceff6;--card:#ffffff;--card2:#f4f6fb;--line:#dde2ee;--ink:#141a2e;--mut:#5f6b88;
+  --g:#12915a;--y:#b87400;--r:#d93a40;--gs:#1fbf7a;--ys:#f2a81d;--rs:#f0484e;
+  --glow:.28;--c1:#5b7cff;--c2:#8f6bff;--c3:#ff7aa8;--c4:#9aa4bd;
+  --disp:'Bricolage Grotesque',system-ui,sans-serif;--body:'Manrope',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+:root[data-t="dark"]{--bg:#0f1426;--card:#171e36;--card2:#1d2646;--line:#2a3558;--ink:#eef1fa;--mut:#9aa6c6;--g:#3ddc97;--y:#ffb938;--r:#ff5a5f;--gs:#3ddc97;--ys:#ffb938;--rs:#ff5a5f;--glow:.5;--c4:#6f7ba0}
+@media(prefers-color-scheme:dark){:root:not([data-t="light"]){--bg:#0f1426;--card:#171e36;--card2:#1d2646;--line:#2a3558;--ink:#eef1fa;--mut:#9aa6c6;--g:#3ddc97;--y:#ffb938;--r:#ff5a5f;--gs:#3ddc97;--ys:#ffb938;--rs:#ff5a5f;--glow:.5;--c4:#6f7ba0}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font:500 17px/1.4 var(--body);font-variant-numeric:tabular-nums}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 120px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font:800 24px var(--disp);letter-spacing:-.01em;margin-right:auto}
+.bulb{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);color:var(--ys)}
+.bulb svg{width:20px;height:20px}
+select,.ibtn{font:700 16px var(--body);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;height:44px}
+select{padding-right:6px;max-width:170px}
+.ibtn{width:44px;padding:0;display:grid;place-items:center;cursor:pointer}
+.ibtn svg{width:20px;height:20px}
+select:focus-visible,.ibtn:focus-visible,button:focus-visible{outline:3px solid var(--c1);outline-offset:2px}
+h1{font:800 30px/1.1 var(--disp);letter-spacing:-.02em;margin:4px 0 14px}
+h2{font:700 17px/1.2 var(--body);margin:0 0 10px}
+.pg-sec{display:none}.pg-sec.on{display:block}
+.g2{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}.g2>div{min-width:0}
+@media(min-width:900px){.g2{grid-template-columns:1.15fr 1fr;align-items:start}.lgrid{grid-template-columns:1fr 1fr}.wrap{padding-top:28px}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px 18px 8px;margin-bottom:16px}
+.panel>h2{margin-bottom:6px}
+.mut{color:var(--mut)}.sm{font-size:14px;color:var(--mut)}
+
+/* HERO: sjaj lampe u boji semafora */
+.hero{--sig:var(--g);--sigs:var(--gs);position:relative;overflow:hidden;border-radius:30px;padding:30px 24px 26px;margin-bottom:16px;background:var(--card);border:1px solid var(--line)}
+.hero.y{--sig:var(--y);--sigs:var(--ys)}.hero.r{--sig:var(--r);--sigs:var(--rs)}
+.hero .glow{position:absolute;right:-110px;top:-150px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle at 50% 50%,var(--sigs) 0%,transparent 66%);opacity:var(--glow);pointer-events:none}
+.hero.r .glow{animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:calc(var(--glow)*.7)}50%{opacity:var(--glow)}}
+@media(prefers-reduced-motion:reduce){.hero.r .glow{animation:none}}
+.hero .st{position:relative;font:800 64px/.95 var(--disp);letter-spacing:-.03em;color:var(--sig);margin:0 0 12px}
+.hero p{position:relative;margin:0;font:700 22px/1.25 var(--body);max-width:30ch}
+.chips{position:relative;display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{font:700 15px var(--body);padding:7px 13px;border-radius:99px;background:var(--card2);border:1px solid var(--line)}
+.chip.r{border-color:var(--r);color:var(--r)}.chip.y{border-color:var(--y);color:var(--y)}
+
+/* Za danas */
+.todo{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line)}
+.todo:first-of-type{border-top:0}
+.who{flex:0 0 auto;min-width:44px;text-align:center;font:800 15px var(--disp);padding:8px 0;border-radius:12px}
+.who.ti{background:color-mix(in srgb,var(--ys) 22%,transparent);color:var(--y)}
+.who.ja{background:color-mix(in srgb,var(--c1) 20%,transparent);color:var(--c1)}
+.todo b{display:block;font:700 19px/1.25 var(--body)}
+.todo span{display:block;font-size:15px;color:var(--mut);margin-top:3px}
+
+/* Novac: jedna traka, tri polja */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border:1px solid var(--line);border-radius:22px;margin-bottom:16px;overflow:hidden}
+.strip>div{padding:16px 14px;border-left:1px solid var(--line)}
+.strip>div:first-child{border-left:0}
+.strip small{display:block;font-size:13px;color:var(--mut);min-height:34px;line-height:1.25}
+.strip b{display:block;font:800 25px/1.1 var(--disp);letter-spacing:-.02em;margin-top:4px}
+.strip em{display:block;font-style:normal;font-size:12px;color:var(--mut);margin-top:4px}
+@media(max-width:420px){.strip b{font-size:22px}.strip>div{padding:14px 10px}}
+@media(min-width:900px){.strip b{font-size:28px}}
+.big{font:800 44px/1 var(--disp);letter-spacing:-.03em}
+.big small{font:600 18px var(--body);color:var(--mut);letter-spacing:0}
+.track{position:relative;height:14px;border-radius:99px;background:var(--card2);margin:14px 0 8px;border:1px solid var(--line)}
+.track i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,var(--c1),var(--g))}
+.track u{position:absolute;top:-5px;bottom:-5px;width:3px;border-radius:2px;background:var(--ink);opacity:.7}
+.line{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.line:first-of-type{border-top:0}
+.line b{font-weight:800}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:0}
+.seg{display:flex;height:22px;border-radius:99px;overflow:hidden;background:var(--card2);margin:10px 0 6px}
+.seg i{display:block;height:100%}
+
+/* Lager */
+.lgrid{display:grid;gap:12px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 16px 14px}
+.item .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item .nm{font:800 20px var(--disp)}
+.pill{font:800 13px var(--body);padding:4px 11px;border-radius:99px}
+.pill.r{background:color-mix(in srgb,var(--rs) 20%,transparent);color:var(--r)}
+.pill.y{background:color-mix(in srgb,var(--ys) 22%,transparent);color:var(--y)}
+.pill.g{background:color-mix(in srgb,var(--gs) 20%,transparent);color:var(--g)}
+.item .big{margin:8px 0 2px;font-size:38px}
+.days{height:8px;border-radius:99px;background:var(--card2);margin:10px 0 6px;overflow:hidden}
+.days i{display:block;height:100%;border-radius:99px}
+.item.r .days i{background:var(--r)}.item.y .days i{background:var(--y)}.item.g .days i{background:var(--g)}
+.act{margin-top:10px;padding:11px 13px;border-radius:14px;font:700 16px/1.3 var(--body);background:var(--card2)}
+.item.r .act{background:color-mix(in srgb,var(--rs) 14%,transparent)}
+.item.y .act{background:color-mix(in srgb,var(--ys) 16%,transparent)}
+.act p{margin:0}.act p+p{margin-top:5px}
+.nap{font-size:14px;color:var(--mut);margin-top:8px}
+.incoming{border-color:var(--ys);margin-bottom:16px}
+.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--g);color:#fff;font:800 20px var(--body);padding:14px;margin:12px 0 8px;cursor:pointer}
+:root[data-t="dark"] .btn,:root:not([data-t="light"]) .btn{color:#06210f}
+@media(prefers-color-scheme:light){:root:not([data-t="dark"]) .btn{color:#fff}}
+.btn.btn.ghost,:root .btn.ghost{color:var(--mut)!important}
+.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line);font:700 14px var(--body);padding:10px}
+details{margin:6px 0 12px}
+summary{cursor:pointer;color:var(--mut);font-size:14px;font-weight:700;padding:6px 0}
+details p{font-size:14px;color:var(--mut);margin:6px 0}
+
+/* Narudžbine */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+@media(min-width:600px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+.tile .big{font-size:36px}
+.tile div:last-child{font-size:14px;color:var(--mut);margin-top:4px}
+.tile.faint{opacity:.65}
+
+/* Reklame */
+.bars{display:flex;align-items:flex-end;gap:3px;height:96px;margin:12px 0 6px}
+.bars i{flex:1;min-width:3px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--c3),var(--c2));min-height:3px}
+
+/* Rolne filamenta */
+.fil{display:flex;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.fil:first-of-type{border-top:0}
+.rolls{display:flex;flex-wrap:wrap;gap:4px;flex:0 0 132px}
+.rolls svg{width:40px;height:40px}
+.fil .nm{font:800 18px var(--disp)}
+.fil .sm b{color:var(--ink)}
+/* Reklame po proizvodu */
+.prod{margin-bottom:16px}
+.cr{padding:14px 0 6px;border-top:1px solid var(--line)}
+.cr .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.cr .nm{font:800 18px var(--disp)}
+.vrd{font:700 17px var(--body);margin:8px 0 2px}
+.vrd.g{color:var(--g)}.vrd.y{color:var(--y)}.vrd.r{color:var(--r)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 6px}
+.nums div{background:var(--card2);border-radius:14px;padding:9px 10px}
+.nums small{display:block;font-size:12px;color:var(--mut)}
+.nums b{display:block;font:800 18px var(--disp)}
+.nums em{display:block;font-style:normal;font-size:12px;color:var(--mut)}
+.pbars{display:flex;align-items:flex-end;gap:4px;height:90px;margin:14px 0 4px}
+.pbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.pbars i{display:block;width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--c3),var(--c2));min-height:2px}
+.pbars span{font:800 12px var(--body);color:var(--g);margin-bottom:2px;min-height:15px}
+/* Plan */
+.wk{display:flex;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.wk:first-of-type{border-top:0}
+.wk b{flex:0 0 96px;font:800 16px var(--disp)}
+
+/* Dock */
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));display:flex;gap:2px;padding:6px;border-radius:24px;background:var(--card);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.18);z-index:9;width:calc(100% - 24px);max-width:520px}
+nav button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:transparent;color:var(--mut);font:700 12px var(--body);padding:8px 2px;border-radius:18px;cursor:pointer}
+nav button svg{width:22px;height:22px}
+nav button.on{background:var(--ink);color:var(--bg)}
+.foot{font-size:13px;color:var(--mut);margin-top:22px;line-height:1.5}
+.foot a,a.lnk{color:var(--mut)}
+
+#toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:96px;background:var(--ink);color:var(--bg);font:700 15px var(--body);padding:12px 16px;border-radius:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%)}
+/* Moji štampači (1.5) */
+.stcard{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.stcard:hover{border-color:var(--c1)}
+.stn{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.stn div{background:var(--card2);border-radius:12px;padding:8px 10px;min-width:0}
+.stn small{display:block;font-size:12px;color:var(--mut)}.stn b{display:block;font:800 18px var(--disp)}
+.roi{display:flex;height:16px;border-radius:99px;background:var(--card2);border:1px solid var(--line);overflow:hidden;margin:12px 0 8px}
+.roi i{display:block;height:100%}
+.roi i.p{background:linear-gradient(90deg,var(--c1),var(--g))}
+.roi i.e{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--c1) 60%,transparent) 0 6px,color-mix(in srgb,var(--c1) 18%,transparent) 6px 11px)}
+.frm{display:grid;gap:0 12px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:600px){.frm{grid-template-columns:1fr 1fr}}
+.fld{display:block;margin:8px 0}
+.fld span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.fld input,.fld select,.fld textarea{width:100%;max-width:none;height:auto;font:600 16px var(--body);padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
+.vek{display:flex;gap:8px;margin:4px 0 10px}
+.vek button{flex:1;font:700 15px var(--body);padding:10px 6px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink);cursor:pointer}
+.vek button.on{background:var(--ink);color:var(--bg)}
+h1 .pill{font-size:14px;vertical-align:middle}
+/* Prijava */
+#login{display:none;max-width:380px;margin:12vh auto;padding:18px}
+#login .panel{padding-bottom:18px}
+#login input{width:100%;font:600 18px var(--body);padding:13px;margin:6px 0;border-radius:14px;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
+#err{color:var(--r);font-size:15px;min-height:20px}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="brand" style="margin-bottom:14px"><span class="bulb" id="lb"></span>3DM</div>
+  <div class="panel">
+    <h2>Prijava</h2>
+    <input id="em" type="email" placeholder="E-pošta" autocomplete="username">
+    <input id="pw" type="password" placeholder="Šifra" autocomplete="current-password">
+    <button class="btn" onclick="prijava()">Prijavi se</button>
+    <div id="err"></div>
+    <div class="sm">Ista prijava kao u starom programu.</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="bulb" id="hb"></span>3DM</div>
+    <select id="mesec" onchange="promeniMesec(this.value)" aria-label="Mesec"></select>
+    <button class="ibtn" onclick="osvezi()" aria-label="Osveži podatke" id="rf"></button>
+    <button class="ibtn" onclick="go('p-pod')" aria-label="Podešavanja" id="gear"></button>
+  </header>
+  <section id="p-odluka" class="pg-sec on"></section>
+  <section id="p-lager" class="pg-sec"></section>
+  <section id="p-novac" class="pg-sec"></section>
+  <section id="p-nar" class="pg-sec"></section>
+  <section id="p-rek" class="pg-sec"></section>
+  <section id="p-plan" class="pg-sec"></section>
+  <section id="p-pod" class="pg-sec"></section>
+  <section id="p-stamp" class="pg-sec"></section>
+  <section id="p-stamp1" class="pg-sec"></section>
+  <div class="foot" id="foot"></div>
+</div>
+<nav id="nav"></nav>
+<div id="toast"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ===================== CONFIG (ovde se menjaju ručni podaci) ===================== */
+var CONFIG={
+  VERZIJA:'nova 1.5 · 15.10.2026',
+  SUPA_URL:'https://auwkcdfsflhptaggasbv.supabase.co',
+  SUPA_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1d2tjZGZzZmxocHRhZ2dhc2J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMTA1NzUsImV4cCI6MjA5NDU4NjU3NX0.Eh3Y0aF4xcAwfKduIgVzKjXItow5mPChk93YEz6KMIU',
+  AUTH_KEY:'3dm_auth',               // ISTI ključ kao u starom programu → jedna prijava za oba
+  CAP:{1:13,2:6,3:6,4:6,5:6},         // kapacitet slanja po danu (pon 12–13, uto–pet 5–6; gornja granica)
+  ZALIHA_DANA:14,                     // koliko dana zalihe se naručuje odjednom
+  ROK_DANA:2,                         // naruči toliko dana pre nego što nestane (domaće stiže sutradan + 1 dan sigurnosti)
+  ROLNA_KG:1,                         // jedna rolna filamenta
+  GRANICA_CPA:1951,                   // iznad ovoga reklama gubi pare (priručnik)
+  // kratka ručna napomena ispod stavke u Lageru (id stavke → tekst); prazno = nema
+  NAPOMENE:{},
+  // sirovina po lampi + pakovanje za naručivanje; sifra = sifra iz v_lager
+  BOM:[
+    {id:'usb',   naziv:'USB kablovi',unit:'kom',per:1,   pack:10},
+    {id:'led',   naziv:'LED traka', unit:'m',  per:1,    pack:5},
+    {id:'kutija',naziv:'Kutije',    unit:'kom',per:1,    pack:50},
+    {id:'folija',naziv:'Folija',    unit:'m²', per:0.18, pack:5, sifra:'folija'}
+  ],
+  // Filament: sve boje iz baze (šifra pla_*) se prikazuju kao rolne; ovde samo koliko ide po lampi
+  FIL_PO_LAMPI:{pla_crna:0.1404,pla_bela:0.0647},
+  FIL_BOJA:{pla_crna:'#0b0d12',pla_bela:'#e4dfcf',pla_crvena:'#e0393e',pla_plava:'#2f6fe0',pla_zlatna:'#d4a62a',pla_siva:'#9aa0a6',pla_zelena:'#2fa865'},
+  // Šta stiže iz nabavke bez šifre: izvor_kljuc → stavke.
+  // Temu PO-175-17309903872633225: 50 USB NAMERNO nije ovde (vidi EXTRA_INC), da se ne računa dvaput.
+  RASPODELA:{'temu:PO-175-17309903872633225':[{it:'led',q:24}]},
+  // Stiže, a nije upisano u bazu (ručno). datum 'GGGG-MM-DD' ili null.
+  EXTRA_INC:[
+    {id:'usb100',naslov:'100 USB kablova',datum:'2026-10-12',lines:[{it:'usb',q:100}],extra:'Stiglo u ponedeljak 12.10? Klikni STIGLO.'}
+  ]
+};
+/* ================================================================================== */
+
+var D={adm:[],orders:[],ads:[],settings:{},lager:[],pak:[],racun:null,nabavke:[],rek:[],tasks:[]};
+var SB=null, MESEC=null, TODAY=new Date();
+var MN=['januar','februar','mart','april','maj','jun','jul','avgust','septembar','oktobar','novembar','decembar'];
+var DN=['ned','pon','uto','sre','čet','pet','sub'];
+var IC={
+  bulb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>',
+  box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5M12 13v8"/></svg>',
+  wallet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h15a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7zM3 7l12-3v3M17 14h2"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3zM9 8h6M9 12h6"/></svg>',
+  mega:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zM15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>'
+};
+function nf(x,dec){return Number(x).toLocaleString('de-DE',{maximumFractionDigits:dec||0});}
+function fd(d){return DN[d.getDay()]+' '+d.getDate()+'.'+(d.getMonth()+1)+'.';}
+function add(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function isWork(d){var w=d.getDay();return w>=1&&w<=5;}
+function prevWork(d){var x=add(d,-1);while(!isWork(x))x=add(x,-1);return x;}
+function nextWork(d){var x=add(d,1);while(!isWork(x))x=add(x,1);return x;}
+function same(a,b){return a.getFullYear()==b.getFullYear()&&a.getMonth()==b.getMonth()&&a.getDate()==b.getDate();}
+function dmy(d){var p=function(n){return String(n).padStart(2,'0');};return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear();}
+function isoToDate(s){var m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?new Date(+m[1],+m[2]-1,+m[3]):null;}
+function monthOf(d){return MN[d.getMonth()]+' '+d.getFullYear();}
+function monthKey(m){var p=String(m).split(' ');return (+p[1])*12+MN.indexOf(p[0]);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function dmyIso(d){var p=function(n){return String(n).padStart(2,'0');};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+function isoToDmy(s){return String(s||'').slice(0,10).split('-').reverse().join('.');}
+
+/* ---------- računica (ISTA kao renderPregled u index.html) ---------- */
+function capOf(d){var k=(D.settings&&D.settings.kapacitet_po_danu)||CONFIG.CAP;return Number(k[d]!=null?k[d]:(CONFIG.CAP[d]||0));}
+function setx(){var s=D.settings||{};return {post:typeof s.postarina==='number'?s.postarina:390,
+  mat:(s.proizvodi&&s.proizvodi[0]&&s.proizvodi[0].cena)||900,
+  fiksni:(s.fiksni_troskovi||[]).reduce(function(a,f){return a+(+f.mesecno||0);},0),
+  cilj:s.cilj_mesecni||150000,prag:typeof s.prag_povrata==='number'?s.prag_povrata:0.05};}
+function qtyOf(p){var m=String(p||'').match(/(\d+)\s*kom/i);return m?(+m[1]||1):1;}
+function costOf(p){return setx().mat*qtyOf(p);}
+function calcMonth(m){
+  var S=setx(),r={prihod:0,mat:0,povratMat:0,post:0,ads:0,fiksni:S.fiksni,cnt:{},poslato:0,vraceno:0,prag:S.prag};
+  D.orders.forEach(function(o){
+    if(o.mesec!==m)return;
+    r.cnt[o.status]=(r.cnt[o.status]||0)+1;
+    var c=(o.status==='Isporučeno'||o.status==='Preuzeto'||o.status==='Čeka preuzimanje');
+    if(o.status==='Vraćeno'||o.status==='Vraća se'){ if(o.status==='Vraćeno'){r.povratMat+=costOf(o.proizvod);r.vraceno++;} }
+    else if(c){r.prihod+=Math.round(o.cena);r.mat+=costOf(o.proizvod);}
+    if(String(o.d2||'').trim())r.poslato++;
+  });
+  r.post=S.post*r.poslato;
+  D.ads.forEach(function(a){if(!a.mesec||a.mesec===m)r.ads+=Math.round(a.rsd);});
+  r.profit=r.prihod-(r.mat+r.post+r.ads+r.povratMat+r.fiksni);
+  r.cilj=S.cilj;
+  return r;
+}
+function naPutu(){
+  var S=setx(),lw=isWork(TODAY)?TODAY:prevWork(TODAY),lws=dmy(lw);
+  var k={n:0,s:0,p:0},p={n:0,s:0,p:0};
+  D.orders.forEach(function(o){
+    var pr=Math.round(o.cena)-costOf(o.proizvod)-S.post;
+    if(o.status==='Preuzeto'||o.status==='Čeka preuzimanje'){k.n++;k.s+=Math.round(o.cena);k.p+=pr;}
+    else if(o.status==='Isporučeno'&&String(o.d3||'').slice(0,10)===lws){p.n++;p.s+=Math.round(o.cena);p.p+=pr;}
+  });
+  return {kurir:k,juce:p,lw:lw};
+}
+
+/* ---------- lager i naručivanje ---------- */
+var arrived=[];
+try{arrived=JSON.parse(localStorage.getItem('3dm_nova_stiglo')||'[]');}catch(e){}
+function saveArr(){try{localStorage.setItem('3dm_nova_stiglo',JSON.stringify(arrived));}catch(e){}}
+function rowOf(sifra){return D.lager.filter(function(r){return r.sifra===sifra;})[0]||null;}
+function mkItem(b,row){
+  var o=Object.assign({},b);row=row||{};
+  o.knjiga=row.stanje==null?0:Number(row.stanje);o.stock=Math.max(0,o.knjiga);o.ima=row.stanje!=null;
+  o.dnevno=row.dnevno==null?null:Number(row.dnevno);
+  return o;
+}
+function buildItems(){
+  return CONFIG.BOM.map(function(b){return mkItem(b,rowOf(b.sifra||b.id));});
+}
+function buildFil(){
+  return D.lager.filter(function(r){return /^pla_/.test(r.sifra||'');}).map(function(r){
+    var per=CONFIG.FIL_PO_LAMPI[r.sifra]||0;
+    return mkItem({id:r.sifra,naziv:String(r.naziv||r.sifra).replace(/^PLA\s*/i,'PLA '),unit:'kg',per:per,pack:CONFIG.ROLNA_KG,fil:true},r);
+  }).sort(function(a,b){return (b.dnevno||0)-(a.dnevno||0);});
+}
+function buildInc(){
+  var inc=[];
+  D.nabavke.forEach(function(n){
+    if(n.kategorija==='oprema')return; // štampači i oprema nisu lager (vidi Moji štampači)
+    var lines=CONFIG.RASPODELA[n.izvor_kljuc]||(n.sifra&&n.kolicina?[{it:n.sifra,q:Number(n.kolicina)}]:[]);
+    inc.push({id:'n'+n.id,naslov:n.naziv,datum:null,lines:lines,extra:lines.length?'':'Nema raspodele po materijalima, ne računa se u lager.',iz:'baza'});
+  });
+  CONFIG.EXTRA_INC.forEach(function(e){if((D.prim||[]).indexOf('prijem:'+e.id)>=0)return;inc.push({id:e.id,naslov:e.naslov,datum:e.datum?isoToDate(e.datum):null,lines:e.lines,extra:e.extra||'',iz:'ručno'});});
+  return inc;
+}
+function state(){
+  var items=buildItems(),fil=buildFil(),inc=[],all=items.concat(fil);
+  buildInc().forEach(function(p){
+    inc.push(p);
+  });
+  return {items:items,fil:fil,inc:inc};
+}
+function roundUp(q,p){return Math.max(p,Math.ceil(q/p-1e-9)*p);}
+function decOf(u){return (u==='kg'||u==='m²')?2:0;}
+/* Tempo = stvarna potrošnja iz baze (v_lager.dnevno, prosek 14 dana). */
+function plan(it){
+  var res={last:null,acts:[],level:'g',dana:null};
+  res.lampi=it.per>0?Math.floor(it.stock/it.per):null;
+  var t=it.dnevno;
+  if(!t||t<=0){res.acts.push('Ne trošiš ga u poslednje 2 nedelje.');return res;}
+  var dana=Math.floor(it.stock/t+1e-9);res.dana=dana;
+  res.last=add(TODAY,dana);
+  var rok=add(res.last,-CONFIG.ROK_DANA);
+  var qty=roundUp(CONFIG.ZALIHA_DANA*t,it.pack),u=it.unit,dec=decOf(u);
+  var tempo=t<0.01?'Skoro ga ne trošiš. ':'Trošiš oko '+nf(t,t<1?2:1)+' '+u+' dnevno. ';
+  if(dana>30){res.acts.push(tempo+'Dovoljno za više od mesec dana.');return res;}
+  if(!isWork(rok))rok=prevWork(rok);
+  res.acts.push(tempo+(dana<=0?'Već je nestalo.':'Ovim tempom nestaje '+fd(res.last)+' (za '+dana+' '+(dana===1?'dan':'dana')+').'));
+  if(rok<=TODAY){res.level='r';res.acts.push('Naruči danas: '+nf(qty,dec)+' '+u+'.');}
+  else{res.level=(dayDiff(rok,TODAY)<=3||dana<=7)?'y':'g';res.acts.push('Naruči najkasnije '+fd(rok)+': '+nf(qty,dec)+' '+u+'.');}
+  return res;
+}
+function dayDiff(a,b){return Math.round((new Date(a.getFullYear(),a.getMonth(),a.getDate())-new Date(b.getFullYear(),b.getMonth(),b.getDate()))/86400000);}
+function rollSvg(frac,col){
+  var r=15,c=2*Math.PI*r,f=Math.max(0,Math.min(1,frac));
+  return '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="'+r+'" fill="none" stroke="var(--line)" stroke-width="9"/>'+
+    '<circle cx="20" cy="20" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="9" stroke-dasharray="'+(c*f).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 20 20)"/>'+
+    '<circle cx="20" cy="20" r="'+(r+4.5)+'" fill="none" stroke="var(--mut)" stroke-opacity=".5" stroke-width="1"/><circle cx="20" cy="20" r="5" fill="var(--card2)" stroke="var(--line)"/></svg>';
+}
+/* ---------- crtanje ---------- */
+var PL={r:'Naruči danas',y:'Uskoro',g:'U redu'};
+function neposlato(){return D.orders.filter(function(o){return o.status==='U obradi'&&!String(o.d2||'').trim();}).length;}
+function dimOf(m){return new Date(+m.split(' ')[1],MN.indexOf(m.split(' ')[0])+1,0).getDate();}
+function reklameDnevno(){
+  var ds=D.ads.map(function(a){return a.datum;}).sort().slice(-7);
+  if(!ds.length)return 0;
+  var s=0;D.ads.forEach(function(a){if(ds.indexOf(a.datum)>=0)s+=Number(a.rsd)||0;});
+  return Math.round(s/ds.length);
+}
+function granica(){
+  var dim=new Date(TODAY.getFullYear(),TODAY.getMonth()+1,0).getDate(),left=dim-TODAY.getDate()+1,dn=reklameDnevno();
+  return {iznos:dn*left,dn:dn,dana:left};
+}
+function render(){
+  var S=state(),items=S.items,fil=S.fil,inc=S.inc,M=calcMonth(MESEC),NP=naPutu();
+  var plans=items.map(function(i){return {it:i,p:plan(i)};});
+  var fplans=fil.map(function(i){return {it:i,p:plan(i)};});
+  var svi=plans.concat(fplans);
+  var worst=svi.some(function(x){return x.p.level==='r';})?'r':(svi.some(function(x){return x.p.level==='y';})?'y':'g');
+  var bad=svi.filter(function(x){return x.p.level!=='g';});
+  var bal=D.racun?Number(D.racun.iznos_rsd):null,G=granica();
+  var h;
+
+  /* ODLUKA */
+  var line=worst==='r'?'Prvo naruči, reklame ne diraj.':worst==='y'?'Skoro sve je u redu, ali uskoro treba naručiti.':'Sve je u redu, reklame mogu da rastu.';
+  var left='<div class="hero '+worst+'"><div class="glow"></div><div class="st">'+(worst==='r'?'Crveno':worst==='y'?'Žuto':'Zeleno')+'</div><p>'+line+'</p>'+
+    (bad.length?'<div class="chips">'+bad.map(function(x){return '<span class="chip '+x.p.level+'">'+esc(x.it.naziv)+'</span>';}).join('')+'</div>':'')+'</div>';
+  var tasks=[],np=neposlato(),cap=capOf(TODAY.getDay());
+  if(np>0){
+    if(cap>0)tasks.push(['ti','Danas pošalji '+Math.min(cap,np)+' lampi',np>cap?'Čeka još '+(np-cap)+'. Kapacitet danas je '+cap+'.':'To je sve što čeka.']);
+    else tasks.push(['ti','Za slanje čeka '+np,'Vikend je, šalje se od '+fd(nextWork(TODAY))+'.']);
+  }
+  svi.filter(function(x){return x.p.level==='r';}).slice(0,2).forEach(function(x){tasks.push(['ti','Naruči: '+x.it.naziv,x.p.acts[x.p.acts.length-1]]);});
+  var sutra=inc.filter(function(p){return p.datum&&same(p.datum,add(TODAY,1));})[0];
+  if(sutra)tasks.push(['ti','Sutra stiže: '+sutra.naslov,'Kad stigne, klikni STIGLO u Lageru.']);
+  if(tasks.length<3)tasks.push(['ja','Sinhronizacija oko 18h','Povlačim narudžbine, pošiljke i reklame.']);
+  left+='<div class="panel"><h2>Za danas</h2>'+tasks.slice(0,3).map(function(t){return '<div class="todo"><span class="who '+t[0]+'">'+(t[0]==='ti'?'TI':'JA')+'</span><div><b>'+esc(t[1])+'</b><span>'+esc(t[2])+'</span></div></div>';}).join('')+'</div>';
+  var right=stripKartica(bal,G,NP)+goalKartica(M);
+  document.getElementById('p-odluka').innerHTML='<div class="g2"><div>'+left+'</div><div>'+right+'</div></div>';
+
+  /* LAGER */
+  h='<h1>Lager</h1>'+diktPanel();
+  if(inc.length){
+    h+='<div class="panel incoming"><h2>Stiže</h2>';
+    inc.forEach(function(p){
+      h+='<div style="padding:8px 0 4px"><b style="font-size:19px">'+esc(p.naslov)+'</b><div class="sm">'+(p.datum?'Očekuje se '+fd(p.datum):'Datum nije poznat')+'</div>'+
+        '<div style="margin-top:4px">'+p.lines.map(function(l){var it=CONFIG.BOM.filter(function(i){return i.id===l.it;})[0]||{unit:'',naziv:l.it};return nf(l.q)+' '+it.unit+' '+esc(it.naziv);}).join(', ')+'</div>'+
+        (p.extra?'<div class="sm">'+esc(p.extra)+'</div>':'')+
+        '<button class="btn" onclick="stiglo(\''+p.id+'\')">Stiglo</button></div>';
+    });
+    h+='<div class="sm" style="padding-bottom:10px">STIGLO upisuje u bazu, uz potvrdu.</div></div>';
+  }
+  h+='<div class="lgrid">';
+  plans.forEach(function(x){
+    var i=x.it,p=x.p,dec=decOf(i.unit);
+    var w=p.dana==null?100:Math.min(100,Math.max(4,p.dana/14*100));
+    h+='<div class="item '+p.level+'"><div class="top"><span class="nm">'+esc(i.naziv)+'</span><span class="pill '+p.level+'">'+PL[p.level]+'</span></div>'+
+      '<div class="big">'+nf(i.stock,dec)+' <small>'+i.unit+'</small></div>'+
+      '<div class="sm">'+(i.knjiga<0?'U bazi piše '+nf(i.knjiga,dec)+', prijem nije upisan. ':'')+(p.lampi!=null?'Dovoljno za '+p.lampi+' lampi.':'')+(i.ima?'':' Nema u bazi.')+'</div>'+
+      '<div class="days" title="Dana do nestanka (traka je puna na 14)"><i style="width:'+w.toFixed(0)+'%"></i></div>'+
+      '<div class="act">'+p.acts.map(function(a){return '<p>'+esc(a)+'</p>';}).join('')+'</div>'+
+      (CONFIG.NAPOMENE[i.id]?'<div class="nap">'+esc(CONFIG.NAPOMENE[i.id])+'</div>':'')+'</div>';
+  });
+  h+='</div>';
+  if(fplans.length){
+    var ukupno=fil.reduce(function(a,i){return a+i.stock;},0);
+    h+='<div class="panel" style="margin-top:16px"><h2>Filament · ukupno '+nf(ukupno,2)+' kg</h2>';
+    fplans.forEach(function(x){
+      var i=x.it,p=x.p,cele=Math.floor(i.stock/CONFIG.ROLNA_KG+1e-9),ost=i.stock-cele*CONFIG.ROLNA_KG,col=CONFIG.FIL_BOJA[i.id]||'var(--c1)';
+      var r='';for(var k=0;k<Math.min(cele,6);k++)r+=rollSvg(1,col);if(ost>0.005||!cele)r+=rollSvg(ost/CONFIG.ROLNA_KG,col);
+      h+='<div class="fil"><div class="rolls">'+r+'</div><div style="flex:1;min-width:0"><div class="top" style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="nm">'+esc(i.naziv)+'</span>'+(p.level!=='g'?'<span class="pill '+p.level+'">'+PL[p.level]+'</span>':'')+'</div>'+
+        '<div class="sm"><b>'+(cele?cele+' '+(cele===1?'cela rolna':'cele rolne')+(ost>0.005?' + '+nf(ost,2)+' kg':''):nf(i.stock,2)+' kg')+'</b>'+(p.lampi!=null?' · za '+p.lampi+' lampi':'')+'</div>'+
+        '<div class="sm">'+p.acts.map(esc).join(' ')+'</div></div></div>';
+    });
+    h+='<p class="sm" style="margin:4px 0 12px">Rolna = '+CONFIG.ROLNA_KG+' kg. Potrošnja je prosek poslednjih 14 dana iz poslatih narudžbina.</p></div>';
+  }
+  h+='<details><summary>Kako računam</summary><p>Tempo je stvarna potrošnja iz baze (prosek 14 dana). Kad se pošalje lampa, sistem sam skida kabl, traku, kutiju, foliju i filament. Rok za naručivanje je '+CONFIG.ROK_DANA+' dana pre nestanka (domaće stiže sutradan, plus dan sigurnosti). Količina je za '+CONFIG.ZALIHA_DANA+' dana.</p></details>'+
+    '';
+  document.getElementById('p-lager').innerHTML=h;
+
+  /* NOVAC */
+  var cost=M.mat+M.povratMat+M.post+M.ads+M.fiksni,tot=Math.max(M.prihod,cost,1);
+  var segs=[['Materijal',M.mat+M.povratMat,'var(--c1)','900 po lampi'],['Poštarina',M.post,'var(--c2)',M.poslato+' pošiljki × '+setx().post],['Reklame',M.ads,'var(--c3)','Meta'],['Fiksni',M.fiksni,'var(--c4)','Shopify i domen']];
+  h='<h1>Novac</h1><div class="g2"><div>'+stripKartica(bal,G,NP)+putaKartica(NP)+'</div><div>'+
+    '<div class="panel"><h2>Od prihoda do profita · '+esc(MESEC)+'</h2>'+
+    '<div class="sm">Kupci su platili</div><div class="big">'+nf(M.prihod)+' <small>RSD</small></div>'+
+    '<div class="seg">'+segs.concat([['Profit',Math.max(0,M.profit),'var(--g)']]).map(function(s){return '<i style="width:'+(s[1]/tot*100).toFixed(2)+'%;background:'+s[2]+'" title="'+s[0]+'"></i>';}).join('')+'</div>'+
+    segs.map(function(s){return '<div class="line"><span><span class="dot" style="background:'+s[2]+'"></span>minus '+s[0].toLowerCase()+' <span class="sm">· '+esc(s[3])+'</span></span><b>−'+nf(s[1])+'</b></div>';}).join('')+
+    '<div class="line" style="border-top:2px solid var(--ink)"><span><span class="dot" style="background:var(--g)"></span><b>= čist profit</b></span><b style="color:var(--g)">'+nf(M.profit)+'</b></div></div>'+
+    '<div class="panel"><h2>Ne padaj ispod</h2><div class="big">'+nf(G.iznos)+' <small>RSD</small></div><p class="sm" style="margin:8px 0 12px">Toliko ti treba za reklame do kraja meseca: oko '+nf(G.dn)+' dnevno × '+G.dana+' dana. '+(bal!=null?(bal>=G.iznos?'Na računu imaš '+nf(bal-G.iznos)+' više od toga.':'Na računu imaš '+nf(G.iznos-bal)+' manje od toga.'):'')+'</p></div></div></div>';
+  document.getElementById('p-novac').innerHTML=h;
+
+  /* NARUDŽBINE */
+  var order=[['Isporučeno','var(--g)'],['Preuzeto','var(--c1)'],['Čeka preuzimanje','var(--ys)'],['U obradi','var(--c2)'],['Vraća se','var(--ys)'],['Vraćeno','var(--r)'],['Otkazano','var(--c4)'],['Nacrt','var(--c4)']];
+  var NAZ={'Preuzeto':'Kod kurira','U obradi':'Za slanje','Nacrt':'Nedovršene'};
+  var rate=M.poslato?M.vraceno/M.poslato:0,cn=function(k){return M.cnt[k]||0;};
+  var kur=cn('Preuzeto')+cn('Čeka preuzimanje'),vr=cn('Vraćeno')+cn('Vraća se');
+  h='<h1>Narudžbine</h1><div class="tiles">'+order.filter(function(s){return M.cnt[s[0]];}).map(function(s){return '<div class="tile'+((s[0]==='Nacrt'||s[0]==='Otkazano')?' faint':'')+'"><div class="big">'+M.cnt[s[0]]+'</div><div><span class="dot" style="background:'+s[1]+'"></span>'+(NAZ[s[0]]||s[0])+'</div></div>';}).join('')+'</div>'+
+    '<div class="panel"><h2>Poslato kuriru: '+M.poslato+'</h2>'+
+    '<div class="line"><span>Isporučeno, kupac platio</span><b>'+cn('Isporučeno')+'</b></div>'+
+    '<div class="line"><span>Kod kurira, na putu</span><b>'+kur+'</b></div>'+
+    '<div class="line"><span>Vraćeno</span><b>'+vr+'</b></div>'+
+    '<div class="line"><span>'+cn('Isporučeno')+' + '+kur+' + '+vr+'</span><b>= '+(cn('Isporučeno')+kur+vr)+(cn('Isporučeno')+kur+vr!==M.poslato?' (a poslato '+M.poslato+', proveriću)':'')+'</b></div>'+
+    '<div class="line"><span>Stopa povrata</span><b style="color:'+(rate>M.prag?'var(--r)':'var(--g)')+'">'+(rate*100).toFixed(1).replace('.',',')+'% <span class="sm">od dozvoljenih '+Math.round(M.prag*100)+'%</span></b></div>'+
+    '<p class="sm" style="margin:8px 0 12px">Povrate proveravam sa Paketomatom pri svakoj sinhronizaciji. Ako se ne slaže, javljam ti.</p></div>';
+  document.getElementById('p-nar').innerHTML=h;
+
+  document.getElementById('p-pod').innerHTML=podStrana();
+  document.getElementById('p-novac').insertAdjacentHTML('beforeend',stampaciKratko());
+  document.getElementById('p-stamp').innerHTML=stampaciStrana();
+  if(STAMP_SEL)document.getElementById('p-stamp1').innerHTML=stDetalj(STAMP_SEL);
+  /* REKLAME */
+  document.getElementById('p-rek').innerHTML=reklameStrana();
+
+  /* PLAN */
+  var wk=[['Svaki dan','17:52 sinhronizacija: narudžbine, pošiljke, reklame, lager.'],['Pon–pet','15:40 provera lagera. Ako treba da naručiš, stiže ti poruka na telefon.'],['Ponedeljak','Finansije: gde gubim pare.'],['Utorak','Ima li jeftinije: LED, USB, PLA, kutije.'],['Sreda','Konkurencija i cene.'],['Četvrtak','Ideje: novi proizvodi, B2B.'],['Petak','Reklame: pregled za 7 dana.']];
+  var an=(D.an||[]).filter(function(a){return /^tema:/.test(a.period||'');}).slice(0,5);
+  document.getElementById('p-plan').innerHTML='<h1>Plan</h1><div class="g2"><div><div class="panel"><h2>Šta radim i kada</h2>'+wk.map(function(w){return '<div class="wk"><b>'+w[0]+'</b><span>'+w[1]+'</span></div>';}).join('')+'<p class="sm">Zakazano. Rezultat ti stiže na telefon i ostaje ovde.</p></div></div><div>'+
+    '<div class="panel"><h2>Poslednje analize</h2>'+(an.length?an.map(function(a){return '<div class="cr"><div class="sm">'+esc(isoToDmy(a.datum))+'</div><b style="font-size:17px">'+esc(a.naslov||'')+'</b><p style="margin:6px 0 4px;font-size:16px">'+esc(a.zakljucak_tekst||'')+'</p></div>';}).join(''):'<p class="sm">Prva stiže danas u 15:40.</p>')+'</div></div></div>'+
+    '<div class="panel"><h2>Stari izgled</h2><p><a class="lnk" href="index.html">Otvori stari program</a></p></div>';
+
+  var NAV=[['odluka','Odluka','bulb'],['lager','Lager','box'],['novac','Novac','wallet'],['nar','Narudžbine','list'],['rek','Reklame','mega'],['plan','Plan','cal']];
+  var cur=(document.querySelector('.pg-sec.on')||{}).id||'p-odluka';
+  document.getElementById('nav').innerHTML=NAV.map(function(n){return '<button data-p="p-'+n[0]+'" class="'+(('p-'+n[0])===cur?'on':'')+'" onclick="go(\'p-'+n[0]+'\')">'+IC[n[2]]+'<span>'+n[1]+'</span></button>';}).join('');
+  var lastAd=D.ads.map(function(a){return a.datum;}).sort().pop();
+  document.getElementById('foot').innerHTML='Podaci uživo iz baze. Reklame upisane do '+esc(lastAd?isoToDmy(lastAd):'—')+'. '+CONFIG.VERZIJA+'. <a href="index.html">Stari izgled</a>';
+}
+/* ---------- reklame po proizvodu ---------- */
+function proizvodOf(c){var s=String(c||'Ostalo').split(/\s+kampanja/i)[0].trim();return s||'Ostalo';}
+function presuda(sp7,kup7,freq,ctr,ctrPret,db){
+  var cilj=(D.settings&&D.settings.ciljni_cpa)||1100,cpa=kup7?sp7/kup7:null;
+  if(db==='SKALIRATI')return ['g','Ide odlično. Možeš da povećaš budžet.'];
+  if(db==='UGASITI')return ['r','Ugasi je. Košta više nego što zaradi.'];
+  if(sp7<2200)return ['y','Još je rano. Premalo je potrošeno da bi se znalo, pusti je.'];
+  if(freq>2.5&&ctrPret&&ctr<ctrPret*0.8)return ['y','Ljudi su je se zasitili. Snimi novi video.'];
+  if(cpa==null)return ['r','Troši, a nema prodaje. Ugasi je.'];
+  if(cpa<=cilj)return ['g','Ide dobro, ostavi.'];
+  if(cpa<=CONFIG.GRANICA_CPA)return ['y','Prodaje, ali skuplje nego što želimo. Ostavi i prati.'];
+  return ['r','Ugasi je. Košta više nego što zaradi.'];
+}
+function reklameStrana(){
+  var h='<h1>Reklame</h1>',am=D.adm||[];
+  var M=calcMonth(MESEC);
+  h+='<div class="panel"><div class="sm">Potrošeno u '+esc(MESEC)+'</div><div class="big">'+nf(M.ads)+' <small>RSD</small></div><p class="sm" style="margin:6px 0 12px">Oko '+nf(reklameDnevno())+' dnevno u poslednjih 7 dana.</p></div>';
+  if(!am.length)return h+'<p class="sm">Nema podataka po kreativama.</p>';
+  var dates=am.map(function(r){return r.datum;}).filter(function(v,i,a){return a.indexOf(v)===i;}).sort();
+  var d1=dates.slice(-1),d2=dates.slice(-2),d7=dates.slice(-7),d14=dates.slice(-14);
+  var S=setx(),ordsM=D.orders.filter(function(o){return o.mesec===monthOf(TODAY)&&o.status!=='Nacrt'&&o.status!=='Otkazano';});
+  var avg=ordsM.length?ordsM.reduce(function(a,o){return a+Number(o.cena||0);},0)/ordsM.length:3390;
+  var poProd=Math.round(avg-S.mat-S.post);
+  var prods={};
+  am.forEach(function(r){var p=proizvodOf(r.campaign_name);(prods[p]=prods[p]||{ads:{},byDay:{}});var P=prods[p];
+    var a=(P.ads[r.ad_id]=P.ads[r.ad_id]||{naziv:r.ad_name||r.ad_id,rows:[]});a.rows.push(r);
+    var b=(P.byDay[r.datum]=P.byDay[r.datum]||{sp:0,k:0});b.sp+=Number(r.spend_rsd)||0;b.k+=Number(r.purchases)||0;});
+  var vr={};(D.rek||[]).forEach(function(r){vr[r.ad_id]=r;});
+  function sum(rows,ds){var o={sp:0,k:0,f:0,ctr:0,n:0};rows.forEach(function(r){if(ds.indexOf(r.datum)>=0){o.sp+=Number(r.spend_rsd)||0;o.k+=Number(r.purchases)||0;o.f=Math.max(o.f,Number(r.frequency)||0);o.ctr+=Number(r.ctr)||0;o.n++;}});o.ctr=o.n?o.ctr/o.n:0;return o;}
+  Object.keys(prods).sort(function(a,b){var s=function(p){return d7.reduce(function(x,d){return x+((prods[p].byDay[d]||{}).sp||0);},0);};return s(b)-s(a);}).forEach(function(pn){
+    var P=prods[pn],mx=Math.max.apply(null,d14.map(function(d){return (P.byDay[d]||{}).sp||0;}).concat([1]));
+    if(!d14.some(function(d){return P.byDay[d]&&(P.byDay[d].sp||P.byDay[d].k);}))return;
+    var t7=d7.reduce(function(x,d){var b=P.byDay[d]||{sp:0,k:0};x.sp+=b.sp;x.k+=b.k;return x;},{sp:0,k:0});
+    h+='<div class="panel prod"><h2 style="font:800 22px var(--disp)">'+esc(pn)+'</h2>'+
+      '<div class="sm">7 dana: potrošeno <b style="color:var(--ink)">'+nf(t7.sp)+'</b>, prodaja <b style="color:var(--ink)">'+t7.k+'</b>'+(t7.k?', po prodaji '+nf(t7.sp/t7.k):'')+'</div>'+
+      '<div class="pbars" title="Potrošnja po danu, broj iznad = prodaje">'+d14.map(function(d){var b=P.byDay[d]||{sp:0,k:0};return '<div><span>'+(b.k?b.k:'')+'</span><i style="height:'+Math.max(2,b.sp/mx*72).toFixed(0)+'px" title="'+isoToDmy(d)+': '+nf(b.sp)+' RSD, '+b.k+' prodaja"></i></div>';}).join('')+'</div>'+
+      '<div class="sm" style="display:flex;justify-content:space-between;margin-bottom:6px"><span>'+isoToDmy(d14[0]).slice(0,5)+'</span><span>stubić = potrošeno · broj = prodaje</span><span>'+isoToDmy(d14[d14.length-1]).slice(0,5)+'</span></div>';
+    Object.keys(P.ads).map(function(id){return [id,P.ads[id]];}).sort(function(a,b){return sum(b[1].rows,d7).sp-sum(a[1].rows,d7).sp;}).forEach(function(e){
+      var id=e[0],a=e[1],s1=sum(a.rows,d1),s2=sum(a.rows,d2),s7=sum(a.rows,d7);
+      if(!s7.sp&&!s7.k)return;
+      var v=vr[id]||{},pr=presuda(s7.sp,s7.k,Number(v.frekvencija_7d)||s7.f,Number(v.ctr_7d)||s7.ctr,Number(v.ctr_pret_7d)||0,v.presuda);
+      var zar=Math.round(s7.k*poProd-s7.sp);
+      var cell=function(lbl,o){return '<div><small>'+lbl+'</small><b>'+nf(o.sp)+'</b><em>'+o.k+' '+(o.k===1?'prodaja':'prodaje')+(o.k?' · '+nf(o.sp/o.k)+'/prod.':'')+'</em></div>';};
+      h+='<div class="cr"><div class="top"><span class="nm">'+esc(a.naziv)+'</span></div>'+
+        '<div class="vrd '+pr[0]+'">'+esc(pr[1])+'</div>'+
+        '<div class="nums">'+cell('Juče',s1)+cell('2 dana',s2)+cell('7 dana',s7)+'</div>'+
+        '<div class="sm" style="margin-bottom:6px">Zarada od nje za 7 dana oko <b style="color:'+(zar>=0?'var(--g)':'var(--r)')+'">'+nf(zar)+' RSD</b> (prodaje × '+nf(poProd)+' − reklama).</div></div>';
+    });
+    h+='</div>';
+  });
+  return h+'<p class="sm">Prodaje broji Meta. Ponekad broji više nego što stvarno stigne, pa je zarada procena.</p>';
+}
+function stripKartica(bal,G,NP){
+  var s=NP.kurir.s+NP.juce.s,p=NP.kurir.p+NP.juce.p,n=NP.kurir.n+NP.juce.n,nisko=bal!=null&&bal<G.iznos;
+  return '<div class="strip"><div><small>Na računu'+(D.racun?' ('+isoToDmy(D.racun.datum).slice(0,5)+')':'')+'</small><b>'+(bal==null?'—':nf(bal))+'</b></div>'+
+    '<div><small>Ne padaj ispod</small><b style="'+(nisko?'color:var(--r)':'')+'">'+nf(G.iznos)+'</b><em>reklame do kraja meseca</em></div>'+
+    '<div><small>Na putu do tebe</small><b>'+nf(s)+'</b><em>'+n+' pošiljki, profit oko '+nf(p)+'</em></div></div>';
+}
+function putaKartica(NP){
+  var nw=nextWork(NP.lw);
+  return '<div class="panel"><h2>Na putu do tebe</h2>'+
+   '<div class="line"><span>Kod kurira, još nije isporučeno</span><b>'+NP.kurir.n+' · '+nf(NP.kurir.s)+'</b></div>'+
+   '<div class="line"><span>Isporučeno '+fd(NP.lw)+', pare očekuješ '+fd(nw)+'</span><b>'+NP.juce.n+' · '+nf(NP.juce.s)+'</b></div>'+
+   '<p class="sm" style="margin:8px 0 10px">Paketomat isplaćuje sledećeg radnog dana posle isporuke. Račun ne vidim, nego računam po tom pravilu. Stanje računa je poslednje upisano.</p></div>';
+}
+function goalKartica(M){
+  var now=monthKey(MESEC)===monthKey(monthOf(TODAY)),dim=dimOf(MESEC),dan=now?TODAY.getDate():dim;
+  var pct=Math.max(0,Math.min(100,M.profit/M.cilj*100)),t=dan/dim*100;
+  var trebalo=Math.round(M.cilj*dan/dim),raz=M.profit-trebalo;
+  var txt=now?(raz>=0?'<b style="color:var(--g)">Ispred si plana za '+nf(raz)+'.</b>':'<b style="color:var(--r)">Kasniš '+nf(-raz)+' za tempo.</b>')+'<br><span class="sm">Do danas je trebalo '+nf(trebalo)+', zaradio si '+nf(M.profit)+'. Dan '+dan+' od '+dim+'.</span>'
+    :(M.profit>=M.cilj?'<b style="color:var(--g)">Cilj je ispunjen.</b>':'<b>Mesec je završen, falilo je '+nf(M.cilj-M.profit)+'.</b>');
+  return '<div class="panel"><h2>Cilj za '+esc(MESEC)+'</h2><div class="big">'+nf(M.profit)+' <small>od '+nf(M.cilj)+' RSD</small></div>'+
+    '<div class="track"><i style="width:'+pct.toFixed(1)+'%"></i><u style="left:calc('+t.toFixed(1)+'% - 1px)"></u></div>'+
+    '<p style="margin:4px 0 14px;font-size:16px">'+txt+'</p></div>';
+}
+function go(id){
+  document.querySelectorAll('.pg-sec').forEach(function(s){s.classList.toggle('on',s.id===id);});
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-p')===id);});
+  window.scrollTo(0,0);
+}
+function itemNaziv(sifra){var b=CONFIG.BOM.filter(function(i){return (i.sifra||i.id)===sifra;})[0];if(b)return b.naziv;var r=rowOf(sifra);return r?r.naziv:sifra;}
+async function stiglo(id){
+  var p=buildInc().filter(function(x){return x.id===id;})[0];if(!p)return;
+  if(!p.lines.length){alert('Za ovu nabavku ne znam šta je u paketu. Reci Claude-u ili diktiraj, npr. „stiglo 24 led“.');return;}
+  var opis=p.lines.map(function(l){return '+'+nf(l.q)+' '+itemNaziv(l.it);}).join(', ');
+  if(!confirm('Upisujem u lager: '+opis+'. Važi?'))return;
+  try{
+    var r;
+    if(p.iz==='baza')r=await SB.rpc('primi_nabavku_raspodela',{p_id:+id.slice(1),p_stavke:p.lines.map(function(l){return {sifra:l.it,kolicina:l.q};})});
+    else{for(var i=0;i<p.lines.length;i++){r=await SB.rpc('lager_prijem',{p_sifra:p.lines[i].it,p_kolicina:p.lines[i].q,p_napomena:p.naslov,p_kljuc:'prijem:'+id+(i?':'+i:'')});if(r.error)break;}}
+    if(r&&r.error)throw new Error(r.error.message);
+    poruka('Upisano: '+opis+'.');await ucitaj();render();go('p-lager');
+  }catch(e){alert('Nije upisano: '+e.message);}
+}
+function resetStiglo(){arrived=[];saveArr();render();go('p-lager');}
+function poruka(t){var el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(poruka.t);poruka.t=setTimeout(function(){el.classList.remove('on');},3500);}
+
+/* ---------- Diktiraj: „usb 120“ (imam), „stiglo 100 usb“ (prijem), „crna 2 rolne“ ---------- */
+function bezKv(t){return String(t||'').toLowerCase().replace(/č|ć/g,'c').replace(/š/g,'s').replace(/ž/g,'z').replace(/đ/g,'dj');}
+var BOJE=[['crn','pla_crna'],['bel','pla_bela'],['crven','pla_crvena'],['plav','pla_plava'],['zlat','pla_zlatna'],['siv','pla_siva'],['zelen','pla_zelena'],['narandz','pla_narandzasta'],['zut','pla_zuta'],['roz','pla_roze']];
+function nadjiStavku(t){
+  if(/usb|kabl/.test(t))return 'usb';
+  if(/\bled\b|trak/.test(t))return 'led';
+  if(/kutij/.test(t))return 'kutija';
+  if(/folij|pucket/.test(t))return 'folija';
+  for(var i=0;i<BOJE.length;i++)if(t.indexOf(BOJE[i][0])>=0)return BOJE[i][1];
+  return null;
+}
+function parsiraj(txt){
+  var out=[];
+  bezKv(txt).split(/,(?!\d)|;|\s+i\s+(?=\D)|\n/).forEach(function(d){
+    d=d.trim();if(!d)return;
+    var prijem=/stigl|primi|primljen|dosl|kupi|dodaj|\+/.test(d),m=d.match(/(\d+(?:[.,]\d+)?)/);
+    var s=nadjiStavku(d);
+    var q=m?parseFloat(m[1].replace(',','.')):null;
+    if(q!=null&&/roln/.test(d)&&/^pla_/.test(s||''))q=q*CONFIG.ROLNA_KG;
+    var row=s?rowOf(s):null;
+    out.push({tekst:d,sifra:s,q:q,prijem:prijem,ok:!!(s&&row&&q!=null),row:row});
+  });
+  return out;
+}
+var DIK=[];
+function diktPregled(){
+  var t=document.getElementById('dik').value;DIK=parsiraj(t);var h='';
+  DIK.forEach(function(x){
+    if(!x.sifra){h+='<div class="line"><span>„'+esc(x.tekst)+'“</span><b style="color:var(--r)">Ne znam šta je</b></div>';return;}
+    if(!x.row){h+='<div class="line"><span>„'+esc(x.tekst)+'“</span><b style="color:var(--r)">Nema u bazi</b></div>';return;}
+    if(x.q==null){h+='<div class="line"><span>„'+esc(x.tekst)+'“</span><b style="color:var(--r)">Fali broj</b></div>';return;}
+    var st=Number(x.row.stanje)||0,u=x.row.jed||(/^pla_/.test(x.sifra)?'kg':''),dec=decOf(u==='m2'?'m²':u),nov=x.prijem?st+x.q:x.q;
+    h+='<div class="line"><span><b>'+esc(x.row.naziv)+'</b><div class="sm">'+(x.prijem?'Stiglo +'+nf(x.q,dec):'Imam '+nf(x.q,dec))+' · bilo '+nf(st,dec)+'</div></span><b>→ '+nf(nov,dec)+' '+esc(u)+'</b></div>';
+  });
+  var dobri=DIK.filter(function(x){return x.ok;}).length;
+  document.getElementById('dikout').innerHTML=h+(dobri?'<button class="btn" onclick="diktUpisi()">Upiši ('+dobri+')</button>':'');
+}
+async function diktUpisi(){
+  var dobri=DIK.filter(function(x){return x.ok;}),rez=[];
+  for(var i=0;i<dobri.length;i++){var x=dobri[i];
+    var r=x.prijem?await SB.rpc('lager_prijem',{p_sifra:x.sifra,p_kolicina:x.q,p_napomena:'diktirano: '+x.tekst}):await SB.rpc('lager_popis',{p_sifra:x.sifra,p_kolicina:x.q,p_napomena:'diktirano: '+x.tekst});
+    if(r.error){alert('Nije upisano ('+x.tekst+'): '+r.error.message);break;}
+    rez.push(x.row.naziv+' '+nf(r.data.stanje,2));
+  }
+  if(rez.length){document.getElementById('dik').value='';document.getElementById('dikout').innerHTML='';poruka('Upisano. Sada: '+rez.join(', '));await ucitaj();render();go('p-lager');}
+}
+function diktGlas(){
+  var R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){alert('Ovaj pregledač nema diktiranje. Koristi mikrofon na tastaturi telefona.');return;}
+  var r=new R();r.lang='sr-RS';r.interimResults=false;
+  r.onresult=function(e){var el=document.getElementById('dik');el.value=(el.value?el.value+', ':'')+e.results[0][0].transcript;diktPregled();};
+  r.onerror=function(e){poruka('Diktiranje nije uspelo: '+e.error);};r.start();poruka('Govori…');
+}
+function diktPanel(){
+  return '<div class="panel"><h2>Diktiraj ili upiši</h2>'+
+    '<div style="display:flex;gap:8px"><input id="dik" placeholder="npr. usb 120, stiglo 30 led, crna 3 rolne" oninput="diktPregled()" style="flex:1;min-width:0;font:600 17px var(--body);padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--card2);color:var(--ink)">'+
+    '<button class="ibtn" style="height:48px;width:48px" onclick="diktGlas()" aria-label="Diktiraj">'+IC.mic+'</button></div>'+
+    '<div class="sm" style="margin:6px 0">„usb 120“ znači da imaš 120. „stiglo 100 usb“ dodaje 100. Ništa se ne upisuje dok ne klikneš Upiši.</div>'+
+    '<div id="dikout"></div><div style="height:8px"></div></div>';
+}
+
+/* ---------- Moji štampači (od 1.5) ----------
+   Kupovina štampača je INVESTICIJA (oprema), ne potrošni materijal i ne ulazi u profit aplikacije.
+   Novac za kupovinu je već u `nabavke` (veza nabavka_id) — ovde se ništa ne knjiži ponovo.
+   Pripisana dobit: „potvrđeno“ = Direktor upisao; „procena“ = profit meseca × udeo štampača (jasno označeno).
+   Amortizacija = interna procena (linearno), nije novčani izdatak i nije poreski obračun. */
+var STAMP_SEL=null;
+var ST_STATUS={aktivan:['Radi','g'],u_kvaru:['U kvaru','r'],na_servisu:['Na servisu','y'],prodat:['Prodat','']};
+var ST_TIP={hotend:'Zamena hotenda',ventilator:'Zamena ventilatora',popravka:'Popravka',servis:'Servis',odrzavanje:'Održavanje',deo:'Rezervni deo',ostalo:'Ostalo'};
+function stRsd(x){return nf(Math.round(x||0))+' RSD';}
+function stMeseci(od,doD){var r=[],d=new Date(od.getFullYear(),od.getMonth(),1);while(d<=doD){r.push(monthOf(d));d=new Date(d.getFullYear(),d.getMonth()+1,1);}return r;}
+function stDanaUMesecu(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();}
+function stCalc(s){
+  var start=isoToDate(s.datum_pocetka)||isoToDate(s.datum_kupovine)||TODAY;
+  var kraj=(s.status==='prodat'&&isoToDate(s.datum_prodaje))||TODAY;
+  var inv=Number(s.nabavna_cena_rsd)||0;
+  var dog=(D.stDog||[]).filter(function(e){return e.stampac_id===s.id&&!e.ponisten;});
+  var odr=dog.reduce(function(a,e){return a+Number(e.iznos_rsd||0);},0);
+  var ulozeno=inv+odr;
+  var udeo=s.udeo_procena!=null?Number(s.udeo_procena):null;
+  var tekuci=monthOf(TODAY),dobit=(D.stDob||[]).filter(function(x){return x.stampac_id===s.id&&!x.ponisten;});
+  var mes=stMeseci(start,kraj).map(function(m,i,arr){
+    var rec=dobit.filter(function(x){return x.mesec===m;})[0];
+    var pun=(m!==tekuci)&&!(s.status==='prodat'&&i===arr.length-1);
+    if(rec)return {m:m,v:Number(rec.iznos_rsd),vrsta:rec.vrsta,pun:pun,potvrdjeno:rec.vrsta==='rucno'};
+    if(udeo==null)return {m:m,v:null,vrsta:'nema',pun:pun};
+    var p=calcMonth(m).profit,f=1;
+    if(m===monthOf(start)){
+      var dm=(m===tekuci)?TODAY.getDate():stDanaUMesecu(start);
+      f=Math.max(0,Math.min(1,(dm-start.getDate()+1)/dm));
+    }
+    return {m:m,v:Math.round(p*udeo*f),vrsta:'procena',pun:pun,profitMeseca:p,f:f};
+  });
+  var potv=mes.reduce(function(a,x){return a+(x.potvrdjeno?x.v:0);},0);
+  var proc=mes.reduce(function(a,x){return a+(!x.potvrdjeno&&x.v!=null?x.v:0);},0);
+  var prodaja=s.status==='prodat'?Number(s.prodajna_cena_rsd||0):0;
+  var vraceno=potv+proc+prodaja;
+  var pct=ulozeno>0?vraceno/ulozeno:0;
+  var preostalo=Math.max(0,ulozeno-vraceno);
+  // rok isplate: samo uz bar 2 puna meseca sa podatkom, prosek poslednja 3
+  var puni=mes.filter(function(x){return x.pun&&x.v!=null;}).slice(-3);
+  var isplata=null;
+  if(preostalo<=0&&ulozeno>0)isplata={gotovo:true};
+  else if(puni.length>=2){
+    var avg=puni.reduce(function(a,x){return a+x.v;},0)/puni.length;
+    if(avg>0){var mm=Math.ceil(preostalo/avg);isplata={datum:new Date(TODAY.getFullYear(),TODAY.getMonth()+mm,1),avg:avg,n:puni.length,samoPotvrdjeno:puni.every(function(x){return x.potvrdjeno;})};}
+    else isplata={neisplativo:true,avg:avg,n:puni.length};
+  }
+  // amortizacija (linearno, interna procena)
+  var vek=Number(s.vek_meseci)||36,ost=Number(s.ostatak_vrednosti_rsd)||0,osnov=Math.max(0,inv-ost);
+  var amMes=osnov/vek;
+  var proteklo=Math.max(0,(TODAY-start)/86400000/30.4375);
+  var amDosad=Math.min(osnov,amMes*proteklo);
+  var knjig=inv-amDosad;
+  var sati=s.sati_stampe!=null?Number(s.sati_stampe):null;
+  var poSatu=sati>0?(amDosad+odr)/sati:null;
+  return {s:s,start:start,inv:inv,odr:odr,dog:dog,ulozeno:ulozeno,udeo:udeo,mes:mes,potv:potv,proc:proc,prodaja:prodaja,vraceno:vraceno,pct:pct,preostalo:preostalo,isplata:isplata,
+    vek:vek,ost:ost,amMes:amMes,amDosad:amDosad,knjig:knjig,proteklo:proteklo,sati:sati,poSatu:poSatu};
+}
+function stBar(c){
+  var u=c.ulozeno||1,a=Math.max(0,Math.min(100,(c.potv+c.prodaja)/u*100)),b=Math.max(0,Math.min(100-a,c.proc/u*100));
+  return '<div class="roi" role="img" aria-label="Isplaćeno '+nf(c.pct*100,1)+'%"><i class="p" style="width:'+a+'%"></i><i class="e" style="width:'+b+'%"></i></div>';
+}
+function stPill(s){var x=ST_STATUS[s.status]||[s.status,''];return '<span class="pill '+x[1]+'"'+(x[1]?'':' style="background:var(--card2);color:var(--mut)"')+'>'+x[0]+'</span>';}
+function stNabavka(id){return (D.stNab||[]).filter(function(n){return n.id===id;})[0]||null;}
+
+function stampaciKratko(){
+  var L=D.st||[];if(!L.length)return '';
+  var c=L.map(stCalc),ul=c.reduce(function(a,x){return a+x.ulozeno;},0),vr=c.reduce(function(a,x){return a+x.vraceno;},0);
+  return '<div class="panel"><h2>Moji štampači</h2><div class="line"><span>Uloženo u štampače</span><b>'+stRsd(ul)+'</b></div><div class="line"><span>Vratilo se (potvrđeno + procena)</span><b>'+stRsd(vr)+'</b></div>'+
+    '<p class="sm">Kupovina štampača nije u profitu meseca — to je investicija.</p><button class="btn ghost" onclick="go(\'p-stamp\')">Otvori štampače</button></div>';
+}
+function stampaciStrana(){
+  var L=(D.st||[]).slice().sort(function(a,b){var o={aktivan:0,na_servisu:1,u_kvaru:2,prodat:3};return (o[a.status]-o[b.status])||(a.id-b.id);});
+  var C=L.map(stCalc);
+  var ul=C.reduce(function(a,x){return a+x.ulozeno;},0),vr=C.reduce(function(a,x){return a+x.vraceno;},0),odr=C.reduce(function(a,x){return a+x.odr;},0);
+  var h='<h1>Moji štampači</h1>';
+  if(D.stGreska)h+='<div class="panel"><p>Tabela štampača nije dostupna: '+esc(D.stGreska)+'</p></div>';
+  h+='<div class="strip"><div><small>Uloženo (kupovina + održavanje)</small><b>'+nf(ul)+'</b><em>RSD</em></div><div><small>Od toga održavanje</small><b>'+nf(odr)+'</b><em>RSD</em></div><div><small>Vratilo se</small><b>'+nf(vr)+'</b><em>'+(ul?nf(vr/ul*100,1)+'%':'—')+'</em></div></div>';
+  h+='<div class="lgrid">'+C.map(function(c){var s=c.s;
+    return '<button class="item stcard" onclick="stOtvori('+s.id+')"><div class="top"><span class="nm">'+esc(s.naziv)+'</span>'+stPill(s)+'</div>'+
+      '<div class="sm">'+esc(s.model)+(c.sati!=null?' · '+nf(c.sati)+' h':'')+'</div>'+
+      '<div class="stn"><div><small>Uloženo</small><b>'+nf(c.ulozeno)+'</b></div><div><small>Održavanje</small><b>'+nf(c.odr)+'</b></div><div><small>Isplaćeno</small><b>'+nf(c.pct*100,1)+'%</b></div></div>'+
+      stBar(c)+'<div class="sm">'+(c.udeo==null&&!c.potv?'Zarada još nije pripisana — otvori i podesi.':'Preostalo do isplate: <b style="color:var(--ink)">'+stRsd(c.preostalo)+'</b>')+'</div></button>';
+  }).join('')+'</div>';
+  h+='<details id="stnovi"><summary>+ Dodaj štampač</summary><div class="panel" style="margin-top:8px">'+stForma(null)+'<button class="btn" onclick="stSacuvaj(null)">Sačuvaj štampač</button></div></details>';
+  h+='<p class="sm">Puna traka = potvrđena dobit (ti upisao). Šrafirano = procena. Kupovina je već u nabavkama i ne knjiži se ponovo.</p>';
+  return h;
+}
+function stFld(lbl,html){return '<label class="fld"><span>'+lbl+'</span>'+html+'</label>';}
+function stIn(id,val,type,extra){return '<input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val==null?'':val)+'" '+(extra||'')+'>';}
+function stForma(s){
+  s=s||{};var p=s.id?'e_':'n_';
+  var nab=(D.stNab||[]).filter(function(n){return n.kategorija==='oprema';});
+  var used=(D.st||[]).map(function(x){return x.nabavka_id;});
+  var nabSel='<select id="'+p+'nab"><option value="">— nije u nabavkama —</option>'+nab.filter(function(n){return n.id===s.nabavka_id||used.indexOf(n.id)<0;}).map(function(n){return '<option value="'+n.id+'"'+(n.id===s.nabavka_id?' selected':'')+'>#'+n.id+' · '+esc(n.naziv)+' · '+nf(n.iznos_rsd)+'</option>';}).join('')+'</select>';
+  var stSel='<select id="'+p+'status">'+Object.keys(ST_STATUS).map(function(k){return '<option value="'+k+'"'+(k===(s.status||'aktivan')?' selected':'')+'>'+ST_STATUS[k][0]+'</option>';}).join('')+'</select>';
+  var N=s.udeo_procena?Math.round(1/Number(s.udeo_procena)):'';
+  var h='<div class="frm">'+
+    stFld('Naziv',stIn(p+'naziv',s.naziv,'text','placeholder="npr. P1S Combo"'))+
+    stFld('Model',stIn(p+'model',s.model,'text','placeholder="npr. Bambu Lab P1S Combo"'))+
+    stFld('Serijski broj (ako ga imaš)',stIn(p+'ser',s.serijski_broj))+
+    stFld('Status',stSel)+
+    stFld('Datum kupovine',stIn(p+'dk',s.datum_kupovine,'date'))+
+    stFld('Počeo da radi',stIn(p+'dp',s.datum_pocetka,'date'))+
+    stFld('Nabavna cena (RSD)',stIn(p+'cena',s.nabavna_cena_rsd!=null?Number(s.nabavna_cena_rsd):'','number','inputmode="decimal"'))+
+    stFld('Kupovina u nabavkama',nabSel)+
+    stFld('Ukupno sati štampe (ako znaš)',stIn(p+'sati',s.sati_stampe!=null?Number(s.sati_stampe):'','number','inputmode="decimal"'))+
+    stFld('Koliko štampača radi zajedno sa ovim? (za procenu)',stIn(p+'n',N,'number','inputmode="numeric" placeholder="npr. 4"'))+
+    (s.id?stFld('Datum prodaje',stIn(p+'dpr',s.datum_prodaje,'date'))+stFld('Prodajna cena (RSD)',stIn(p+'pcena',s.prodajna_cena_rsd!=null?Number(s.prodajna_cena_rsd):'','number','inputmode="decimal"')):'')+
+    '</div>'+stFld('Napomene','<textarea id="'+p+'nap" rows="3">'+esc(s.napomena||'')+'</textarea>');
+  return h;
+}
+function stVal(id){var el=document.getElementById(id);return el?String(el.value).trim():'';}
+async function stSacuvaj(id){
+  var p=id?'e_':'n_',n=stVal(p+'n');
+  var o={naziv:stVal(p+'naziv'),model:stVal(p+'model'),serijski_broj:stVal(p+'ser'),status:stVal(p+'status'),datum_kupovine:stVal(p+'dk'),datum_pocetka:stVal(p+'dp'),
+    nabavna_cena_rsd:stVal(p+'cena').replace(',','.'),nabavka_id:stVal(p+'nab'),napomena:stVal(p+'nap')};
+  if(n!==''){var k=parseInt(n,10);if(!(k>=1&&k<=50)){alert('Broj štampača mora biti od 1 do 50.');return;}o.udeo_procena=String(1/k);}else if(id)o.udeo_procena='';
+  var sati=stVal(p+'sati').replace(',','.'),s0=id?(D.st||[]).filter(function(x){return x.id===id;})[0]:null;
+  if(!id||String(s0&&s0.sati_stampe!=null?Number(s0.sati_stampe):'')!==sati)o.sati_stampe=sati;
+  if(id){o.id=id;o.datum_prodaje=stVal(p+'dpr');o.prodajna_cena_rsd=stVal(p+'pcena').replace(',','.');}
+  if(!o.naziv||!o.model){alert('Upiši naziv i model.');return;}
+  if(o.nabavka_id){var nb=stNabavka(+o.nabavka_id);if(nb&&o.nabavna_cena_rsd===''){o.nabavna_cena_rsd=String(nb.iznos_rsd);}}
+  if(!confirm((id?'Sačuvati izmene za ':'Dodati štampač ')+o.naziv+'? Ništa se ne knjiži kao trošak.'))return;
+  var r=await SB.rpc('stampac_sacuvaj',{p:o});
+  if(r.error){alert('Nije sačuvano: '+r.error.message);return;}
+  poruka('Sačuvano.');await ucitaj();render();if(id||(r.data&&r.data.id))stOtvori(id||r.data.id);else go('p-stamp');
+}
+function stOtvori(id){STAMP_SEL=id;document.getElementById('p-stamp1').innerHTML=stDetalj(id);go('p-stamp1');}
+function stDetalj(id){
+  var s=(D.st||[]).filter(function(x){return x.id===id;})[0];if(!s)return '<p>Štampač nije pronađen.</p>';
+  var c=stCalc(s),nb=s.nabavka_id?stNabavka(s.nabavka_id):null;
+  var h='<button class="btn ghost" style="width:auto;display:inline-block;padding:8px 14px" onclick="go(\'p-stamp\')">← Svi štampači</button>'+
+    '<h1 style="margin-top:10px">'+esc(s.naziv)+' '+stPill(s)+'</h1><p class="sm" style="margin-top:-8px">'+esc(s.model)+(s.serijski_broj?' · SN '+esc(s.serijski_broj):'')+' · radi od '+dmy(c.start)+(s.datum_pocetka?'':' (datum kupovine — upiši pravi datum početka)')+'</p>';
+  // Statistika
+  h+='<div class="tiles"><div class="tile"><div class="big">'+nf(c.ulozeno)+'</div><div>Ukupna investicija, RSD</div></div>'+
+    '<div class="tile"><div class="big">'+nf(c.odr)+'</div><div>Održavanje, RSD</div></div>'+
+    '<div class="tile'+(c.sati==null?' faint':'')+'"><div class="big">'+(c.sati!=null?nf(c.sati):'—')+'</div><div>Sati rada'+(s.sati_datum?' (stanje '+isoToDmy(s.sati_datum)+')':'')+'</div></div>'+
+    '<div class="tile'+(c.poSatu==null?' faint':'')+'"><div class="big">'+(c.poSatu!=null?nf(c.poSatu):'—')+'</div><div>Trošak po satu, RSD (procena)</div></div></div>';
+  h+='<div class="g2"><div>';
+  // Povraćaj
+  var ip=c.isplata,ipTxt;
+  if(!ip)ipTxt='Datum isplate: još nema dovoljno podataka (treba bar 2 puna meseca sa dobiti).';
+  else if(ip.gotovo)ipTxt='<b style="color:var(--g)">Štampač se isplatio.</b>';
+  else if(ip.neisplativo)ipTxt='Poslednjih '+ip.n+' meseca dobit nije pozitivna — ovim tempom se ne isplaćuje.';
+  else ipTxt='Isplata se očekuje oko <b>'+MN[ip.datum.getMonth()]+' '+ip.datum.getFullYear()+'</b> — '+(ip.samoPotvrdjeno?'na osnovu potvrđenih':'<b>PROCENA</b>, na osnovu')+' '+ip.n+' puna meseca (prosek '+stRsd(ip.avg)+'/mes).';
+  h+='<div class="panel"><h2>Povraćaj investicije</h2><div class="big">'+nf(c.pct*100,1)+'<small> % isplaćeno</small></div>'+stBar(c)+
+    '<div class="line"><span>Investicija + održavanje</span><b>'+stRsd(c.ulozeno)+'</b></div>'+
+    '<div class="line"><span>Pripisana dobit — potvrđeno</span><b>'+stRsd(c.potv)+'</b></div>'+
+    '<div class="line"><span>Pripisana dobit — procena</span><b class="mut">'+stRsd(c.proc)+'</b></div>'+
+    (c.prodaja?'<div class="line"><span>Prodaja štampača</span><b>'+stRsd(c.prodaja)+'</b></div>':'')+
+    '<div class="line"><span>Preostalo do isplate</span><b>'+stRsd(c.preostalo)+'</b></div>'+
+    '<p class="sm" style="margin:10px 0">'+ipTxt+'</p>'+
+    (c.udeo==null?'<div class="act"><p>Nemam podatak koji štampač je štampao koju lampu, pa ne izmišljam zaradu.</p><p>Upiši ispod „Koliko štampača radi zajedno sa ovim“ — tada pravim procenu (profit meseca ÷ broj štampača), jasno označenu. Ili upiši dobit ručno po mesecu.</p></div>':'<p class="sm">Procena = profit meseca (posle materijala, poštarine, reklama, povrata i fiksnih) × 1/'+Math.round(1/c.udeo)+' (udeo ovog štampača), za prvi mesec samo dani od početka rada.</p>')+
+    '<h2 style="margin-top:14px">Po mesecima</h2>'+c.mes.slice().reverse().map(function(x){
+      var lbl=x.potvrdjeno?'<span class="pill g">potvrđeno</span>':x.vrsta==='procena'?'<span class="pill y">procena</span>':'<span class="sm">nema podatka</span>';
+      return '<div class="line" style="align-items:center"><span>'+x.m+(x.pun?'':' <span class="sm">(u toku)</span>')+'<br>'+lbl+'</span><span style="text-align:right"><b>'+(x.v!=null?stRsd(x.v):'—')+'</b><br><a class="lnk sm" href="javascript:void 0" onclick="stDobit('+s.id+',\''+x.m+'\','+(x.v!=null?x.v:'null')+')">'+(x.potvrdjeno?'izmeni':'upiši tačno')+'</a></span></div>';
+    }).join('')+'<div style="height:8px"></div></div>';
+  // Amortizacija
+  h+='<div class="panel"><h2>Amortizacija (interna procena)</h2><div class="vek">'+[[36,'3 godine'],[60,'5 godina']].map(function(v){return '<button class="'+(c.vek===v[0]?'on':'')+'" onclick="stVek('+s.id+','+v[0]+')">'+v[1]+'</button>';}).join('')+
+    '<button class="'+([36,60].indexOf(c.vek)<0?'on':'')+'" onclick="stVek('+s.id+',null)">'+([36,60].indexOf(c.vek)<0?nf(c.vek)+' mes.':'Drugo')+'</button></div>'+
+    '<div class="line"><span>Mesečna amortizacija</span><b>'+stRsd(c.amMes)+'</b></div>'+
+    '<div class="line"><span>Do sada ('+nf(c.proteklo,1)+' mes.)</span><b>'+stRsd(c.amDosad)+'</b></div>'+
+    '<div class="line"><span>Procenjena preostala vrednost</span><b>'+stRsd(c.knjig)+'</b></div>'+
+    (c.ost?'<div class="line"><span>Vrednost na kraju veka</span><b>'+stRsd(c.ost)+'</b></div>':'')+
+    '<p class="sm">Ovo NIJE novčani izdatak: pare su već isplaćene '+(nb?isoToDmy(nb.datum)+' (nabavka #'+nb.id+')':'pri kupovini')+'. Amortizacija samo raspoređuje cenu na mesece rada, da vidiš koliko te štampač „košta“ mesečno. Nije zvanični poreski obračun — njega radi knjigovođa po poreskim propisima (paušalcu porez ne zavisi od troškova).</p></div>';
+  h+='</div><div>';
+  // Održavanje
+  var dog=c.dog.slice().sort(function(a,b){return String(b.datum).localeCompare(String(a.datum));});
+  var nabOpt=(D.stNab||[]).filter(function(n){return n.kategorija!=='oprema';});
+  h+='<div class="panel"><h2>Održavanje i kvarovi</h2>'+(dog.length?dog.map(function(e){
+      return '<div class="line"><span><b style="font-weight:700">'+esc(ST_TIP[e.tip]||e.tip)+'</b> · '+isoToDmy(e.datum)+'<br><span class="sm">'+esc(e.opis)+(e.nabavka_id?' · nabavka #'+e.nabavka_id+' (već knjiženo)':'')+'</span></span><span style="text-align:right;white-space:nowrap"><b>'+stRsd(e.iznos_rsd)+'</b><br><a class="lnk sm" href="javascript:void 0" onclick="stPonisti('+e.id+','+s.id+')">poništi</a></span></div>';
+    }).join(''):'<p class="sm">Još nema intervencija.</p>')+
+    '<details><summary>+ Dodaj intervenciju</summary><div class="frm">'+
+      stFld('Datum',stIn('d_dat',dmyIso(TODAY),'date'))+
+      stFld('Vrsta','<select id="d_tip">'+Object.keys(ST_TIP).map(function(k){return '<option value="'+k+'">'+ST_TIP[k]+'</option>';}).join('')+'</select>')+
+      stFld('Cena (RSD)',stIn('d_iz','','number','inputmode="decimal" placeholder="0"'))+
+      stFld('Plaćeno kroz nabavku?','<select id="d_nab"><option value="">— ne / nije u nabavkama —</option>'+nabOpt.slice().reverse().map(function(n){return '<option value="'+n.id+'">#'+n.id+' · '+esc(n.naziv)+' · '+nf(n.iznos_rsd)+'</option>';}).join('')+'</select>')+
+    '</div>'+stFld('Opis','<input id="d_op" type="text" placeholder="npr. zamenjen hotend 0.4">')+
+    '<button class="btn" onclick="stDogadjaj('+s.id+')">Dodaj</button></details></div>';
+  // Kupovina i podaci
+  h+='<div class="panel"><h2>Kupovina</h2>'+(nb?'<div class="line"><span>Nabavka #'+nb.id+' · '+isoToDmy(nb.datum)+'</span><b>'+stRsd(nb.iznos_rsd)+'</b></div>'+
+      (Math.round(Number(nb.iznos_rsd))!==Math.round(c.inv)?'<p class="sm" style="color:var(--r)">Cena ovde ('+stRsd(c.inv)+') se razlikuje od nabavke — proveri.</p>':'<p class="sm">Novac je već u nabavkama; ovde se ne knjiži ponovo.</p>')
+      :'<p class="sm">Nije povezano sa nabavkom. Cena se vodi samo ovde.</p>')+
+    (s.napomena?'<p class="sm">'+esc(s.napomena)+'</p>':'')+'</div>';
+  h+='<details class="panel" style="padding-bottom:12px"><summary style="font-size:16px;color:var(--ink)">Izmeni podatke štampača</summary>'+stForma(s)+'<button class="btn" onclick="stSacuvaj('+s.id+')">Sačuvaj izmene</button></details>';
+  h+='</div></div>';
+  return h;
+}
+async function stVek(id,m){
+  if(m==null){var x=prompt('Očekivani radni vek u mesecima (npr. 48):','48');if(x==null)return;m=parseInt(x,10);if(!(m>=6&&m<=180)){alert('Od 6 do 180 meseci.');return;}}
+  var r=await SB.rpc('stampac_sacuvaj',{p:{id:id,vek_meseci:String(m)}});
+  if(r.error){alert('Nije sačuvano: '+r.error.message);return;}
+  poruka('Radni vek: '+m+' meseci.');await ucitaj();render();stOtvori(id);
+}
+async function stDobit(id,mesec,predlog){
+  var x=prompt('Dobit koju pripisuješ ovom štampaču za '+mesec+' (RSD, posle troškova).\nPrazno = obriši upis.',predlog!=null?String(Math.round(predlog)):'');
+  if(x==null)return;
+  x=String(x).replace(/\./g,'').replace(',','.').trim();
+  var v=x===''?null:parseFloat(x);if(x!==''&&isNaN(v)){alert('Upiši broj.');return;}
+  var r=await SB.rpc('stampac_dobit_upisi',{p_stampac:id,p_mesec:mesec,p_iznos:v,p_vrsta:'rucno',p_napomena:null});
+  if(r.error){alert('Nije upisano: '+r.error.message);return;}
+  poruka(v==null?'Upis obrisan.':'Upisano: '+stRsd(v)+'.');await ucitaj();render();stOtvori(id);
+}
+async function stDogadjaj(id){
+  var o={stampac_id:String(id),datum:stVal('d_dat'),tip:stVal('d_tip'),iznos_rsd:stVal('d_iz').replace(',','.'),nabavka_id:stVal('d_nab'),opis:stVal('d_op')};
+  if(!o.opis){alert('Upiši kratak opis.');return;}
+  if(!confirm('Dodati: '+(ST_TIP[o.tip]||o.tip)+', '+(o.iznos_rsd||0)+' RSD'+(o.nabavka_id?' (veza sa nabavkom #'+o.nabavka_id+', ne knjiži se ponovo)':'')+'?'))return;
+  var r=await SB.rpc('stampac_dogadjaj_dodaj',{p:o});
+  if(r.error){alert('Nije upisano: '+r.error.message);return;}
+  poruka('Dodato.');await ucitaj();render();stOtvori(id);
+}
+async function stPonisti(eid,id){
+  if(!confirm('Poništiti ovu intervenciju? (ostaje zapisana kao poništena)'))return;
+  var r=await SB.rpc('stampac_dogadjaj_ponisti',{p_id:eid});
+  if(r.error){alert('Nije poništeno: '+r.error.message);return;}
+  poruka('Poništeno.');await ucitaj();render();stOtvori(id);
+}
+
+/* ---------- Podešavanja (ista kao u starom programu) ---------- */
+function podStrana(){
+  var s=D.settings||{},k=s.kapacitet_po_danu||CONFIG.CAP,f=s.fiksni_troskovi||[];
+  var inp=function(id,lbl,val,suf){return '<div class="line" style="align-items:center"><span style="min-width:0">'+lbl+'</span><span style="white-space:nowrap"><input id="'+id+'" type="number" inputmode="decimal" value="'+esc(val)+'" style="width:84px;text-align:right;font:700 16px var(--body);padding:8px 6px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink)"> '+(suf||'')+'</span></div>';};
+  var h='<h1>Podešavanja</h1><div class="g2"><div><div class="panel"><h2>Troškovi po lampi</h2>'+
+    inp('s_post','Poštarina po pošiljci',s.postarina!=null?s.postarina:390,'RSD')+
+    inp('s_ppost','Poštarina za vraćene',s.povratna_postarina!=null?s.povratna_postarina:390,'RSD')+
+    inp('s_mat','Materijal po lampi',(s.proizvodi&&s.proizvodi[0]&&s.proizvodi[0].cena)||900,'RSD')+'</div>'+
+    '<div class="panel"><h2>Ciljevi</h2>'+
+    inp('s_cilj','Cilj profita mesečno',s.cilj_mesecni||150000,'RSD')+
+    inp('s_cpa','Ciljna cena po prodaji',s.ciljni_cpa||1100,'RSD')+
+    inp('s_prag','Dozvoljen povrat',Math.round((s.prag_povrata!=null?s.prag_povrata:0.05)*100),'%')+'</div></div><div>'+
+    '<div class="panel"><h2>Koliko lampi šalješ dnevno</h2>'+[1,2,3,4,5].map(function(d){return inp('s_k'+d,['','Ponedeljak','Utorak','Sreda','Četvrtak','Petak'][d],k[d]!=null?k[d]:0,'kom');}).join('')+'</div>'+
+    '<div class="panel"><h2>Fiksni troškovi mesečno</h2><div id="fiks">'+f.map(function(x,i){return fiksRed(x.naziv,x.mesecno);}).join('')+'</div>'+
+    '<button class="btn ghost" onclick="document.getElementById(\'fiks\').insertAdjacentHTML(\'beforeend\',fiksRed(\'\',0))">+ Dodaj trošak</button></div></div></div>'+
+    '<button class="btn" onclick="podSacuvaj()">Sačuvaj</button><button class="btn ghost" onclick="go(\'p-stamp\')">Moji štampači</button><p class="sm">Ista podešavanja koristi i stari program, pa se promena vidi u oba.</p>';
+  return h;
+}
+function fiksRed(n,v){return '<div class="line fr" style="align-items:center;gap:8px"><input class="fn" value="'+esc(n)+'" placeholder="Naziv" style="flex:1;min-width:0;font:600 16px var(--body);padding:8px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink)"><input class="fv" type="number" value="'+esc(v)+'" style="width:78px;text-align:right;font:700 16px var(--body);padding:8px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink)"><button class="ibtn" style="width:36px;height:36px" onclick="this.parentNode.remove()" aria-label="Obriši">×</button></div>';}
+async function podSacuvaj(){
+  var v=function(id){var x=parseFloat(String(document.getElementById(id).value).replace(',','.'));return isNaN(x)?null:x;};
+  var s=D.settings||{},pr=(s.proizvodi&&s.proizvodi.length?JSON.parse(JSON.stringify(s.proizvodi)):[{tip:'Lampa',cena:900}]);pr[0].cena=v('s_mat');
+  var k={};[1,2,3,4,5].forEach(function(d){k[d]=v('s_k'+d)||0;});
+  var fx=[];document.querySelectorAll('#fiks .fr').forEach(function(r){var n=r.querySelector('.fn').value.trim(),m=parseFloat(r.querySelector('.fv').value);if(n&&!isNaN(m))fx.push({naziv:n,mesecno:m});});
+  var p={postarina:v('s_post'),povratna_postarina:v('s_ppost'),proizvodi:pr,cilj_mesecni:v('s_cilj'),ciljni_cpa:v('s_cpa'),prag_povrata:(v('s_prag')||0)/100,kapacitet_po_danu:k,fiksni_troskovi:fx};
+  for(var key in p){if(p[key]===null){alert('Proveri polje: '+key);return;}}
+  if(!confirm('Sačuvati podešavanja? Važi i za stari program.'))return;
+  var r=await SB.rpc('sacuvaj_podesavanja',{p:p});
+  if(r.error){alert('Nije sačuvano: '+r.error.message);return;}
+  poruka('Sačuvano.');await ucitaj();render();go('p-pod');
+}
+function promeniMesec(m){MESEC=m;render();}
+
+/* ---------- učitavanje (samo čitanje) ---------- */
+function sbInit(){if(!SB)SB=supabase.createClient(CONFIG.SUPA_URL,CONFIG.SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:CONFIG.AUTH_KEY}});return SB;}
+function ok(r,def){return r&&!r.error&&r.data?r.data:def;}
+async function ucitaj(){
+  var sb=sbInit();
+  var r=await Promise.all([
+    sb.from('orders').select('broj,kupac,proizvod,cena,d1,d2,d3,status,mesec'),
+    sb.from('ad_spend').select('datum,mesec,usd,rsd'),
+    sb.from('app_state').select('key,data').eq('key','settings'),
+    sb.from('v_lager').select('*'),
+    sb.from('v_paketomat').select('*'),
+    sb.from('stanje_racuna').select('*').order('datum',{ascending:false}).limit(1),
+    sb.from('nabavke').select('*').eq('stigla',false),
+    sb.from('v_reklame').select('*'),
+    sb.from('tasks').select('*').neq('status','zavrseno'),
+    sb.from('inventory_movements').select('izvor_kljuc').like('izvor_kljuc','prijem:%'),
+    sb.from('analyses').select('datum,period,naslov,zakljucak_tekst').order('datum',{ascending:false}).limit(12),
+    sb.from('ad_metrics').select('datum,ad_id,ad_name,campaign_name,spend_rsd,purchases,frequency,ctr').gte('datum',dmyIso(add(TODAY,-20))),
+    sb.from('stampaci').select('*').order('id'),
+    sb.from('stampaci_dogadjaji').select('*'),
+    sb.from('stampaci_dobit').select('*'),
+    sb.from('nabavke').select('id,datum,kategorija,naziv,iznos_rsd').in('kategorija',['oprema','alat','ostalo','elektronika'])
+  ]);
+  if(r[0].error||r[1].error)throw new Error((r[0].error||r[1].error).message);
+  D.orders=r[0].data||[];D.ads=r[1].data||[];
+  var st=ok(r[2],[]);D.settings=(st[0]&&st[0].data)||{};
+  D.lager=ok(r[3],[]);D.pak=ok(r[4],[]);D.racun=(ok(r[5],[])[0])||null;
+  D.nabavke=ok(r[6],[]);D.rek=ok(r[7],[]);D.tasks=ok(r[8],[]);D.prim=ok(r[9],[]).map(function(x){return x.izvor_kljuc;});D.an=ok(r[10],[]);D.adm=ok(r[11],[]);
+  D.st=ok(r[12],[]);D.stDog=ok(r[13],[]);D.stDob=ok(r[14],[]);D.stNab=ok(r[15],[]);D.stGreska=r[12].error?r[12].error.message:null;
+  var set={};D.orders.forEach(function(o){if(o.mesec)set[o.mesec]=1;});D.ads.forEach(function(a){if(a.mesec)set[a.mesec]=1;});
+  var ms=Object.keys(set).sort(function(a,b){return monthKey(b)-monthKey(a);});
+  var cur=monthOf(TODAY);
+  if(!MESEC||ms.indexOf(MESEC)<0)MESEC=ms.indexOf(cur)>=0?cur:ms[0];
+  document.getElementById('mesec').innerHTML=ms.map(function(m){return '<option'+(m===MESEC?' selected':'')+'>'+m+'</option>';}).join('');
+}
+async function osvezi(){TODAY=new Date();try{await ucitaj();render();}catch(e){alert('Greška pri učitavanju: '+e.message);}}
+async function prijava(){
+  document.getElementById('err').textContent='Prijavljivanje...';
+  var r=await sbInit().auth.signInWithPassword({email:document.getElementById('em').value.trim(),password:document.getElementById('pw').value});
+  if(r.error){document.getElementById('err').textContent='Prijava nije uspela: '+r.error.message;return;}
+  start();
+}
+async function start(){
+  document.getElementById('hb').innerHTML=IC.bulb;document.getElementById('lb').innerHTML=IC.bulb;document.getElementById('rf').innerHTML=IC.refresh;document.getElementById('gear').innerHTML=IC.gear;
+  var g=await sbInit().auth.getSession(),sess=g&&g.data?g.data.session:null;
+  if(!sess){document.getElementById('login').style.display='block';document.getElementById('app').style.display='none';return;}
+  document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';
+  try{await ucitaj();render();if(location.hash==='#stampaci')go('p-stamp');}catch(e){document.getElementById('app').style.display='none';document.getElementById('login').style.display='block';document.getElementById('err').textContent='Sesija je istekla ili greška: '+e.message;}
+}
+start();
+</script>
+</body>
+</html>
